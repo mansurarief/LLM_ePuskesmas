@@ -8,18 +8,29 @@ document.addEventListener('DOMContentLoaded', function() {
   const processAudioButton = document.getElementById('processAudio');
   const recordingStatus = document.getElementById('recordingStatus');
   const resultDiv = document.getElementById('result');
+  const requestMicPermissionButton = document.getElementById('openWelcomePage');
 
   chrome.storage.local.get('microphoneAccess', function(data) {
     if (data.microphoneAccess) {
       startRecordingButton.disabled = false;
+      requestMicPermissionButton.style.display = 'none';
     } else {
       recordingStatus.textContent = 'Please grant microphone access in the extension settings.';
+      requestMicPermissionButton.style.display = 'block';
     }
   });
 
   startRecordingButton.addEventListener('click', startRecording);
   stopRecordingButton.addEventListener('click', stopRecording);
   processAudioButton.addEventListener('click', processAudio);
+  requestMicPermissionButton.addEventListener('click', openWelcomePage);
+
+  function openWelcomePage() {
+    chrome.tabs.create({
+      url: chrome.runtime.getURL("welcome.html"),
+      active: true
+  });
+  }
 
   async function startRecording() {
     try {
@@ -41,6 +52,7 @@ document.addEventListener('DOMContentLoaded', function() {
     } catch (error) {
       console.error('Error accessing microphone:', error);
       recordingStatus.textContent = 'Error: Could not access microphone';
+      requestMicPermissionButton.style.display = 'block';
     }
   }
 
