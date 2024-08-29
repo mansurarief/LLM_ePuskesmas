@@ -1,17 +1,90 @@
-  <!DOCTYPE html>
-  <html>
-  <head>
-    <title>Welcome to Audio Recorder</title>
-    <style>
-      body { width: 300px; padding: 20px; text-align: center; }
-      button { margin: 20px 0; padding: 10px 20px; }
-    </style>
-  </head>
-  <body>
-    <h1>Welcome to Audio Recorder</h1>
-    <p>To use this extension, we need access to your microphone.</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to Audio Recorder</title>
+  <style>
+    /* Base styles */
+    body {
+      font-family: Arial, sans-serif;
+      width: 320px;
+      padding: 20px;
+      margin: 0;
+      background-color: #f4f4f4;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 24px;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    p {
+      font-size: 16px;
+      color: #555;
+      margin-bottom: 30px;
+    }
+
+    .button-container {
+      display: flex;
+      justify-content: center;
+    }
+
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      color: #fff;
+      background-color: #007BFF;
+      transition: background-color 0.2s, transform 0.2s;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    #status {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #333;
+    }
+
+    /* Responsive design */
+    @media (max-width: 400px) {
+      body {
+        width: 100%;
+        padding: 10px;
+      }
+
+      h1 {
+        font-size: 20px;
+      }
+
+      p {
+        font-size: 14px;
+      }
+
+      button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Welcome to Audio Recorder</h1>
+  <p>To use this extension, we need access to your microphone.</p>
+  <div class="button-container">
     <button id="requestAccess">Grant Microphone Access</button>
-    <div id="status"></div>
-    <script src="welcome.js"></script>
-  </body>
-  </html>
+  </div>
+  <div id="status"></div>
+  <script src="welcome.js"></script>
+</body>
+</html>

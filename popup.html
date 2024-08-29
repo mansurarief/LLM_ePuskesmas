@@ -1,20 +1,102 @@
-  <!DOCTYPE html>
-  <html>
-  <head>
-    <title>Audio Recording, Transcription, and Summarization</title>
-    <style>
-      body { width: 300px; padding: 10px; }
-      button { margin: 5px 0; }
-      #recordingStatus, #result { margin-top: 10px; }
-    </style>
-  </head>
-  <body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Audio Recording, Transcription, and Summarization</title>
+  <style>
+    /* Base styles */
+    body {
+      font-family: Arial, sans-serif;
+      width: 320px;
+      padding: 20px;
+      background-color: #f9f9f9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      font-size: 18px;
+      margin-bottom: 5px;
+      text-align: center;
+    }
+
+    h2 {
+      font-size: 14px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .button-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    button {
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      width: 100%;
+      color: #fff;
+      transition: background-color 0.2s;
+    }
+
+    button:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+    }
+
+    #startRecording {
+      background-color: #4CAF50;
+    }
+
+    #stopRecording {
+      background-color: #f44336;
+    }
+
+    #processAudio {
+      background-color: #2196F3;
+    }
+
+    #openWelcomePage {
+      background-color: #ff9800;
+      display: none;
+    }
+
+    #recordingStatus, #result {
+      font-size: 12px;
+      margin-top: 10px;
+      text-align: center;
+      color: #333;
+    }
+
+    /* Status styles */
+    #recordingStatus {
+      font-weight: bold;
+    }
+
+  </style>
+</head>
+<body>
+  <h1>ePuskesmas</h1>
+  <h2>Audio Recording, Transcription & Summarization</h2>
+
+  <div class="button-container">
     <button id="startRecording">Start Recording</button>
     <button id="stopRecording" disabled>Stop Recording</button>
     <button id="processAudio" disabled>Process Audio</button>
-    <button id="openWelcomePage" style="display: none;">Request Microphone Permission</button>
-    <div id="recordingStatus"></div>
-    <div id="result"></div>
-    <script src="popup.js"></script>
-  </body>
-  </html>
+    <button id="openWelcomePage">Request Microphone Permission</button>
+  </div>
+
+  <div id="recordingStatus">Status: Ready to start</div>
+  <div id="result"></div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
