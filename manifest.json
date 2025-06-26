@@ -1,13 +1,18 @@
 {
     "manifest_version": 3,
     "name": "Medical Notetaking for ePuskesmas",
-    "version": "1.4.0",
+    "version": "2.1.0",
+    "description": "Advanced medical audio recording, transcription, and AI-powered summarization for healthcare professionals",
     "permissions": [
       "activeTab",
       "storage"
     ],
     "host_permissions": [
-      "https://api.openai.com/*"
+      "https://api.openai.com/*",
+      "http://localhost:5001/*",
+      "http://localhost:5002/*",
+      "http://127.0.0.1:5001/*",
+      "http://127.0.0.1:5002/*"
     ],
     "action": {
       "default_popup": "popup.html"
@@ -20,6 +25,13 @@
         "matches": ["<all_urls>"],
         "js": ["content.js"]
       }
+    ],
+    "options_page": "options.html",
+    "web_accessible_resources": [
+      {
+        "resources": ["offscreen.html"],
+        "matches": ["<all_urls>"]
+      }
     ]
-  }
+}
   

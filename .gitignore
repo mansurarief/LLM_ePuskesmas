@@ -1,1 +1,10 @@
 .env
+venv/
+logs/
+api/*/venv/
+*.log
+*.pid
+__pycache__/
+*.pyc
+*.pyo
+.DS_Store
