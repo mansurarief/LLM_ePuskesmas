@@ -4,9 +4,18 @@ import os
 import tempfile
 import librosa
 import torch
-from transformers import pipeline, WhisperProcessor, WhisperForConditionalGeneration
+from transformers import pipeline
 import logging
 import traceback
+from pyannote.audio.pipelines.speaker_verification import PretrainedSpeakerEmbedding
+import pyannote.audio
+from pyannote.audio import Audio
+from pyannote.core import Segment
+import contextlib
+import wave
+import numpy as np
+from sklearn.cluster import AgglomerativeClustering
+import datetime
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -14,6 +23,7 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for Chrome extension
+device = "cuda" if torch.cuda.is_available() else "cpu"
 
 # Initialize the model globally for better performance
 class WhisperTranscriber:
@@ -21,13 +31,18 @@ class WhisperTranscriber:
         self.model = None
         self.processor = None
         self.pipe = None
-        self.load_model()
+        self.embedding_model = None
+        self.audio = Audio()
+        try:
+            self.load_model()
+            self.load_embedding_model()
+        except Exception as e:
+            logger.error(f"Failed to initialize WhisperTranscriber: {str(e)}")
     
     def load_model(self):
         try:
             logger.info("Loading Whisper model...")
             # Use pipeline for simplicity, but you can also use model + processor for more control
-            device = "cuda" if torch.cuda.is_available() else "cpu"
             logger.info(f"Using device: {device}")
             
             # Load the pipeline - using large-v3-turbo for better performance
@@ -40,10 +55,47 @@ class WhisperTranscriber:
             logger.info("Whisper model loaded successfully")
         except Exception as e:
             logger.error(f"Error loading model: {str(e)}")
+            self.pipe = None
             raise e
+
+    def load_embedding_model(self):
+        try:
+            logger.info("Loading embedding model...")
+            self.embedding_model = PretrainedSpeakerEmbedding(
+                "speechbrain/spkrec-ecapa-voxceleb",
+                device=torch.device(device)
+            )
+            logger.info("Embedding model loaded successfully")
+        except Exception as e:
+            logger.error(f"Error loading embedding model: {str(e)}")
+            self.embedding_model = None
+            raise e
+
+    def get_duration(self, audio_path):
+        try:
+            duration = librosa.get_duration(path=audio_path)
+            return duration
+        except Exception as e:
+            logger.error(f"Error getting audio duration with librosa: {str(e)}")
+            try:
+                with contextlib.closing(wave.open(audio_path,'r')) as f:
+                    frames = f.getnframes()
+                    rate = f.getframerate()
+                    return frames / float(rate)
+            except Exception as wave_error:
+                logger.error(f"Error getting audio duration with wave: {str(wave_error)}")
+                try:
+                    audio, sr = librosa.load(audio_path, sr=None)
+                    return len(audio) / sr
+                except Exception as final_error:
+                    logger.error(f"Final fallback failed: {str(final_error)}")
+                    return 60.0  # 60 seconds default
     
     def transcribe(self, audio_path, language=None):
         try:
+            if self.pipe is None:
+                raise RuntimeError("Whisper model not loaded. Please check server startup logs.")
+            
             # Load audio file using librosa for better compatibility
             audio, sr = librosa.load(audio_path, sr=16000)  # Whisper expects 16kHz
             
@@ -65,10 +117,72 @@ class WhisperTranscriber:
                 return_timestamps=False
             )
             
-            return result['text'].strip()
+            # ASR pipeline always returns a dict with 'text' key
+            return result['text'].strip()  # type: ignore
         except Exception as e:
             logger.error(f"Transcription error: {str(e)}")
             raise e
+
+    def transcribe_with_diarization(self, audio_path, language=None):
+        try:
+            if self.pipe is None:
+                raise RuntimeError("Whisper model not loaded. Please check server startup logs.")
+            
+            # Load audio file using librosa for better compatibility
+            audio, sr = librosa.load(audio_path, sr=16000)  # Whisper expects 16kHz
+            
+            # Prepare generation kwargs
+            generate_kwargs = {}
+            if language and language != 'auto':
+                # Map language codes
+                lang_map = {
+                    'id': 'indonesian',
+                    'en': 'english',
+                }
+                if language in lang_map:
+                    generate_kwargs['language'] = lang_map[language]
+            
+            # Transcribe using pipeline
+            result = self.pipe(
+                audio,
+                generate_kwargs=generate_kwargs,
+                return_timestamps=True
+            )
+            print(result)
+            segments = result["chunks"] # type: ignore
+
+            embeddings = np.zeros(shape=(len(segments), 192))
+            for i, segment in enumerate(segments):
+                embeddings[i] = self.segment_embedding(audio_path, segment)
+
+            embeddings = np.nan_to_num(embeddings)
+            num_speakers = 2
+            clustering = AgglomerativeClustering(num_speakers).fit(embeddings)
+            labels = clustering.labels_
+            for i in range(len(segments)):
+                segments[i]["speaker"] = 'SPEAKER ' + str(labels[i] + 1) # type: ignore
+            
+            result_text = ""
+            for (i, segment) in enumerate(segments):
+                if i == 0 or segments[i - 1]["speaker"] != segment["speaker"]: # type: ignore
+                    start_time = segment["timestamp"][0] # type: ignore
+                    result_text += "\n" + segment["speaker"] + ' ' + str(self.time(start_time)) + '\n' # type: ignore
+                result_text += segment["text"][1:] + ' ' # type: ignore
+            return result_text.strip()
+        except Exception as e:
+            logger.error(f"Transcription error: {str(e)}")
+            raise e
+
+    def segment_embedding(self, audio_path, segment):
+        start, end = segment["timestamp"]
+        # Whisper overshoots the end timestamp in the last segment
+        end = min(self.get_duration(audio_path), end)
+        clip = Segment(start, end)
+        waveform, sample_rate = self.audio.crop(audio_path, clip)
+        return self.embedding_model(waveform[None]) # type: ignore
+
+    def time(self, secs):
+        return datetime.timedelta(seconds=round(secs))
 
 # Initialize transcriber
 transcriber = WhisperTranscriber()
@@ -104,7 +218,7 @@ def transcribe_audio():
             try:
                 # Transcribe
                 logger.info(f"Transcribing audio with language: {language}")
-                text = transcriber.transcribe(temp_file.name, language)
+                text = transcriber.transcribe_with_diarization(temp_file.name, language)
                 
                 logger.info("Transcription completed successfully")
                 return jsonify({
@@ -131,7 +245,7 @@ def get_models():
     return jsonify({
         'available_models': ['whisper-large-v3-turbo'],
         'current_model': 'whisper-large-v3-turbo',
-        'languages': ['auto', 'id', 'en', 'ms']
+        'languages': ['auto', 'id', 'en']
     })
 
 @app.route('/translate', methods=['POST'])

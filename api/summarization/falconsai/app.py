@@ -41,11 +41,16 @@ class MedicalSummarizer:
             logger.info("Medical summarization model loaded successfully")
         except Exception as e:
             logger.error(f"Error loading model: {str(e)}")
+            self.pipe = None
+            self.tokenizer = None
             raise e
     
     def preprocess_text(self, text):
         """Preprocess text for better summarization"""
         try:
+            if self.tokenizer is None:
+                raise RuntimeError("Tokenizer not loaded. Please check server startup logs.")
+            
             # Clean up the text
             text = re.sub(r'\s+', ' ', text)  # Replace multiple spaces with single space
             text = text.strip()
@@ -67,6 +72,9 @@ class MedicalSummarizer:
     
     def summarize(self, text, template_prompt=None, max_length=150, min_length=50):
         try:
+            if self.pipe is None:
+                raise RuntimeError("Summarization model not loaded. Please check server startup logs.")
+            
             # Preprocess text
             processed_text, error = self.preprocess_text(text)
             if error:
@@ -89,7 +97,7 @@ class MedicalSummarizer:
                 truncation=True
             )
             
-            summary = result[0]['summary_text'].strip()
+            summary = result[0]['summary_text'].strip() # type: ignore
             
             # Post-process summary
             summary = self.post_process_summary(summary)
