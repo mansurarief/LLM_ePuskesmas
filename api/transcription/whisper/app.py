@@ -54,7 +54,6 @@ class WhisperTranscriber:
                 lang_map = {
                     'id': 'indonesian',
                     'en': 'english',
-                    'ms': 'malay'
                 }
                 if language in lang_map:
                     generate_kwargs['language'] = lang_map[language]

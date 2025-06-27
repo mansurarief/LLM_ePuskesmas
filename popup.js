@@ -23,6 +23,8 @@ class MedicalAudioRecorder {
       playRecording: document.getElementById('playRecording'),
       processAudio: document.getElementById('processAudio'),
       clearRecording: document.getElementById('clearRecording'),
+      uploadAudio: document.getElementById('uploadAudio'),
+      audioFileInput: document.getElementById('audioFileInput'),
       openWelcomePage: document.getElementById('openWelcomePage'),
       openSettings: document.getElementById('openSettings'),
       statusBar: document.getElementById('statusBar'),
@@ -45,6 +47,8 @@ class MedicalAudioRecorder {
     this.elements.playRecording.addEventListener('click', () => this.playRecording());
     this.elements.processAudio.addEventListener('click', () => this.processAudio());
     this.elements.clearRecording.addEventListener('click', () => this.clearRecording());
+    this.elements.uploadAudio.addEventListener('click', () => this.openFileDialog());
+    this.elements.audioFileInput.addEventListener('change', (event) => this.handleFileUpload(event));
     this.elements.openWelcomePage.addEventListener('click', () => this.openWelcomePage());
     this.elements.openSettings.addEventListener('click', () => this.openSettings());
     
@@ -691,6 +695,47 @@ class MedicalAudioRecorder {
     this.elements.result.style.display = 'block';
     
     setTimeout(() => messageDiv.remove(), 5000);
+  }
+
+  openFileDialog() {
+    this.elements.audioFileInput.click();
+  }
+
+  handleFileUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('audio/')) {
+      this.showMessage("Please select a valid audio file", "error");
+      return;
+    }
+
+    // Validate file size (max 25MB for most APIs)
+    const maxSize = 25 * 1024 * 1024; // 25MB
+    if (file.size > maxSize) {
+      this.showMessage("File size too large. Please select a file smaller than 25MB", "error");
+      return;
+    }
+
+    this.audioBlob = file;
+    
+    // Create audio URL for playback
+    const audioUrl = URL.createObjectURL(this.audioBlob);
+    this.elements.audioPlayback.src = audioUrl;
+    this.elements.audioPlayback.style.display = "block";
+
+    // Update UI to show uploaded file
+    this.elements.playRecording.disabled = false;
+    this.elements.processAudio.disabled = false;
+    this.elements.clearRecording.disabled = false;
+    this.elements.audioControls.style.display = "block";
+
+    this.updateStatus(`Audio file uploaded: ${file.name}`);
+    this.showMessage(`Successfully uploaded: ${file.name}`, "success");
+
+    // Reset file input
+    event.target.value = '';
   }
 
   async saveRecordingLocally() {

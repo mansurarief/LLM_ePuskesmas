@@ -300,11 +300,19 @@
         <button id="clearRecording" class="btn-warning" disabled>
           🗑️ Clear
         </button>
+        <button id="uploadAudio" class="btn-primary">
+          📁 Upload Audio
+        </button>
+      </div>
+      
+      <div class="control-row">
         <button id="openWelcomePage" class="btn-secondary" style="display: none;">
           🎤 Grant Mic Access
         </button>
       </div>
     </div>
+
+    <input type="file" id="audioFileInput" accept="audio/*" style="display: none;">
 
     <div class="progress-bar" id="progressBar" style="display: none;">
       <div class="progress-fill" id="progressFill"></div>
