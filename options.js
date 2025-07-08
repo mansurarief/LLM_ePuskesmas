@@ -37,7 +37,7 @@
     const settings = await chrome.storage.local.get([
       'apiKey', 'language', 'gptModel', 'audioQuality', 'maxRecordingTime',
       'enableRetry', 'saveRecordings', 'enableOfflineMode', 'apiProvider',
-      'transcriptionUrl', 'summarizationUrl'
+      'transcriptionUrl', 'summarizationUrl', 'enableTranslation'
     ]);
     
     document.getElementById('apiProvider').value = settings.apiProvider || 'openai';
@@ -51,7 +51,7 @@
     document.getElementById('enableRetry').checked = settings.enableRetry || true;
     document.getElementById('saveRecordings').checked = settings.saveRecordings || false;
     document.getElementById('enableOfflineMode').checked = settings.enableOfflineMode || false;
-    
+    document.getElementById('enableTranslation').checked = settings.enableTranslation || false;
     toggleApiConfig();
   }
   
@@ -88,7 +88,8 @@
       maxRecordingTime: parseInt(document.getElementById('maxRecordingTime').value),
       enableRetry: document.getElementById('enableRetry').checked,
       saveRecordings: document.getElementById('saveRecordings').checked,
-      enableOfflineMode: document.getElementById('enableOfflineMode').checked
+      enableOfflineMode: document.getElementById('enableOfflineMode').checked,
+      enableTranslation: document.getElementById('enableTranslation').checked,
     };
     
     try {

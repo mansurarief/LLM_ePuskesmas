@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import torch
-from transformers import pipeline, AutoTokenizer, AutoModelForSeq2SeqLM
+from transformers import pipeline, AutoTokenizer
 import logging
 import traceback
 import re
@@ -19,6 +19,7 @@ class MedicalSummarizer:
         self.model = None
         self.tokenizer = None
         self.pipe = None
+        self.llama_pipe = None
         self.load_model()
     
     def load_model(self):
@@ -37,6 +38,16 @@ class MedicalSummarizer:
             
             # Also load tokenizer for text preprocessing
             self.tokenizer = AutoTokenizer.from_pretrained("Falconsai/medical_summarization")
+
+            # Load the Llama model
+            logger.info("Loading Llama model...")
+            model_id = "meta-llama/Meta-Llama-3-8B-Instruct"
+            self.llama_pipe = pipeline(
+                "text-generation",
+                model=model_id,
+                model_kwargs={"torch_dtype": torch.bfloat16},
+                device_map="auto",
+            )
             
             logger.info("Medical summarization model loaded successfully")
         except Exception as e:
@@ -85,15 +96,18 @@ class MedicalSummarizer:
                 # Combine template with text for better context
                 input_text = f"Medical Summary Request: {template_prompt}\n\nOriginal Text: {processed_text}"
             else:
-                input_text = processed_text
+                # Use a default medical summarization prompt for better results
+                input_text = f"Summarize this medical text in Indonesian: {processed_text}"
             
-            # Generate summary
+            # Generate summary with better parameters
             result = self.pipe(
                 input_text,
                 max_length=max_length,
                 min_length=min_length,
-                do_sample=False,
-                temperature=0.3,
+                do_sample=True,
+                temperature=0.5,
+                top_p=0.9,
+                repetition_penalty=1.1,
                 truncation=True
             )
             
@@ -118,6 +132,74 @@ class MedicalSummarizer:
             summary += '.'
         
         return summary
+
+    def summarize_with_llama(self, text, template_prompt=None, max_length=150, min_length=50):
+        try:
+            if self.llama_pipe is None:
+                raise RuntimeError("Llama model not loaded. Please check server startup logs.")
+            
+            # Prepare the system message and user message
+            if template_prompt:
+                system_content = f"You are a medical assistant. {template_prompt}"
+                user_content = text
+            else:
+                system_content = "You are a medical assistant. Summarize the following medical text into a JSON format in Bahasa Indonesia with structure: {keluhan_utama: 'ISI DENGAN KELUHAN UTAMA', keluhan_tambahan: 'ISI DENGAN DETAIL LAINNYA'}."
+                user_content = text
+
+            messages = [
+                {"role": "system", "content": system_content},
+                {"role": "user", "content": user_content},
+            ]
+
+            # Generate summary with simplified parameters to prevent infinite loops
+            generation_kwargs = {
+                'max_new_tokens': min(max_length, 256),
+                'do_sample': True,
+                'temperature': 0.7,
+                'top_p': 0.9,
+                'repetition_penalty': 1.1,
+                'length_penalty': 1.0,
+                'early_stopping': True
+            }
+            
+            # Add pad_token_id only if tokenizer exists
+            if hasattr(self.llama_pipe, 'tokenizer') and self.llama_pipe.tokenizer is not None:
+                generation_kwargs['pad_token_id'] = self.llama_pipe.tokenizer.eos_token_id
+            
+            outputs = self.llama_pipe(messages, **generation_kwargs)
+            
+            # Extract the generated text - handle different output formats
+            if isinstance(outputs, list) and len(outputs) > 0:
+                output = outputs[0]
+                if isinstance(output, dict) and "generated_text" in output:
+                    generated_text = output["generated_text"]
+                    # If generated_text is a list of messages, get the last one
+                    if isinstance(generated_text, list) and len(generated_text) > 0:
+                        last_message = generated_text[-1]
+                        if isinstance(last_message, dict) and "content" in last_message:
+                            summary = last_message["content"]
+                        else:
+                            # Fallback: use the entire last message as string
+                            summary = str(last_message)
+                    else:
+                        # Fallback: use generated_text directly
+                        summary = str(generated_text)
+                else:
+                    # Fallback: use the entire output
+                    summary = str(output)
+            else:
+                raise ValueError("Unexpected output format from Llama model")
+
+            summary = summary.strip()
+
+            # Post-process summary
+            summary = self.post_process_summary(summary)
+
+            return summary
+
+        except Exception as e:
+            logger.error(f"Summarization error: {str(e)}")
+            raise e
 
 # Initialize summarizer
 summarizer = MedicalSummarizer()
@@ -158,7 +240,7 @@ def summarize_text():
         if template_prompt:
             logger.info(f"Using template: {template_prompt[:50]}...")
         
-        # Generate summary
+        # Generate summary using the medical summarization model (faster and more reliable)
         summary = summarizer.summarize(
             text, 
             template_prompt, 

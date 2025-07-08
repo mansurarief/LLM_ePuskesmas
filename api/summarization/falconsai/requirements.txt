@@ -1,8 +1,9 @@
 flask>=2.0.0
 flask-cors>=3.0.0
-transformers>=4.30.0,<4.40.0
+transformers>=4.40.0
 torch>=2.0.0
 numpy>=1.21.0,<2.0.0
-accelerate>=0.20.0
+accelerate>=0.30.0
 protobuf>=3.19.0,<4.0.0
 sentencepiece>=0.1.97
+bitsandbytes>=0.41.0

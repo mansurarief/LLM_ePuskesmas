@@ -60,7 +60,7 @@ class MedicalAudioRecorder {
     this.settings = await chrome.storage.local.get([
       'apiKey', 'language', 'gptModel', 'audioQuality', 'maxRecordingTime',
       'enableRetry', 'saveRecordings', 'enableOfflineMode', 'medicalTemplates',
-      'apiProvider', 'transcriptionUrl', 'summarizationUrl'
+      'apiProvider', 'transcriptionUrl', 'summarizationUrl', 'enableTranslation'
     ]);
     
     // Set defaults
@@ -72,7 +72,7 @@ class MedicalAudioRecorder {
     this.settings.audioQuality = this.settings.audioQuality || 'medium';
     this.settings.maxRecordingTime = this.settings.maxRecordingTime || 10;
     this.settings.enableRetry = this.settings.enableRetry !== false;
-    
+    this.settings.enableTranslation = this.settings.enableTranslation || false;
     this.loadTemplates();
   }
 
@@ -287,7 +287,8 @@ class MedicalAudioRecorder {
       
       // Step 1.5: Translate transcription to English for summary generation
       let transcriptionForSummary = transcription;
-      if (this.settings.language !== 'en') {
+
+      if (this.settings.language !== 'en' && this.settings.enableTranslation) {
         this.updateProgress(30, 'Translating transcription to English...');
         try {
           const translatedTranscription = await this.translateTranscription(transcription);
@@ -501,8 +502,8 @@ class MedicalAudioRecorder {
     const requestBody = {
       text: transcription,
       template_prompt: templatePrompt,
-      max_length: 150,
-      min_length: 50
+      max_length: 300,
+      min_length: 100
     };
 
     const response = await fetch(`${this.settings.summarizationUrl}/summarize`, {
