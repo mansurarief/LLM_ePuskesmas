@@ -1,17 +1,35 @@
-// welcome.js - Enhanced version with better UX
+/**
+ * Welcome Page Manager - Chrome Extension
+ * Handles microphone permission requests and initial setup
+ */
 class WelcomeManager {
   constructor() {
-    this.statusElement = document.getElementById('status');
-    this.nextStepsElement = document.getElementById('nextSteps');
-    
+    this.initializeElements();
     this.setupEventListeners();
     this.checkCurrentPermissions();
   }
 
-  setupEventListeners() {
-    document.getElementById('requestAccess').addEventListener('click', () => this.requestMicrophoneAccess());
-    document.getElementById('configureSettings').addEventListener('click', () => this.openSettings());
+  // ============================================================================
+  // INITIALIZATION METHODS
+  // ============================================================================
+
+  initializeElements() {
+    this.elements = {
+      status: document.getElementById('status'),
+      nextSteps: document.getElementById('nextSteps'),
+      requestAccess: document.getElementById('requestAccess'),
+      configureSettings: document.getElementById('configureSettings')
+    };
   }
+
+  setupEventListeners() {
+    this.elements.requestAccess.addEventListener('click', () => this.requestMicrophoneAccess());
+    this.elements.configureSettings.addEventListener('click', () => this.openSettings());
+  }
+
+  // ============================================================================
+  // PERMISSION MANAGEMENT
+  // ============================================================================
 
   async checkCurrentPermissions() {
     try {
@@ -23,92 +41,140 @@ class WelcomeManager {
       }
     } catch (error) {
       console.error('Error checking permissions:', error);
+      this.showStatus('Error checking permissions: ' + error.message, 'error');
     }
   }
 
   async requestMicrophoneAccess() {
-    const button = document.getElementById('requestAccess');
+    const button = this.elements.requestAccess;
     const originalText = button.textContent;
     
-    button.textContent = 'Requesting Access...';
-    button.disabled = true;
+    this.updateButtonState(button, 'Requesting Access...', true);
     
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true
-        }
-      });
+      const stream = await this.getMicrophoneStream();
+      await this.testMicrophone(stream);
+      await this.savePermissionStatus();
       
-      // Test the microphone briefly
-      this.showStatus('Testing microphone...', 'info');
-      
-      // Stop all tracks after testing
-      stream.getTracks().forEach(track => track.stop());
-      
-      // Save permission status
-      await chrome.storage.local.set({ 
-        microphoneAccess: true,
-        permissionGrantedAt: new Date().toISOString()
-      });
-      
-      this.showStatus('✅ Microphone access granted successfully!', 'success');
-      this.showNextSteps();
-      
-      // Update button
-      button.textContent = '✓ Access Granted';
-      button.className = 'btn-success';
-      
+      this.handleSuccessfulPermission(button);
     } catch (error) {
-      console.error('Error accessing microphone:', error);
-      
-      let errorMessage = 'Error: Could not access microphone. ';
-      
-      if (error.name === 'NotAllowedError') {
-        errorMessage += 'Permission was denied. Please allow microphone access in your browser settings.';
-      } else if (error.name === 'NotFoundError') {
-        errorMessage += 'No microphone found. Please connect a microphone and try again.';
-      } else if (error.name === 'NotReadableError') {
-        errorMessage += 'Microphone is being used by another application.';
-      } else {
-        errorMessage += error.message;
-      }
-      
-      this.showStatus(errorMessage, 'error');
-      
-      // Reset button
-      button.textContent = originalText;
-      button.disabled = false;
+      this.handlePermissionError(error, button, originalText);
     }
   }
+
+  async getMicrophoneStream() {
+    return await navigator.mediaDevices.getUserMedia({ 
+      audio: {
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: true
+      }
+    });
+  }
+
+  async testMicrophone(stream) {
+    this.showStatus('Testing microphone...', 'info');
+    
+    // Stop all tracks after testing
+    stream.getTracks().forEach(track => track.stop());
+  }
+
+  async savePermissionStatus() {
+    await chrome.storage.local.set({ 
+      microphoneAccess: true,
+      permissionGrantedAt: new Date().toISOString()
+    });
+  }
+
+  handleSuccessfulPermission(button) {
+    this.showStatus('✅ Microphone access granted successfully!', 'success');
+    this.showNextSteps();
+    
+    // Update button
+    button.textContent = '✓ Access Granted';
+    button.className = 'btn-success';
+  }
+
+  handlePermissionError(error, button, originalText) {
+    console.error('Error accessing microphone:', error);
+    
+    const errorMessage = this.getErrorMessage(error);
+    this.showStatus(errorMessage, 'error');
+    
+    // Reset button
+    button.textContent = originalText;
+    button.disabled = false;
+  }
+
+  getErrorMessage(error) {
+    let errorMessage = 'Error: Could not access microphone. ';
+    
+    switch (error.name) {
+      case 'NotAllowedError':
+        errorMessage += 'Permission was denied. Please allow microphone access in your browser settings.';
+        break;
+      case 'NotFoundError':
+        errorMessage += 'No microphone found. Please connect a microphone and try again.';
+        break;
+      case 'NotReadableError':
+        errorMessage += 'Microphone is being used by another application.';
+        break;
+      default:
+        errorMessage += error.message;
+    }
+    
+    return errorMessage;
+  }
+
+  updateButtonState(button, text, disabled) {
+    button.textContent = text;
+    button.disabled = disabled;
+  }
+
+  // ============================================================================
+  // NAVIGATION METHODS
+  // ============================================================================
 
   openSettings() {
     chrome.runtime.openOptionsPage();
   }
 
+  // ============================================================================
+  // UI METHODS
+  // ============================================================================
+
   showStatus(message, type) {
-    this.statusElement.textContent = message;
-    this.statusElement.className = `status-${type}`;
-    this.statusElement.style.display = 'block';
+    this.elements.status.textContent = message;
+    this.elements.status.className = `status-${type}`;
+    this.elements.status.style.display = 'block';
   }
 
   showNextSteps() {
-    this.nextStepsElement.style.display = 'block';
-    
-    // Check if API key is already configured
-    chrome.storage.local.get('apiKey').then(({ apiKey }) => {
+    this.elements.nextSteps.style.display = 'block';
+    this.checkApiKeyConfiguration();
+  }
+
+  async checkApiKeyConfiguration() {
+    try {
+      const { apiKey } = await chrome.storage.local.get('apiKey');
+      
       if (apiKey) {
-        // Update first step to show it's complete
-        const firstStep = this.nextStepsElement.querySelector('ol li:first-child');
-        firstStep.innerHTML = '<strong>✓ OpenAI API key configured</strong>';
+        this.updateFirstStep();
       }
-    });
+    } catch (error) {
+      console.error('Error checking API key:', error);
+    }
+  }
+
+  updateFirstStep() {
+    const firstStep = this.elements.nextSteps.querySelector('ol li:first-child');
+    if (firstStep) {
+      firstStep.innerHTML = '<strong>✓ OpenAI API key configured</strong>';
+    }
   }
 }
 
-// Initialize welcome manager
+// Initialize welcome manager when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
   new WelcomeManager();
 });

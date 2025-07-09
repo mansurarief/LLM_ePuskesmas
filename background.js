@@ -1,20 +1,51 @@
-// background.js - Enhanced version with better functionality
+/**
+ * Background Service - Chrome Extension
+ * Handles extension lifecycle, storage management, and background tasks
+ */
 class BackgroundService {
   constructor() {
     this.setupEventListeners();
     this.initializeStorage();
   }
 
+  // ============================================================================
+  // INITIALIZATION METHODS
+  // ============================================================================
+
   setupEventListeners() {
     chrome.runtime.onInstalled.addListener((details) => this.handleInstallation(details));
     chrome.runtime.onStartup.addListener(() => this.handleStartup());
     chrome.storage.onChanged.addListener((changes, area) => this.handleStorageChange(changes, area));
     chrome.action.onClicked.addListener(() => this.handleActionClick());
+    
+    // Add message listener for content script communication
+    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+      this.handleMessage(request, sender, sendResponse);
+      return true; // Keep the message channel open for async response
+    });
+  }
+
+  handleMessage(request, sender, sendResponse) {
+    console.log("Background received message:", request);
+    
+    switch (request.action) {
+      case "contentScriptReady":
+        console.log("Content script ready on:", request.url);
+        sendResponse({ success: true, message: "Background script acknowledged" });
+        break;
+        
+      case "ping":
+        sendResponse({ success: true, message: "Background script is active" });
+        break;
+        
+      default:
+        console.log("Unknown message action:", request.action);
+        sendResponse({ success: false, message: "Unknown action" });
+    }
   }
 
   async initializeStorage() {
     try {
-      // Check if this is first run
       const { firstRun } = await chrome.storage.local.get('firstRun');
       
       if (firstRun === undefined) {
@@ -26,50 +57,63 @@ class BackgroundService {
     }
   }
 
+  // ============================================================================
+  // INSTALLATION AND STARTUP HANDLERS
+  // ============================================================================
+
   async handleInstallation(details) {
     console.log('Extension installed/updated:', details.reason);
     
     if (details.reason === 'install') {
-      // First time installation
-      await this.setDefaultSettings();
-      this.openWelcomePage();
+      await this.handleFirstInstallation();
     } else if (details.reason === 'update') {
-      // Extension updated
-      const currentVersion = chrome.runtime.getManifest().version;
-      console.log(`Updated to version ${currentVersion}`);
-      
-      // Check if major version change requires reset
-      if (details.previousVersion && this.isMajorUpdate(details.previousVersion, currentVersion)) {
-        await this.handleMajorUpdate();
-      }
+      await this.handleUpdate(details);
+    }
+  }
+
+  async handleFirstInstallation() {
+    await this.setDefaultSettings();
+    this.openWelcomePage();
+  }
+
+  async handleUpdate(details) {
+    const currentVersion = chrome.runtime.getManifest().version;
+    console.log(`Updated to version ${currentVersion}`);
+    
+    if (details.previousVersion && this.isMajorUpdate(details.previousVersion, currentVersion)) {
+      await this.handleMajorUpdate();
     }
   }
 
   async handleStartup() {
     console.log('Extension startup');
     
-    // Clean up old recordings if storage is getting full
+    await this.performStartupTasks();
+  }
+
+  async performStartupTasks() {
     await this.cleanupOldRecordings();
-    
-    // Check API key validity
     await this.validateApiKey();
   }
 
+  // ============================================================================
+  // STORAGE AND SETTINGS MANAGEMENT
+  // ============================================================================
+
   handleStorageChange(changes, area) {
     if (area === 'local') {
-      // Log important setting changes
-      Object.keys(changes).forEach(key => {
-        if (['apiKey', 'language', 'gptModel'].includes(key)) {
-          console.log(`Setting changed: ${key}`);
-        }
-      });
+      this.logImportantChanges(changes);
     }
   }
 
-  handleActionClick() {
-    // This is called when user clicks the extension icon
-    // You can add custom behavior here if needed
-    console.log('Extension icon clicked');
+  logImportantChanges(changes) {
+    const importantKeys = ['apiKey', 'language', 'gptModel'];
+    
+    Object.keys(changes).forEach(key => {
+      if (importantKeys.includes(key)) {
+        console.log(`Setting changed: ${key}`);
+      }
+    });
   }
 
   async setDefaultSettings() {
@@ -81,32 +125,33 @@ class BackgroundService {
       enableRetry: true,
       saveRecordings: false,
       enableOfflineMode: false,
-      medicalTemplates: [
-        {
-          name: "General Consultation",
-          prompt: "Summarize this medical consultation focusing on: chief complaint, symptoms, physical examination findings, diagnosis, and treatment plan. Format in Indonesian."
-        },
-        {
-          name: "Follow-up Visit",
-          prompt: "Summarize this follow-up visit focusing on: current condition, response to previous treatment, any new symptoms, and adjusted treatment plan. Format in Indonesian."
-        },
-        {
-          name: "Emergency Case",
-          prompt: "Summarize this emergency case focusing on: presenting complaint, vital signs, immediate interventions, diagnosis, and urgent treatment required. Format in Indonesian."
-        }
-      ]
+      medicalTemplates: this.getDefaultTemplates()
     };
     
     await chrome.storage.local.set(defaultSettings);
     console.log('Default settings initialized');
   }
 
-  openWelcomePage() {
-    chrome.tabs.create({
-      url: chrome.runtime.getURL("welcome.html"),
-      active: true
-    });
+  getDefaultTemplates() {
+    return [
+      {
+        name: "General Consultation",
+        prompt: "Summarize this medical consultation focusing on: chief complaint, symptoms, physical examination findings, diagnosis, and treatment plan. Format in Indonesian."
+      },
+      {
+        name: "Follow-up Visit",
+        prompt: "Summarize this follow-up visit focusing on: current condition, response to previous treatment, any new symptoms, and adjusted treatment plan. Format in Indonesian."
+      },
+      {
+        name: "Emergency Case",
+        prompt: "Summarize this emergency case focusing on: presenting complaint, vital signs, immediate interventions, diagnosis, and urgent treatment required. Format in Indonesian."
+      }
+    ];
   }
+
+  // ============================================================================
+  // VERSION MANAGEMENT
+  // ============================================================================
 
   isMajorUpdate(previousVersion, currentVersion) {
     const prevMajor = parseInt(previousVersion.split('.')[0]);
@@ -116,8 +161,10 @@ class BackgroundService {
 
   async handleMajorUpdate() {
     console.log('Handling major update');
-    
-    // Show update notification if supported
+    await this.showUpdateNotification();
+  }
+
+  async showUpdateNotification() {
     if (chrome.notifications && chrome.notifications.create) {
       try {
         await chrome.notifications.create('update-notification', {
@@ -132,12 +179,15 @@ class BackgroundService {
     }
   }
 
+  // ============================================================================
+  // MAINTENANCE TASKS
+  // ============================================================================
+
   async cleanupOldRecordings() {
     try {
       const { savedRecordings } = await chrome.storage.local.get('savedRecordings');
       
       if (savedRecordings && savedRecordings.length > 10) {
-        // Keep only the 10 most recent recordings
         const recentRecordings = savedRecordings.slice(-10);
         await chrome.storage.local.set({ savedRecordings: recentRecordings });
         console.log('Cleaned up old recordings');
@@ -152,20 +202,45 @@ class BackgroundService {
       const { apiKey } = await chrome.storage.local.get('apiKey');
       
       if (apiKey) {
-        const response = await fetch('https://api.openai.com/v1/models', {
-          headers: { 'Authorization': `Bearer ${apiKey}` }
-        });
-        
-        if (!response.ok) {
-          console.warn('API key validation failed');
-          await chrome.storage.local.set({ apiKeyValid: false });
-        } else {
-          await chrome.storage.local.set({ apiKeyValid: true });
-        }
+        const isValid = await this.testApiKey(apiKey);
+        await chrome.storage.local.set({ apiKeyValid: isValid });
       }
     } catch (error) {
       console.error('Error validating API key:', error);
     }
+  }
+
+  async testApiKey(apiKey) {
+    try {
+      const response = await fetch('https://api.openai.com/v1/models', {
+        headers: { 'Authorization': `Bearer ${apiKey}` }
+      });
+      
+      return response.ok;
+    } catch (error) {
+      console.error('API key validation failed:', error);
+      return false;
+    }
+  }
+
+  // ============================================================================
+  // NAVIGATION METHODS
+  // ============================================================================
+
+  openWelcomePage() {
+    chrome.tabs.create({
+      url: chrome.runtime.getURL("welcome.html"),
+      active: true
+    });
+  }
+
+  // ============================================================================
+  // EVENT HANDLERS
+  // ============================================================================
+
+  handleActionClick() {
+    console.log('Extension icon clicked');
+    // Add custom behavior here if needed
   }
 }
 

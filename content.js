@@ -1,6 +1,20 @@
-// content.js - Enhanced version with better integration
+/**
+ * Content Integrator - Chrome Extension
+ * Handles integration with healthcare systems and summary insertion
+ */
 class ContentIntegrator {
   constructor() {
+    this.initializeProperties();
+    this.setupMessageListener();
+    this.detectHealthcareSystems();
+    console.log("🏥 Medical Audio Recorder Content Script Initialized");
+  }
+
+  // ============================================================================
+  // INITIALIZATION METHODS
+  // ============================================================================
+
+  initializeProperties() {
     this.targetSelectors = [
       '#diagnose-comments',
       '[name="diagnosis"]',
@@ -13,39 +27,66 @@ class ContentIntegrator {
       '.consultation-notes'
     ];
     
-    this.setupMessageListener();
-    this.detectHealthcareSystems();
+    this.systemType = 'generic';
+    this.isInitialized = false;
   }
 
   setupMessageListener() {
-    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-      if (request.action === "updateSummary") {
-        this.insertSummary(request.summary);
-        sendResponse({ success: true });
-      } else if (request.action === "detectFields") {
-        const fields = this.detectMedicalFields();
-        sendResponse({ fields: fields });
-      }
-    });
+    try {
+      chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+        console.log("Content script received message:", request);
+        
+        if (request.action === "updateSummary") {
+          console.log("Processing updateSummary action");
+          this.insertSummary(request.summary);
+          sendResponse({ success: true });
+        } else if (request.action === "detectFields") {
+          console.log("Processing detectFields action");
+          const fields = this.detectMedicalFields();
+          sendResponse({ fields: fields });
+        } else if (request.action === "ping") {
+          console.log("Content script ping received");
+          sendResponse({ success: true, message: "Content script is active" });
+        }
+        
+        // Return true to indicate we will send a response asynchronously
+        return true;
+      });
+      
+      console.log("Content script message listener setup complete");
+      this.isInitialized = true;
+    } catch (error) {
+      console.error("Error setting up message listener:", error);
+    }
   }
+
+  // ============================================================================
+  // HEALTHCARE SYSTEM DETECTION
+  // ============================================================================
 
   detectHealthcareSystems() {
     const url = window.location.href;
     const title = document.title.toLowerCase();
     
-    // Detect specific healthcare systems
-    if (url.includes('puskesmas') || title.includes('puskesmas')) {
-      this.systemType = 'epuskesmas';
-    } else if (url.includes('simrs') || title.includes('simrs')) {
-      this.systemType = 'simrs';
-    } else if (url.includes('hospital') || title.includes('hospital')) {
-      this.systemType = 'hospital';
-    } else {
-      this.systemType = 'generic';
+    const systemPatterns = {
+      epuskesmas: ['puskesmas'],
+      simrs: ['simrs'],
+      hospital: ['hospital']
+    };
+    
+    for (const [system, patterns] of Object.entries(systemPatterns)) {
+      if (patterns.some(pattern => url.includes(pattern) || title.includes(pattern))) {
+        this.systemType = system;
+        break;
+      }
     }
     
     console.log(`Detected healthcare system: ${this.systemType}`);
   }
+
+  // ============================================================================
+  // FIELD DETECTION METHODS
+  // ============================================================================
 
   detectMedicalFields() {
     const fields = [];
@@ -54,14 +95,7 @@ class ContentIntegrator {
       const elements = document.querySelectorAll(selector);
       elements.forEach(element => {
         if (element && this.isVisible(element)) {
-          fields.push({
-            id: element.id,
-            name: element.name,
-            placeholder: element.placeholder,
-            selector: selector,
-            tagName: element.tagName,
-            type: this.determineMedicalFieldType(element)
-          });
+          fields.push(this.createFieldInfo(element, selector));
         }
       });
     });
@@ -69,19 +103,32 @@ class ContentIntegrator {
     return fields;
   }
 
+  createFieldInfo(element, selector) {
+    return {
+      id: element.id,
+      name: element.name,
+      placeholder: element.placeholder,
+      selector: selector,
+      tagName: element.tagName,
+      type: this.determineMedicalFieldType(element)
+    };
+  }
+
   determineMedicalFieldType(element) {
     const text = (element.placeholder + ' ' + element.name + ' ' + element.id).toLowerCase();
     
-    if (text.includes('diagnosis') || text.includes('diagnos')) {
-      return 'diagnosis';
-    } else if (text.includes('symptom') || text.includes('gejala')) {
-      return 'symptoms';
-    } else if (text.includes('treatment') || text.includes('terapi') || text.includes('pengobatan')) {
-      return 'treatment';
-    } else if (text.includes('note') || text.includes('catatan')) {
-      return 'notes';
-    } else if (text.includes('complaint') || text.includes('keluhan')) {
-      return 'complaint';
+    const fieldTypes = {
+      diagnosis: ['diagnosis', 'diagnos'],
+      symptoms: ['symptom', 'gejala'],
+      treatment: ['treatment', 'terapi', 'pengobatan'],
+      notes: ['note', 'catatan'],
+      complaint: ['complaint', 'keluhan']
+    };
+    
+    for (const [type, keywords] of Object.entries(fieldTypes)) {
+      if (keywords.some(keyword => text.includes(keyword))) {
+        return type;
+      }
     }
     
     return 'general';
@@ -89,10 +136,60 @@ class ContentIntegrator {
 
   isVisible(element) {
     const style = window.getComputedStyle(element);
-    return style.display !== 'none' && style.visibility !== 'hidden' && element.offsetParent !== null;
+    return style.display !== 'none' && 
+           style.visibility !== 'hidden' && 
+           element.offsetParent !== null;
   }
 
+  // ============================================================================
+  // DEBUG METHODS
+  // ============================================================================
+
+  scanAvailableFields() {
+    console.log("🔍 Scanning for available form fields...");
+    
+    const allInputs = document.querySelectorAll('input, textarea');
+    const availableFields = [];
+    
+    allInputs.forEach((element, index) => {
+      const fieldInfo = {
+        index: index,
+        tagName: element.tagName,
+        id: element.id,
+        name: element.name,
+        placeholder: element.placeholder,
+        type: element.type,
+        visible: this.isVisible(element)
+      };
+      availableFields.push(fieldInfo);
+    });
+    
+    console.log("Available form fields:", availableFields);
+    return availableFields;
+  }
+
+  // ============================================================================
+  // SUMMARY INSERTION METHODS
+  // ============================================================================
+
   insertSummary(summary) {
+    console.log("Received summary:", summary);
+    
+    // Scan available fields for debugging
+    this.scanAvailableFields();
+    
+    // Try to parse JSON summary first
+    const parsedData = this.parseSummaryJSON(summary);
+    
+    if (parsedData) {
+      console.log("✅ JSON parsing successful, populating specific fields");
+      // Populate specific fields with parsed data
+      this.populateSpecificFields(parsedData);
+      return;
+    }
+    
+    console.log("❌ JSON parsing failed, falling back to original insertion method");
+    // Fallback to original insertion method
     let inserted = false;
     
     // Try primary target first
@@ -103,34 +200,287 @@ class ContentIntegrator {
       inserted = true;
     } else {
       // Try alternative selectors
-      for (const selector of this.targetSelectors) {
-        const elements = document.querySelectorAll(selector);
-        for (const element of elements) {
-          if (this.isVisible(element)) {
-            this.insertIntoElement(element, summary);
-            this.highlightElement(element);
-            inserted = true;
-            break;
-          }
-        }
-        if (inserted) break;
-      }
+      inserted = this.tryAlternativeSelectors(summary);
     }
     
     if (!inserted) {
-      // Create floating notification if no target found
       this.createFloatingNotification(summary);
     }
     
-    // Log insertion for debugging
     console.log(`Summary inserted: ${inserted}`);
+  }
+
+  parseSummaryJSON(summary) {
+    try {
+      console.log("Attempting to parse summary:", summary);
+      
+      let jsonString = summary.trim();
+      
+      // First, try to extract JSON from the full summary format
+      // The summary might be wrapped with timestamps and formatting
+      if (summary.includes('--- AI Medical Summary')) {
+        const startIndex = summary.indexOf('{');
+        const endIndex = summary.lastIndexOf('}');
+        if (startIndex !== -1 && endIndex !== -1) {
+          jsonString = summary.substring(startIndex, endIndex + 1);
+          console.log("Extracted JSON from timestamp wrapper:", jsonString);
+        }
+      }
+      
+      // Check if the string is already valid JSON
+      if (jsonString.startsWith('{') && jsonString.endsWith('}')) {
+        try {
+          const parsed = JSON.parse(jsonString);
+          
+          // Check if it has the expected structure
+          if (parsed.keluhan_utama || parsed.keluhan_tambahan || parsed.rps || parsed.rpd || parsed.rpsos || parsed.tatalaksana) {
+            console.log("✅ Successfully parsed JSON data:", parsed);
+            return parsed;
+          } else {
+            console.log("Parsed JSON but missing expected fields:", parsed);
+          }
+        } catch (parseError) {
+          console.log("Failed to parse as JSON:", parseError.message);
+        }
+      }
+      
+      // Fallback: Look for JSON pattern in the summary
+      const jsonMatch = jsonString.match(/\{.*\}/);
+      if (jsonMatch) {
+        const extractedJson = jsonMatch[0];
+        const parsed = JSON.parse(extractedJson);
+        
+        // Check if it has the expected structure
+        if (parsed.keluhan_utama || parsed.keluhan_tambahan || parsed.rps || parsed.rpd || parsed.rpsos || parsed.tatalaksana) {
+          console.log("✅ Successfully parsed JSON data from pattern match:", parsed);
+          return parsed;
+        } else {
+          console.log("Parsed JSON but missing expected fields:", parsed);
+        }
+      } else {
+        console.log("No JSON pattern found in summary");
+      }
+    } catch (error) {
+      console.error("Error parsing JSON summary:", error);
+    }
+    
+    return null;
+  }
+
+  populateSpecificFields(parsedData) {
+    let fieldsPopulated = 0;
+    console.log("Starting to populate fields with data:", parsedData);
+    
+    // Define all field mappings including the new medical fields
+    const fieldMappings = [
+      {
+        jsonKey: 'keluhan_utama',
+        selectors: [
+          '#keluhanUtama',
+          '[name="keluhanUtama"]',
+          'textarea[placeholder*="keluhan utama"]',
+          'textarea[placeholder*="main complaint"]',
+          'input[name*="keluhan"]',
+          'textarea[name*="keluhan"]',
+          'textarea[placeholder*="complaint"]',
+          'input[placeholder*="complaint"]'
+        ]
+      },
+      {
+        jsonKey: 'keluhan_tambahan',
+        selectors: [
+          '#keluhanTambahan',
+          '[name="keluhanTambahan"]',
+          'textarea[placeholder*="keluhan tambahan"]',
+          'textarea[placeholder*="additional"]',
+          'input[name*="tambahan"]',
+          'textarea[name*="tambahan"]',
+          'textarea[placeholder*="additional complaint"]',
+          'input[placeholder*="additional"]'
+        ]
+      },
+      {
+        jsonKey: 'rps',
+        selectors: [
+          '#rps',
+          '[name="rps"]',
+          'textarea[placeholder*="riwayat penyakit sekarang"]',
+          'textarea[placeholder*="current medical history"]',
+          'input[name*="rps"]',
+          'textarea[name*="rps"]',
+          'textarea[placeholder*="current history"]',
+          'input[placeholder*="current history"]'
+        ]
+      },
+      {
+        jsonKey: 'rpd',
+        selectors: [
+          '#rpd',
+          '[name="rpd"]',
+          'textarea[placeholder*="riwayat penyakit dahulu"]',
+          'textarea[placeholder*="past medical history"]',
+          'input[name*="rpd"]',
+          'textarea[name*="rpd"]',
+          'textarea[placeholder*="past history"]',
+          'input[placeholder*="past history"]'
+        ]
+      },
+      {
+        jsonKey: 'rpsos',
+        selectors: [
+          '#rpsos',
+          '[name="rpsos"]',
+          'textarea[placeholder*="riwayat penyakit sosial"]',
+          'textarea[placeholder*="social history"]',
+          'input[name*="rpsos"]',
+          'textarea[name*="rpsos"]',
+          'textarea[placeholder*="social"]',
+          'input[placeholder*="social"]'
+        ]
+      },
+      {
+        jsonKey: 'tatalaksana',
+        selectors: [
+          '#tatalaksana',
+          '[name="tatalaksana"]',
+          'textarea[placeholder*="treatment plan"]',
+          'textarea[placeholder*="tatalaksana"]',
+          'input[name*="tatalaksana"]',
+          'textarea[name*="tatalaksana"]',
+          'textarea[placeholder*="treatment"]',
+          'input[placeholder*="treatment"]',
+          'textarea[placeholder*="plan"]',
+          'input[placeholder*="plan"]'
+        ]
+      }
+    ];
+    
+    // Try to populate each field
+    for (const fieldMapping of fieldMappings) {
+      const jsonValue = parsedData[fieldMapping.jsonKey];
+      if (jsonValue) {
+        console.log(`Looking for field: ${fieldMapping.jsonKey} with value: ${jsonValue}`);
+        
+        for (const selector of fieldMapping.selectors) {
+          const element = document.querySelector(selector);
+          if (element) {
+            console.log(`Found element for ${fieldMapping.jsonKey} using selector: ${selector}`);
+            element.value = jsonValue;
+            this.highlightElement(element);
+            fieldsPopulated++;
+            console.log(`✅ Populated ${fieldMapping.jsonKey}: ${jsonValue}`);
+            break; // Found and populated this field, move to next
+          }
+        }
+        
+        if (fieldsPopulated === 0) {
+          console.log(`❌ No element found for ${fieldMapping.jsonKey}`);
+        }
+      } else {
+        console.log(`No value found for ${fieldMapping.jsonKey}`);
+      }
+    }
+    
+    if (fieldsPopulated > 0) {
+      console.log(`✅ Successfully populated ${fieldsPopulated} fields`);
+      // Show success notification
+      this.showSuccessNotification(parsedData);
+    } else {
+      console.log("❌ No matching fields found, creating floating notification");
+      this.createFloatingNotification(JSON.stringify(parsedData, null, 2));
+    }
+  }
+
+  showSuccessNotification(parsedData) {
+    // Remove existing notification
+    const existing = document.getElementById('medical-ai-notification');
+    if (existing) existing.remove();
+    
+    const notification = document.createElement('div');
+    notification.id = 'medical-ai-notification';
+    notification.innerHTML = `
+      <div style="
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: white;
+        border: 2px solid #28a745;
+        border-radius: 10px;
+        padding: 20px;
+        max-width: 400px;
+        max-height: 500px;
+        overflow-y: auto;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        z-index: 10000;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      ">
+        <div style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 15px;
+          border-bottom: 1px solid #eee;
+          padding-bottom: 10px;
+        ">
+          <h3 style="margin: 0; color: #28a745; font-size: 16px;">✅ Summary Applied</h3>
+          <button onclick="this.parentElement.parentElement.parentElement.remove()" style="
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #666;
+          ">×</button>
+        </div>
+        <div style="
+          font-size: 14px;
+          line-height: 1.4;
+          color: #333;
+        ">
+          <strong>Keluhan Utama:</strong><br>
+          ${parsedData.keluhan_utama || 'N/A'}<br><br>
+          <strong>Keluhan Tambahan:</strong><br>
+          ${parsedData.keluhan_tambahan || 'N/A'}<br><br>
+          <strong>RPS (Riwayat Penyakit Sekarang):</strong><br>
+          ${parsedData.rps || 'N/A'}<br><br>
+          <strong>RPD (Riwayat Penyakit Dahulu):</strong><br>
+          ${parsedData.rpd || 'N/A'}<br><br>
+          <strong>RPSos (Riwayat Penyakit Sosial):</strong><br>
+          ${parsedData.rpsos || 'N/A'}<br><br>
+          <strong>Tatalaksana:</strong><br>
+          ${parsedData.tatalaksana || 'N/A'}
+        </div>
+      </div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+      if (document.getElementById('medical-ai-notification')) {
+        notification.remove();
+      }
+    }, 5000);
+  }
+
+  tryAlternativeSelectors(summary) {
+    for (const selector of this.targetSelectors) {
+      const elements = document.querySelectorAll(selector);
+      for (const element of elements) {
+        if (this.isVisible(element)) {
+          this.insertIntoElement(element, summary);
+          this.highlightElement(element);
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   insertIntoElement(element, summary) {
     const timestamp = new Date().toLocaleString('id-ID');
     const formattedSummary = `\n--- AI Medical Summary (${timestamp}) ---\n${summary}\n--- End Summary ---\n`;
     
-    if (element.value) {
+    if (element.value !== undefined) {
       // For input/textarea elements
       element.value = element.value + formattedSummary;
     } else {
@@ -138,7 +488,10 @@ class ContentIntegrator {
       element.textContent = element.textContent + formattedSummary;
     }
     
-    // Trigger change event
+    this.triggerElementEvents(element);
+  }
+
+  triggerElementEvents(element) {
     element.dispatchEvent(new Event('change', { bubbles: true }));
     element.dispatchEvent(new Event('input', { bubbles: true }));
   }
@@ -154,14 +507,33 @@ class ContentIntegrator {
     }, 3000);
   }
 
+  // ============================================================================
+  // FLOATING NOTIFICATION METHODS
+  // ============================================================================
+
   createFloatingNotification(summary) {
-    // Remove existing notification
+    this.removeExistingNotification();
+    
+    const notification = this.createNotificationElement(summary);
+    document.body.appendChild(notification);
+    
+    this.setupNotificationAutoRemove(notification);
+  }
+
+  removeExistingNotification() {
     const existing = document.getElementById('medical-ai-notification');
     if (existing) existing.remove();
-    
+  }
+
+  createNotificationElement(summary) {
     const notification = document.createElement('div');
     notification.id = 'medical-ai-notification';
-    notification.innerHTML = `
+    notification.innerHTML = this.getNotificationHTML(summary);
+    return notification;
+  }
+
+  getNotificationHTML(summary) {
+    return `
       <div style="
         position: fixed;
         top: 20px;
@@ -177,49 +549,66 @@ class ContentIntegrator {
         z-index: 10000;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       ">
-        <div style="
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 15px;
-          border-bottom: 1px solid #eee;
-          padding-bottom: 10px;
-        ">
-          <h3 style="margin: 0; color: #007bff; font-size: 16px;">🏥 AI Medical Summary</h3>
-          <button onclick="this.parentElement.parentElement.parentElement.remove()" style="
-            background: none;
-            border: none;
-            font-size: 20px;
-            cursor: pointer;
-            color: #666;
-          ">×</button>
-        </div>
-        <div style="
-          font-size: 14px;
-          line-height: 1.4;
-          color: #333;
-          white-space: pre-wrap;
-        ">${summary}</div>
-        <div style="
-          margin-top: 15px;
-          text-align: center;
-        ">
-          <button onclick="navigator.clipboard.writeText('${summary.replace(/'/g, "\\'")}'); this.textContent='Copied!'" style="
-            background: #007bff;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 13px;
-          ">Copy to Clipboard</button>
-        </div>
+        ${this.getNotificationHeader()}
+        ${this.getNotificationContent(summary)}
+        ${this.getNotificationFooter(summary)}
       </div>
     `;
-    
-    document.body.appendChild(notification);
-    
-    // Auto-remove after 30 seconds
+  }
+
+  getNotificationHeader() {
+    return `
+      <div style="
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 10px;
+      ">
+        <h3 style="margin: 0; color: #007bff; font-size: 16px;">🏥 AI Medical Summary</h3>
+        <button onclick="this.parentElement.parentElement.parentElement.remove()" style="
+          background: none;
+          border: none;
+          font-size: 20px;
+          cursor: pointer;
+          color: #666;
+        ">×</button>
+      </div>
+    `;
+  }
+
+  getNotificationContent(summary) {
+    return `
+      <div style="
+        font-size: 14px;
+        line-height: 1.4;
+        color: #333;
+        white-space: pre-wrap;
+      ">${summary}</div>
+    `;
+  }
+
+  getNotificationFooter(summary) {
+    return `
+      <div style="
+        margin-top: 15px;
+        text-align: center;
+      ">
+        <button onclick="navigator.clipboard.writeText('${summary.replace(/'/g, "\\'")}'); this.textContent='Copied!'" style="
+          background: #007bff;
+          color: white;
+          border: none;
+          padding: 8px 16px;
+          border-radius: 5px;
+          cursor: pointer;
+          font-size: 13px;
+        ">Copy to Clipboard</button>
+      </div>
+    `;
+  }
+
+  setupNotificationAutoRemove(notification) {
     setTimeout(() => {
       if (document.getElementById('medical-ai-notification')) {
         notification.remove();
@@ -228,9 +617,54 @@ class ContentIntegrator {
   }
 }
 
-// Initialize content integrator
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => new ContentIntegrator());
-} else {
-  new ContentIntegrator();
+// Initialize content integrator with multiple initialization strategies
+function initializeContentScript() {
+  try {
+    console.log("🏥 Initializing Medical Audio Recorder Content Script...");
+    
+    // Check if already initialized
+    if (window.medicalContentScript) {
+      console.log("Content script already initialized");
+      return;
+    }
+    
+    // Create and initialize the content integrator
+    const contentIntegrator = new ContentIntegrator();
+    
+    // Store reference globally for debugging
+    window.medicalContentScript = contentIntegrator;
+    
+    console.log("✅ Content script initialization complete");
+    
+    // Send a ready signal to the background script
+    if (chrome && chrome.runtime) {
+      chrome.runtime.sendMessage({ 
+        action: "contentScriptReady", 
+        url: window.location.href,
+        timestamp: Date.now()
+      }).catch(() => {
+        // Ignore errors if background script is not available
+      });
+    }
+    
+  } catch (error) {
+    console.error("❌ Error initializing content script:", error);
+  }
 }
+
+// Multiple initialization strategies
+if (document.readyState === 'loading') {
+  // Document is still loading
+  document.addEventListener('DOMContentLoaded', initializeContentScript);
+} else {
+  // Document is already loaded
+  initializeContentScript();
+}
+
+// Also try to initialize after a short delay as a fallback
+setTimeout(() => {
+  if (!window.medicalContentScript) {
+    console.log("🔄 Retrying content script initialization...");
+    initializeContentScript();
+  }
+}, 1000);

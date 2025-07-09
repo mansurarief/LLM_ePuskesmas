@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Consultation Form - Example</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        textarea, input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.3s ease;
+        }
+        
+        textarea:focus, input[type="text"]:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+        }
+        
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .highlight {
+            background-color: #fff3cd !important;
+            border-color: #ffc107 !important;
+            transition: all 0.3s ease;
+        }
+        
+        .patient-info {
+            background: #ecf0f1;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+        }
+        
+        .patient-info h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .form-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .form-section h3 {
+            margin-top: 0;
+            color: #2c3e50;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+        
+        .status-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            border-radius: 5px;
+            color: white;
+            font-weight: 600;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .status-success {
+            background-color: #27ae60;
+        }
+        
+        .status-error {
+            background-color: #e74c3c;
+        }
+        
+        .extension-info {
+            background: #e8f4fd;
+            border: 1px solid #3498db;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .extension-info h4 {
+            margin-top: 0;
+            color: #2980b9;
+        }
+        
+        .extension-info ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        
+        .extension-info li {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏥 Medical Consultation Form</h1>
+        
+        <div class="extension-info">
+            <h4>📋 Extension Instructions:</h4>
+            <ul>
+                <li>1. Record or upload audio using the Medical Audio Recorder extension</li>
+                <li>2. Transcribe the audio to get the conversation text</li>
+                <li>3. Edit the transcript if needed</li>
+                <li>4. Click "Summarize" to generate medical summary</li>
+                <li>5. The summary will automatically populate the fields below</li>
+            </ul>
+        </div>
+        
+        <div class="patient-info">
+            <h3>👤 Patient Information</h3>
+            <div class="info-grid">
+                <div class="form-group">
+                    <label for="patientName">Patient Name:</label>
+                    <input type="text" id="patientName" name="patientName" placeholder="Enter patient name">
+                </div>
+                <div class="form-group">
+                    <label for="patientAge">Age:</label>
+                    <input type="text" id="patientAge" name="patientAge" placeholder="Enter age">
+                </div>
+                <div class="form-group">
+                    <label for="patientId">Patient ID:</label>
+                    <input type="text" id="patientId" name="patientId" placeholder="Enter patient ID">
+                </div>
+                <div class="form-group">
+                    <label for="visitDate">Visit Date:</label>
+                    <input type="text" id="visitDate" name="visitDate" placeholder="DD/MM/YYYY">
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <h3>🏥 Medical Consultation</h3>
+            
+            <div class="form-group">
+                <label for="keluhanUtama">Keluhan Utama (Main Complaint):</label>
+                <textarea 
+                    id="keluhanUtama" 
+                    name="keluhanUtama" 
+                    placeholder="Enter the main complaint or primary symptoms..."
+                    rows="3"
+                ></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="keluhanTambahan">Keluhan Tambahan (Additional Complaints):</label>
+                <textarea 
+                    id="keluhanTambahan" 
+                    name="keluhanTambahan" 
+                    placeholder="Enter additional complaints, symptoms, or details..."
+                    rows="3"
+                ></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="rps">RPS (Riwayat Penyakit Sekarang):</label>
+                <textarea 
+                    id="rps" 
+                    name="rps" 
+                    placeholder="Enter current medical history, illness details, onset, progression..."
+                    rows="3"
+                ></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="rpd">RPD (Riwayat Penyakit Dahulu):</label>
+                <textarea 
+                    id="rpd" 
+                    name="rpd" 
+                    placeholder="Enter past medical history, previous illnesses, surgeries, medications..."
+                    rows="3"
+                ></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="rpsos">RPSos (Riwayat Penyakit Sosial):</label>
+                <textarea 
+                    id="rpsos" 
+                    name="rpsos" 
+                    placeholder="Enter social history, lifestyle, occupation, social factors affecting health..."
+                    rows="3"
+                ></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="tatalaksana">Tatalaksana (Treatment Plan):</label>
+                <textarea 
+                    id="tatalaksana" 
+                    name="tatalaksana" 
+                    placeholder="Enter treatment plan including education given and medications prescribed..."
+                    rows="3"
+                ></textarea>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <h3>📝 Additional Notes</h3>
+            <div class="form-group">
+                <label for="diagnosis">Diagnosis:</label>
+                <textarea 
+                    id="diagnosis" 
+                    name="diagnosis" 
+                    placeholder="Enter diagnosis..."
+                    rows="3"
+                ></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="treatment">Treatment Plan:</label>
+                <textarea 
+                    id="treatment" 
+                    name="treatment" 
+                    placeholder="Enter treatment plan..."
+                    rows="3"
+                ></textarea>
+            </div>
+        </div>
+    </div>
+    
+    <div id="statusIndicator" class="status-indicator"></div>
+    
+    <script>
+        // Simple form validation and status indicators
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('.container');
+            const statusIndicator = document.getElementById('statusIndicator');
+            
+            // Auto-fill current date
+            const today = new Date();
+            const dateString = today.toLocaleDateString('id-ID');
+            document.getElementById('visitDate').value = dateString;
+            
+            // Show status when fields are updated
+            function showStatus(message, type) {
+                statusIndicator.textContent = message;
+                statusIndicator.className = `status-indicator status-${type}`;
+                statusIndicator.style.display = 'block';
+                
+                setTimeout(() => {
+                    statusIndicator.style.display = 'none';
+                }, 3000);
+            }
+            
+            // Highlight fields when they receive focus
+            const textareas = document.querySelectorAll('textarea');
+            textareas.forEach(textarea => {
+                textarea.addEventListener('focus', function() {
+                    this.classList.add('highlight');
+                });
+                
+                textarea.addEventListener('blur', function() {
+                    this.classList.remove('highlight');
+                });
+            });
+            
+            // Listen for extension messages (if extension is installed)
+            if (typeof chrome !== 'undefined' && chrome.runtime) {
+                chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+                    if (request.action === "updateSummary") {
+                        // Parse the summary and populate fields
+                        const summary = request.summary;
+                        
+                        try {
+                            // Try to parse JSON format
+                            if (summary.includes('{') && summary.includes('}')) {
+                                const jsonMatch = summary.match(/\{.*\}/);
+                                if (jsonMatch) {
+                                    const parsed = JSON.parse(jsonMatch[0]);
+                                    
+                                    // Populate all available fields
+                                    const fieldMappings = {
+                                        'keluhan_utama': 'keluhanUtama',
+                                        'keluhan_tambahan': 'keluhanTambahan',
+                                        'rps': 'rps',
+                                        'rpd': 'rpd',
+                                        'rpsos': 'rpsos',
+                                        'tatalaksana': 'tatalaksana'
+                                    };
+                                    
+                                    let populatedCount = 0;
+                                    for (const [jsonKey, fieldId] of Object.entries(fieldMappings)) {
+                                        if (parsed[jsonKey] && document.getElementById(fieldId)) {
+                                            document.getElementById(fieldId).value = parsed[jsonKey];
+                                            populatedCount++;
+                                        }
+                                    }
+                                    
+                                    if (populatedCount > 0) {
+                                        showStatus(`✅ Summary populated successfully! (${populatedCount} fields)`, 'success');
+                                    } else {
+                                        showStatus('⚠️ No matching fields found', 'error');
+                                    }
+                                }
+                            } else {
+                                // Fallback: split by lines or use the whole text
+                                const lines = summary.split('\n');
+                                if (lines.length >= 2) {
+                                    document.getElementById('keluhanUtama').value = lines[0];
+                                    document.getElementById('keluhanTambahan').value = lines.slice(1).join('\n');
+                                } else {
+                                    document.getElementById('keluhanUtama').value = summary;
+                                }
+                                showStatus('✅ Summary populated (fallback method)', 'success');
+                            }
+                        } catch (error) {
+                            console.error('Error parsing summary:', error);
+                            // Fallback: put everything in keluhan utama
+                            document.getElementById('keluhanUtama').value = summary;
+                            showStatus('⚠️ Summary populated (parsing failed)', 'error');
+                        }
+                        
+                        sendResponse({ success: true });
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html> 

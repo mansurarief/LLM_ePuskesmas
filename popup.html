@@ -7,7 +7,7 @@
   <style>
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      width: 380px;
+      width: 420px;
       padding: 20px;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
@@ -133,6 +133,15 @@
       background: #545b62;
     }
 
+    .btn-info {
+      background: #17a2b8;
+      color: white;
+    }
+
+    .btn-info:hover:not(:disabled) {
+      background: #138496;
+    }
+
     .audio-controls {
       background: #f8f9fa;
       padding: 15px;
@@ -214,6 +223,56 @@
       line-height: 1.4;
     }
 
+    .transcript-editor {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      display: none;
+    }
+
+    .transcript-editor textarea {
+      width: 100%;
+      min-height: 120px;
+      padding: 10px;
+      border: 2px solid #ddd;
+      border-radius: 5px;
+      font-size: 13px;
+      font-family: inherit;
+      resize: vertical;
+      line-height: 1.4;
+    }
+
+    .transcript-editor textarea:focus {
+      outline: none;
+      border-color: #007bff;
+      box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+    }
+
+    .transcript-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .transcript-header h4 {
+      margin: 0;
+      color: #333;
+      font-size: 14px;
+    }
+
+    .transcript-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .transcript-actions button {
+      padding: 8px 12px;
+      font-size: 12px;
+    }
+
     .recording-indicator {
       display: inline-block;
       width: 8px;
@@ -247,6 +306,56 @@
       margin-top: 10px;
       font-size: 13px;
     }
+
+    .step-indicator {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 15px;
+      font-size: 12px;
+    }
+
+    .step {
+      flex: 1;
+      text-align: center;
+      padding: 8px;
+      background: #e9ecef;
+      border-radius: 5px;
+      margin: 0 2px;
+      color: #6c757d;
+    }
+
+    .step.active {
+      background: #007bff;
+      color: white;
+    }
+
+    .step.completed {
+      background: #28a745;
+      color: white;
+    }
+
+    .timing-info {
+        margin-top: 10px;
+        font-size: 12px;
+        color: #666;
+        background: #f8f9fa;
+        padding: 8px 12px;
+        border-radius: 5px;
+        border-left: 3px solid #3498db;
+    }
+    
+    .timing-info div {
+        margin-bottom: 5px;
+    }
+    
+    .timing-info div:last-child {
+        margin-bottom: 0;
+    }
+    
+    .time-value {
+        font-weight: 600;
+        color: #2c3e50;
+    }
   </style>
 </head>
 <body>
@@ -256,6 +365,13 @@
   </div>
 
   <div class="main-container">
+    <div class="step-indicator">
+      <div class="step active" id="step1">1. Record</div>
+      <div class="step" id="step2">2. Transcribe</div>
+      <div class="step" id="step3">3. Edit</div>
+      <div class="step" id="step4">4. Summarize</div>
+    </div>
+
     <div class="status-bar" id="statusBar">
       <div id="statusText">Ready to start recording</div>
       <div class="timer" id="timer" style="display: none;">00:00</div>
@@ -277,6 +393,23 @@
       <audio id="audioPlayback" controls style="width: 100%; margin-top: 10px; display: none;"></audio>
     </div>
 
+    <div class="transcript-editor" id="transcriptEditor">
+      <div class="transcript-header">
+        <h4>📝 Edit Transcript</h4>
+        <span style="font-size: 12px; color: #666;">Edit the transcript before summarizing</span>
+      </div>
+      <textarea id="transcriptTextarea" placeholder="Transcript will appear here after transcription..."></textarea>
+      <div class="transcript-actions">
+        <button id="copyTranscript" class="btn-secondary">📋 Copy</button>
+        <button id="clearTranscript" class="btn-warning">🗑️ Clear</button>
+        <button id="summarizeTranscript" class="btn-success">🤖 Summarize</button>
+      </div>
+      <div class="timing-info">
+        <div id="transcriptionTime" style="display: none;">⏱️ Transcription: <span class="time-value">--</span></div>
+        <div id="summarizationTime" style="display: none;">⏱️ Summarization: <span class="time-value">--</span></div>
+      </div>
+    </div>
+
     <div class="controls">
       <div class="control-row">
         <button id="startRecording" class="btn-success">
@@ -291,8 +424,8 @@
         <button id="playRecording" class="btn-secondary" disabled>
           ▶️ Play
         </button>
-        <button id="processAudio" class="btn-primary" disabled>
-          🤖 Process Audio
+        <button id="transcribeAudio" class="btn-primary" disabled>
+          🎯 Transcribe
         </button>
       </div>
       
