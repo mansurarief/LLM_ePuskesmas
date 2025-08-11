@@ -6,18 +6,17 @@ A powerful Chrome extension designed specifically for Indonesian healthcare prof
 
 ### Core Functionality
 - **🎙️ High-Quality Audio Recording** - Crystal clear audio capture with noise cancellation
-- **🤖 AI-Powered Transcription** - Uses OpenAI Whisper or local HuggingFace models
+- **🤖 AI-Powered Transcription** - Uses OpenAI Whisper for accurate speech-to-text conversion
 - **📋 Medical Summarization** - Intelligent summaries using specialized medical models
 - **🏥 Healthcare System Integration** - Seamless integration with ePuskesmas and other medical systems
 
 ### Advanced Features
 - **🌐 Multi-Language Support** - Indonesian, English, Malay, and auto-detection
-- **📝 Medical Templates** - Pre-defined templates for different medical scenarios
-- **⚙️ Flexible API Options** - Choose between OpenAI Cloud, Local Models, or Hybrid approach
-- **🔄 Automatic Retry & Fallback** - Robust error handling with automatic retry and API fallback
+- **⚙️ OpenAI Integration** - Cloud-based processing with reliable API
+- **🔄 Automatic Retry & Fallback** - Robust error handling with automatic retry
 - **💾 Local Storage** - Option to save recordings locally for review
-- **🔒 Privacy-First** - Local processing option for sensitive medical data
-- **💰 Cost-Effective** - Local models eliminate per-use API costs
+- **🔒 Privacy-First** - Secure API communication with user control
+- **💰 Cost-Effective** - Optimized API usage with configurable settings
 
 ## 🚀 Installation
 
@@ -29,7 +28,7 @@ A powerful Chrome extension designed specifically for Indonesian healthcare prof
 
 ## 🔧 Initial Setup
 
-### Option A: Using OpenAI Cloud APIs (Easiest)
+### OpenAI Cloud API Setup (Required)
 
 1. **Grant Microphone Permission**
    - Click the extension icon and select "Grant Microphone Access"
@@ -37,65 +36,27 @@ A powerful Chrome extension designed specifically for Indonesian healthcare prof
 
 2. **Configure OpenAI API Key**
    - Click the settings icon in the popup
-   - Select "OpenAI (Cloud)" as API Provider
    - Enter your OpenAI API key (get one from [OpenAI](https://platform.openai.com/api-keys))
    - Test the connection to ensure it's working
-
-### Option B: Using Local Models (Privacy-First & Cost-Free)
-
-1. **Setup Local APIs**
-   ```bash
-   # Run the master setup script
-   chmod +x setup_all_apis.sh
-   ./setup_all_apis.sh
-   
-   # Start the APIs
-   ./start_apis.sh
-   
-   # Check status
-   ./status_apis.sh
-   ```
-
-2. **Configure Extension**
-   - Click the settings icon in the popup
-   - Select "Local Models (HuggingFace)" as API Provider
-   - Verify the API URLs (usually http://localhost:5001 and http://localhost:5002)
-   - Test the local APIs connection
-
-### Option C: Hybrid Mode (Best of Both Worlds)
-
-1. **Setup both OpenAI and Local APIs** (follow both Option A and B)
-2. **Configure Hybrid Mode**
-   - Select "Hybrid (Local + OpenAI Fallback)" as API Provider
-   - Local models will be used first, OpenAI as fallback
-   - Provides cost savings with reliability backup
 
 ### General Configuration
 - Choose your preferred language (Indonesian recommended for medical use)
 - Configure audio quality based on your needs
-- Set up medical templates for your practice
+- Set up advanced settings for your workflow
 
 ## 📖 Usage Guide
 
 ### Basic Recording Workflow
 1. **Navigate** to any ePuskesmas or medical system page
 2. **Click** the extension icon to open the popup
-3. **Select** a medical template (optional but recommended)
-4. **Click "Start Recording"** to begin audio capture
-5. **Speak clearly** during the medical consultation
-6. **Click "Stop Recording"** when finished
-7. **Review** the audio using the play button (optional)
-8. **Click "Process Audio"** to generate transcription and summary
-9. **Review** the results and edit if necessary
-
-### Medical Templates
-The extension includes several pre-configured templates:
-
-- **General Consultation** - For routine patient visits
-- **Follow-up Visit** - For monitoring existing conditions
-- **Emergency Case** - For urgent medical situations
-
-You can create custom templates in the settings page to match your specific practice needs.
+3. **Click "Start Recording"** to begin audio capture
+4. **Speak clearly** during the medical consultation
+5. **Click "Stop Recording"** when finished
+6. **Review** the audio using the play button (optional)
+7. **Click "Transcribe"** to generate transcription
+8. **Edit** the transcript if necessary
+9. **Click "Summarize"** to generate medical summary
+10. **Review** the results and insert into medical forms
 
 ### Integration with Healthcare Systems
 The extension automatically detects and integrates with:
@@ -103,21 +64,24 @@ The extension automatically detects and integrates with:
 - SIMRS (Hospital Information Systems)
 - Generic medical forms and text areas
 
+The AI-generated summary is automatically inserted into appropriate form fields including:
+- Keluhan Utama (Main Complaint)
+- Keluhan Tambahan (Additional Complaints)
+- RPS (Riwayat Penyakit Sekarang - Current Medical History)
+- RPD (Riwayat Penyakit Dahulu - Past Medical History)
+- RPSos (Riwayat Penyakit Sosial - Social History)
+- RPK (Riwayat Penyakit Keluarga - Family Medical History)
+- Terapi Obat (Pharmacological Treatment)
+- Edukasi (Patient Education)
+- Main Diagnosis
+- Differential Diagnosis
+- Recommended Treatment
+
 ## ⚙️ Configuration Options
 
-### API Provider Settings
-- **OpenAI (Cloud)** - Uses OpenAI's cloud APIs (requires API key)
-- **Local Models** - Uses local HuggingFace models (privacy-first, cost-free)
-- **Hybrid Mode** - Local first with OpenAI fallback (best of both worlds)
-
-### OpenAI Settings (when using OpenAI or Hybrid)
-- **OpenAI API Key** - Required for cloud transcription and summarization
+### OpenAI Settings
+- **OpenAI API Key** - Required for transcription and summarization
 - **GPT Model** - Choose between GPT-3.5 Turbo, GPT-4, or GPT-4 Turbo
-
-### Local API Settings (when using Local or Hybrid)
-- **Transcription URL** - Local Whisper API endpoint (default: http://localhost:5001)
-- **Summarization URL** - Local medical summarization API endpoint (default: http://localhost:5002)
-- **API Health Check** - Test local API connectivity
 
 ### Audio Settings
 - **Quality** - Low (faster), Medium (balanced), High (best accuracy)
@@ -127,75 +91,40 @@ The extension automatically detects and integrates with:
 
 ### Advanced Settings
 - **Automatic Retry** - Enable retry on API failures
-- **API Fallback** - Automatic switching between local and cloud APIs (Hybrid mode)
 - **Save Recordings** - Keep local copies for review
-- **Offline Mode** - Experimental browser-based speech recognition
 
 ## 🔒 Privacy & Security
 
-- **Local Processing** - Audio is only sent to OpenAI for transcription
-- **No Permanent Storage** - Recordings are not stored permanently unless explicitly enabled
 - **Secure API Communication** - All API calls use HTTPS encryption
+- **No Permanent Storage** - Recordings are not stored permanently unless explicitly enabled
 - **User Control** - You control what data is saved and where
+- **OpenAI Privacy** - Audio is only sent to OpenAI for transcription and summarization
 
 ## 🛠️ Technical Details
 
 ### System Requirements
 - Chrome browser (version 88+)
 - Microphone access
-- **For OpenAI Mode**: Internet connection + OpenAI API key
-- **For Local Mode**: Python 3.8+, 5GB+ disk space, 8GB+ RAM (GPU recommended)
-- **For Hybrid Mode**: Both of the above
+- Internet connection for OpenAI API
+- OpenAI API key
 
 ### Supported File Formats
 - WebM (primary)
 - OGG with Opus codec
 - WAV (fallback)
+- MP3, MP4, M4A (for uploaded files)
 
 ### API Usage
-#### Cloud APIs (OpenAI)
+#### OpenAI APIs
 - **Whisper API** - For audio transcription
 - **GPT API** - For medical summarization
 - **Chrome Storage API** - For settings and preferences
 
-#### Local APIs (HuggingFace)
-- **Local Whisper** - OpenAI Whisper Large V3 Turbo model
-- **Medical Summarization** - Falconsai medical summarization model
-- **Flask REST APIs** - For communication between extension and local models
-
-### Local Model Details
-- **Transcription**: `openai/whisper-large-v3-turbo` - High-accuracy multilingual speech recognition
-- **Summarization**: `Falconsai/medical_summarization` - Specialized medical text summarization
-- **Hardware**: CUDA GPU support for faster processing, CPU fallback available
-- **Privacy**: All processing happens locally, no data sent to external servers
-
-## 🔧 Managing Local APIs
-
-### Starting/Stopping APIs
-```bash
-# Start both APIs
-./start_apis.sh
-
-# Stop both APIs  
-./stop_apis.sh
-
-# Check status
-./status_apis.sh
-
-# View logs
-tail -f logs/transcription.log
-tail -f logs/summarization.log
-```
-
-### API Endpoints
-- **Transcription API**: http://localhost:5001
-  - `GET /health` - Health check
-  - `POST /transcribe` - Upload audio file
-  - `GET /models` - Available models
-- **Summarization API**: http://localhost:5002
-  - `GET /health` - Health check
-  - `POST /summarize` - Summarize text
-  - `GET /templates` - Available templates
+### Extension Architecture
+- **Popup Interface** - Main user interface for recording and processing
+- **Content Script** - Handles integration with healthcare systems
+- **Background Service** - Manages extension lifecycle and storage
+- **Options Page** - Settings configuration
 
 ## 🐛 Troubleshooting
 
@@ -211,24 +140,6 @@ tail -f logs/summarization.log
 - Check your internet connection
 - Enable automatic retry in settings
 
-**Local API errors**
-- Ensure both APIs are running: `./status_apis.sh`
-- Check logs for errors: `tail -f logs/transcription.log`
-- Restart APIs: `./stop_apis.sh && ./start_apis.sh`
-- Verify Python environment: `cd api/transcription/whisper && source venv/bin/activate && python --version`
-
-**Model download issues**
-- Ensure stable internet connection during first setup
-- Check available disk space (models require ~3-5GB)
-- Clear pip cache: `pip cache purge`
-- Try manual download: `python -c "from transformers import pipeline; pipeline('automatic-speech-recognition', model='openai/whisper-large-v3-turbo')"`
-
-**Performance issues**
-- Use GPU if available (CUDA/MPS)
-- Reduce audio quality for faster processing
-- Close other resource-intensive applications
-- Consider using OpenAI API for better performance
-
 **Integration not working**
 - Make sure you're on a supported healthcare website
 - Check that the page has loaded completely
@@ -237,7 +148,12 @@ tail -f logs/summarization.log
 **Audio quality issues**
 - Adjust microphone levels in system settings
 - Choose higher audio quality in extension settings
-- Ensure stable connection (local or internet) for processing
+- Ensure stable internet connection for processing
+
+**Summary not inserting**
+- Check that the content script is loaded on the page
+- Refresh the page and try again
+- Verify the page has form fields that match the expected selectors
 
 ### Getting Help
 If you encounter issues:
@@ -249,20 +165,16 @@ If you encounter issues:
 ## 📝 Version History
 
 ### v2.1.0 (Current)
-- **🆕 Local AI Models Support** - HuggingFace Whisper and Medical Summarization models
-- **🆕 Hybrid Mode** - Local processing with cloud fallback
-- **🆕 Cost-Free Option** - Eliminate per-use API costs with local models
-- **🆕 Enhanced Privacy** - Optional local-only processing
-- **🆕 Automatic Setup Scripts** - One-click setup for local APIs
-- **🆕 API Health Monitoring** - Real-time status checks for local APIs
-- Complete rewrite with enhanced UI/UX
-- Added medical templates and multi-language support
-- Improved error handling and retry mechanisms
-- Better healthcare system integration
+- **🆕 Code Cleanup** - Removed unused features and simplified codebase
+- **🆕 Enhanced UI/UX** - Improved user interface and experience
+- **🆕 Better Error Handling** - More robust error handling and user feedback
+- **🆕 Optimized Performance** - Reduced bundle size and improved efficiency
+- **🆕 Medical Field Integration** - Enhanced automatic field detection and population
+- **🆕 Simplified Setup** - Streamlined configuration process
 
 ### v2.0.0 (Previous)
 - Complete rewrite with enhanced UI/UX
-- Added medical templates and multi-language support
+- Added multi-language support
 - Improved error handling and retry mechanisms
 - Better healthcare system integration
 - Enhanced privacy and security features
