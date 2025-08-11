@@ -10,6 +10,11 @@ class MedicalAudioRecorder {
     this.loadSettings();
     this.checkMicrophoneAccess();
     this.logSupportedFormats(); // Debug logging
+    
+    // Additional API key check
+    setTimeout(() => {
+      this.checkApiKeyInStorage();
+    }, 500);
   }
 
   // ============================================================================
@@ -33,6 +38,8 @@ class MedicalAudioRecorder {
     this.transcriptionEndTime = null;
     this.summarizationStartTime = null;
     this.summarizationEndTime = null;
+    this.diagnosisStartTime = null;
+    this.diagnosisEndTime = null;
   }
 
   initializeElements() {
@@ -51,6 +58,8 @@ class MedicalAudioRecorder {
       // Navigation
       openWelcomePage: document.getElementById("openWelcomePage"),
       openSettings: document.getElementById("openSettings"),
+      refreshSettings: document.getElementById("refreshSettings"),
+      testApiKey: document.getElementById("testApiKey"),
       
       // UI elements
       statusBar: document.getElementById("statusBar"),
@@ -84,7 +93,8 @@ class MedicalAudioRecorder {
       
       // Timing displays
       transcriptionTime: document.getElementById("transcriptionTime"),
-      summarizationTime: document.getElementById("summarizationTime")
+      summarizationTime: document.getElementById("summarizationTime"),
+      diagnosisTime: document.getElementById("diagnosisTime")
     };
   }
 
@@ -103,6 +113,8 @@ class MedicalAudioRecorder {
     // Navigation event listeners
     this.elements.openWelcomePage.addEventListener("click", () => this.openWelcomePage());
     this.elements.openSettings.addEventListener("click", () => this.openSettings());
+    this.elements.refreshSettings.addEventListener("click", () => this.refreshSettings());
+    this.elements.testApiKey.addEventListener("click", () => this.testApiKey());
 
     // Audio control event listeners
     this.elements.volumeSlider.addEventListener("input", () => this.updateVolume());
@@ -112,6 +124,7 @@ class MedicalAudioRecorder {
     this.elements.copyTranscript.addEventListener("click", () => this.copyTranscript());
     this.elements.clearTranscript.addEventListener("click", () => this.clearTranscript());
     this.elements.summarizeTranscript.addEventListener("click", () => this.summarizeTranscript());
+    this.elements.generateDiagnosisAndTreatment.addEventListener("click", () => this.generateDiagnosisAndTreatment());
   }
 
   // ============================================================================
@@ -134,6 +147,10 @@ class MedicalAudioRecorder {
       "summarizationUrl",
       "enableTranslation",
     ]);
+
+    console.log("🔧 Loaded settings:", this.settings);
+    console.log("🔑 API Key loaded:", this.settings.apiKey ? "Yes" : "No");
+    console.log("🌐 API Provider:", this.settings.apiProvider);
 
     this.setDefaultSettings();
     this.loadTemplates();
@@ -163,15 +180,15 @@ class MedicalAudioRecorder {
     const defaultTemplates = [
       {
         name: "General Consultation",
-        prompt: "Summarize this medical consultation focusing on: chief complaint, symptoms, physical examination findings, diagnosis, and treatment plan. Format in Indonesian.",
+        prompt: "Summarize this medical consultation focusing on: chief complaint, symptoms, physical examination findings, diagnosis, and treatment plan. Extract all 11 medical fields: keluhan_utama, keluhan_tambahan, rps, rpd, rpsos, rpk, terapi_obat, edukasi, main_diagnosis, differential_diagnosis, and recommended_treatment. Format in Indonesian.",
       },
       {
         name: "Follow-up Visit",
-        prompt: "Summarize this follow-up visit focusing on: current condition, response to previous treatment, any new symptoms, and adjusted treatment plan. Format in Indonesian.",
+        prompt: "Summarize this follow-up visit focusing on: current condition, response to previous treatment, any new symptoms, and adjusted treatment plan. Extract all 11 medical fields: keluhan_utama, keluhan_tambahan, rps, rpd, rpsos, rpk, terapi_obat, edukasi, main_diagnosis, differential_diagnosis, and recommended_treatment. Format in Indonesian.",
       },
       {
         name: "Emergency Case",
-        prompt: "Summarize this emergency case focusing on: presenting complaint, vital signs, immediate interventions, diagnosis, and urgent treatment required. Format in Indonesian.",
+        prompt: "Summarize this emergency case focusing on: presenting complaint, vital signs, immediate interventions, diagnosis, and urgent treatment required. Extract all 11 medical fields: keluhan_utama, keluhan_tambahan, rps, rpd, rpsos, rpk, terapi_obat, edukasi, main_diagnosis, differential_diagnosis, and recommended_treatment. Format in Indonesian.",
       },
     ];
 
@@ -201,14 +218,69 @@ class MedicalAudioRecorder {
   }
 
   validateApiConfiguration() {
+    console.log("🔍 Validating API configuration...");
+    console.log("Current settings:", this.settings);
+    
     if (this.settings.apiProvider === "openai" || this.settings.apiProvider === "hybrid") {
       if (!this.settings.apiKey) {
-        this.showMessage("Please configure your OpenAI API key in settings", "error");
+        this.showMessage("⚠️ OpenAI API key not configured. Click 'Settings' to add your API key.", "error");
+        console.log("❌ API Key status: Not configured");
+        console.log("🌐 API Provider:", this.settings.apiProvider);
+      } else {
+        console.log("✅ OpenAI API key is configured");
+        console.log("🔑 API Key length:", this.settings.apiKey.length);
       }
     }
 
     if (this.settings.apiProvider === "local" || this.settings.apiProvider === "hybrid") {
       this.checkLocalApiStatus();
+    }
+  }
+
+  async refreshSettings() {
+    console.log("🔄 Refreshing settings...");
+    await this.loadSettings();
+    this.validateApiConfiguration();
+    
+    // Show a message to the user
+    this.showMessage("Settings refreshed. Check console for details.", "success");
+  }
+
+  async checkApiKeyInStorage() {
+    try {
+      const result = await chrome.storage.local.get("apiKey");
+      console.log("🔍 Direct storage check - API Key:", result.apiKey ? "Present" : "Not found");
+      console.log("🔍 API Key length:", result.apiKey ? result.apiKey.length : 0);
+      return result.apiKey;
+    } catch (error) {
+      console.error("Error checking API key in storage:", error);
+      return null;
+    }
+  }
+
+  async testApiKey() {
+    try {
+      console.log("🧪 Testing API key...");
+      
+      // Check storage directly
+      const storageKey = await this.checkApiKeyInStorage();
+      console.log("📦 Storage API Key:", storageKey ? "Found" : "Not found");
+      
+      // Check loaded settings
+      console.log("⚙️ Settings API Key:", this.settings.apiKey ? "Found" : "Not found");
+      console.log("🌐 API Provider:", this.settings.apiProvider);
+      
+      if (storageKey && !this.settings.apiKey) {
+        this.showMessage("⚠️ API key in storage but not loaded. Try refreshing settings.", "error");
+      } else if (!storageKey) {
+        this.showMessage("❌ No API key found in storage. Please configure in Settings.", "error");
+      } else if (this.settings.apiKey) {
+        this.showMessage("✅ API key is configured and loaded!", "success");
+      }
+      
+    } catch (error) {
+      console.error("Error testing API key:", error);
+      this.showMessage("Error testing API key: " + error.message, "error");
     }
   }
 
@@ -278,6 +350,37 @@ class MedicalAudioRecorder {
     }
   }
 
+  startDiagnosisTimer() {
+    this.diagnosisStartTime = Date.now();
+    this.elements.diagnosisTime.style.display = "block";
+    this.updateDiagnosisTime();
+    
+    // Set up real-time updates
+    this.diagnosisTimerInterval = setInterval(() => {
+      this.updateDiagnosisTime();
+    }, 1000);
+  }
+
+  endDiagnosisTimer() {
+    this.diagnosisEndTime = Date.now();
+    this.updateDiagnosisTime();
+    
+    // Clear the interval
+    if (this.diagnosisTimerInterval) {
+      clearInterval(this.diagnosisTimerInterval);
+      this.diagnosisTimerInterval = null;
+    }
+  }
+
+  updateDiagnosisTime() {
+    if (this.diagnosisStartTime) {
+      const endTime = this.diagnosisEndTime || Date.now();
+      const duration = endTime - this.diagnosisStartTime;
+      const timeString = this.formatDuration(duration);
+      this.elements.diagnosisTime.querySelector('.time-value').textContent = timeString;
+    }
+  }
+
   formatDuration(milliseconds) {
     const seconds = Math.floor(milliseconds / 1000);
     const minutes = Math.floor(seconds / 60);
@@ -295,6 +398,8 @@ class MedicalAudioRecorder {
     this.transcriptionEndTime = null;
     this.summarizationStartTime = null;
     this.summarizationEndTime = null;
+    this.diagnosisStartTime = null;
+    this.diagnosisEndTime = null;
     
     // Clear intervals
     if (this.transcriptionTimerInterval) {
@@ -305,16 +410,21 @@ class MedicalAudioRecorder {
       clearInterval(this.summarizationTimerInterval);
       this.summarizationTimerInterval = null;
     }
+    if (this.diagnosisTimerInterval) {
+      clearInterval(this.diagnosisTimerInterval);
+      this.diagnosisTimerInterval = null;
+    }
     
     this.elements.transcriptionTime.style.display = "none";
     this.elements.summarizationTime.style.display = "none";
+    this.elements.diagnosisTime.style.display = "none";
   }
 
   // ============================================================================
   // STEP MANAGEMENT
   // ============================================================================
 
-  updateStepIndicator(step) {
+  updateStepIndicator(step, customText = null) {
     // Reset all steps
     [this.elements.step1, this.elements.step2, this.elements.step3, this.elements.step4].forEach(stepEl => {
       stepEl.className = "step";
@@ -327,6 +437,10 @@ class MedicalAudioRecorder {
         stepEl.className = "step completed";
       } else if (i === step) {
         stepEl.className = "step active";
+        // Update step text if custom text is provided
+        if (customText) {
+          stepEl.textContent = customText;
+        }
       }
     }
     
@@ -603,6 +717,43 @@ class MedicalAudioRecorder {
     }
   }
 
+  async generateDiagnosisAndTreatment() {
+    const transcript = this.elements.transcriptTextarea.value.trim();
+    if (!transcript) {
+      this.showMessage("Please enter or transcribe some text first", "error");
+      return;
+    }
+
+    try {
+      this.updateStatus("Generating diagnosis and treatment...", "processing");
+      this.showProgress();
+      this.updateStepIndicator(4, "4. Diagnosis & Treatment");
+      this.startDiagnosisTimer();
+
+      this.updateProgress(20, "Analyzing symptoms and history...");
+      const diagnosisAndTreatment = await this.generateDiagnosisAndTreatmentSummary(transcript);
+      console.log("Diagnosis and treatment result:", diagnosisAndTreatment);
+
+      this.endDiagnosisTimer();
+      this.updateProgress(90, "Inserting diagnosis and treatment...");
+      await this.insertSummary(diagnosisAndTreatment);
+
+      this.updateProgress(100, "Complete!");
+      this.updateStatus("Diagnosis and treatment generated successfully");
+      this.showResults(transcript, diagnosisAndTreatment);
+      this.updateStepIndicator(4, "4. Summarize"); // Reset to normal text
+      setTimeout(() => this.hideProgress(), 2000);
+
+    } catch (error) {
+      this.endDiagnosisTimer();
+      console.error("Diagnosis and treatment generation error:", error);
+      this.updateStatus("Diagnosis and treatment generation failed");
+      this.showMessage(`Diagnosis and treatment generation failed: ${error.message}`, "error");
+      this.updateStepIndicator(4, "4. Summarize"); // Reset to normal text
+      this.hideProgress();
+    }
+  }
+
   // ============================================================================
   // TRANSCRIPTION API METHODS
   // ============================================================================
@@ -629,12 +780,18 @@ class MedicalAudioRecorder {
   }
 
   async transcribeWithOpenAI() {
+    // Check if API key is configured
+    if (!this.settings.apiKey) {
+      throw new Error("OpenAI API key is not configured. Please go to Settings and add your API key.");
+    }
+
     const formData = this.createTranscriptionFormData();
     formData.append("model", "whisper-1");
 
     console.log("Original audio blob type:", this.audioBlob.type);
     console.log("Compatible blob type:", formData.get("file").type);
     console.log("Filename:", formData.get("file").name);
+    console.log("API Key configured:", this.settings.apiKey ? "Yes" : "No");
 
     const response = await fetch("https://api.openai.com/v1/audio/transcriptions", {
         method: "POST",
@@ -763,6 +920,32 @@ class MedicalAudioRecorder {
         }
       }
 
+  async generateDiagnosisAndTreatmentSummary(transcription) {
+    try {
+      if (this.settings.apiProvider === "local" || this.settings.apiProvider === "hybrid") {
+        try {
+          return await this.generateDiagnosisAndTreatmentWithLocalAPI(transcription);
+        } catch (error) {
+          console.warn("Local diagnosis generation failed:", error);
+          if (this.settings.apiProvider === "hybrid" && this.settings.apiKey) {
+            console.log("Falling back to OpenAI API");
+            return await this.generateDiagnosisAndTreatmentWithOpenAI(transcription);
+          }
+          throw error;
+        }
+      }
+      return await this.generateDiagnosisAndTreatmentWithOpenAI(transcription);
+    } catch (diagnosisError) {
+      console.warn("Diagnosis generation failed:", diagnosisError);
+      if (diagnosisError.message && diagnosisError.message.includes("too short")) {
+        const fallbackDiagnosis = `Diagnosis: ${transcription}`;
+        console.log("Used fallback diagnosis for short text");
+        return fallbackDiagnosis;
+      }
+      throw diagnosisError;
+    }
+  }
+
   async generateSummaryWithLocalAPI(transcription) {
     const templates = this.settings.medicalTemplates || [];
     const selectedTemplateIndex = this.elements.templateSelect.value;
@@ -799,7 +982,40 @@ class MedicalAudioRecorder {
     return data.summary;
   }
 
+  async generateDiagnosisAndTreatmentWithLocalAPI(transcription) {
+    const requestBody = {
+      text: transcription,
+      template_prompt: "Based on the transcript and summary of the patient encounter (including chief complaint, additional symptoms, history of present illness, past medical history, and examination findings if available), suggest the most likely diagnosis. Include one primary diagnosis and up to two differential diagnoses. The suggestion should be based strictly on the available clinical information, without inventing new data. Based on the patient's previously mentioned diagnosis or presenting symptoms, generate a complete pharmacological treatment plan. Include the recommended medications along with their generic names, drug classes, dosages, frequency of administration, and duration of treatment. Additionally, provide a brief rationale for the use of each medication, based on the patient's symptoms or diagnosis. The final output should be presented as a structured list using accurate and professional medical terminology.",
+      max_length: 500,
+      min_length: 200,
+    };
+
+    const response = await fetch(`${this.settings.summarizationUrl}/summarize`, {
+        method: "POST",
+      headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(requestBody),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(`Local API: ${errorData.error || "HTTP " + response.status}`);
+    }
+
+    const data = await response.json();
+
+    if (data.error) {
+      throw new Error(data.error + (data.details ? ": " + data.details : ""));
+    }
+
+    return data.summary;
+  }
+
   async generateSummaryWithOpenAI(transcription) {
+    // Check if API key is configured
+    if (!this.settings.apiKey) {
+      throw new Error("OpenAI API key is not configured. Please go to Settings and add your API key.");
+    }
+
     const templates = this.settings.medicalTemplates || [];
     const selectedTemplateIndex = this.elements.templateSelect.value;
 
@@ -807,23 +1023,30 @@ class MedicalAudioRecorder {
     let systemPrompt = `You are a medical assistant specialized in analyzing doctor-patient conversations in Bahasa Indonesia. Your task is to extract and structure medical information into a comprehensive JSON format.
 
 EXTRACTION REQUIREMENTS:
-1. keluhan_utama: Main complaint/symptoms (keluhan utama)
-2. keluhan_tambahan: Additional complaints or supporting details (keluhan tambahan)
-3. rps: Current medical history (riwayat penyakit sekarang) - current illness details
-4. rpd: Past medical history (riwayat penyakit dahulu) - previous illnesses, surgeries, medications
-5. rpsos: Social history (riwayat penyakit sosial) - lifestyle, occupation, social factors
-6. tatalaksana: Treatment plan (tatalaksana) - education given and medications prescribed
+1. keluhan_utama: Main complaint/symptoms (keluhan utama) - only one main complaint that makes patient come to the doctor
+2. keluhan_tambahan: Additional symptoms or supporting details (keluhan tambahan) - any additional symptoms reported by the patient besides the main complaint, including those that occurred simultaneously or prior to the main complaint. Avoid repeating the main complaint.
+3. rps: Current medical history (riwayat penyakit sekarang) - current illness details that describe the patient's main complaint in a chronological manner: when it started, how the symptoms have progressed, the location, the nature/character of the complaint, aggravating or relieving factors, and any associated symptoms.
+4. rpd: Past medical history (riwayat penyakit dahulu) - previous illnesses, surgeries, medications, and any other relevant medical history that may have contributed to the current complaint, including any chronic or acute illnesses, prior hospitalizations, surgeries, known allergies, and current or past medications.
+5. rpsos: Social history (riwayat penyakit sosial) - patient's social habits and lifestyle factors that may influence their health, including smoking, alcohol use, illicit drug use, physical activity, occupation, and living environment.
+6. rpk: Family medical history (riwayat penyakit keluarga) - any immediate family members (parents, siblings) have a history of significant medical conditions such as hypertension, diabetes, heart disease, cancer, mental illness, or genetic disorders.
+7. terapi_obat: Treatment plan (tatalaksana) - pharmacological therapy prescribed to the patient, including the drug name, dosage, frequency, route of administration, and duration of use. Mention the indication if relevant, identify and convert any layman's terms or general descriptions of medications into their correct pharmacological drug classes.
+8. edukasi: Patient education (edukasi) - any educational information provided to the patient, including instructions on medication use, lifestyle changes, or other health-related advice.
 
 OUTPUT FORMAT:
 Respond ONLY with a valid JSON object in Bahasa Indonesia. If information is not available, use "Informasi tidak tersedia".
 
 {
   "keluhan_utama": "Main complaint in Bahasa Indonesia",
-  "keluhan_tambahan": "Additional complaints in Bahasa Indonesia", 
+  "keluhan_tambahan": "Additional symptoms in Bahasa Indonesia", 
   "rps": "Current medical history in Bahasa Indonesia",
   "rpd": "Past medical history in Bahasa Indonesia",
   "rpsos": "Social history in Bahasa Indonesia",
-  "tatalaksana": "Treatment plan including education and medications in Bahasa Indonesia"
+  "rpk": "Family medical history in Bahasa Indonesia",
+  "terapi_obat": "Treatment plan in Bahasa Indonesia",
+  "edukasi": "Patient education in Bahasa Indonesia",
+  "main_diagnosis": "Primary diagnosis with ICD-10 code if applicable",
+  "differential_diagnosis": "List of alternative diagnoses to consider",
+  "recommended_treatment": "Detailed treatment plan with drug names, dosages, frequency, route, and duration"
 }
 
 GUIDELINES:
@@ -831,7 +1054,7 @@ GUIDELINES:
 - Be concise but comprehensive
 - Focus on clinically relevant information
 - If a section is not mentioned in the conversation, use "Informasi tidak tersedia"
-- Maintain medical accuracy and professionalism`;
+- Maintain medical accuracy and professionalism and bio-ethics in Indonesia`;
 
     let userPrompt = `Analyze the following doctor-patient conversation in Bahasa Indonesia and extract the medical information as specified:
 
@@ -847,12 +1070,14 @@ TASK: Extract and structure the medical information into the JSON format describ
 TEMPLATE: ${templates[selectedTemplateIndex].prompt}
 
 EXTRACTION REQUIREMENTS:
-1. keluhan_utama: Main complaint/symptoms (keluhan utama)
-2. keluhan_tambahan: Additional complaints or supporting details (keluhan tambahan)
-3. rps: Current medical history (riwayat penyakit sekarang) - current illness details
-4. rpd: Past medical history (riwayat penyakit dahulu) - previous illnesses, surgeries, medications
-5. rpsos: Social history (riwayat penyakit sosial) - lifestyle, occupation, social factors
-6. tatalaksana: Treatment plan (tatalaksana) - education given and medications prescribed
+1. keluhan_utama: Main complaint/symptoms (keluhan utama) - only one main complaint that makes patient come to the doctor
+2. keluhan_tambahan: Additional complaints or supporting details (keluhan tambahan) - any additional complaints or symptoms reported by the patient besides the main complaint
+3. rps: Current medical history (riwayat penyakit sekarang) - current illness details that describe the patient's main complaint in a chronological manner
+4. rpd: Past medical history (riwayat penyakit dahulu) - previous illnesses, surgeries, medications, and any other relevant medical history
+5. rpsos: Social history (riwayat penyakit sosial) - patient's social habits and lifestyle factors that may influence their health
+6. rpk: Family medical history (riwayat penyakit keluarga) - any immediate family members (parents, siblings) have a history of significant medical conditions
+7. terapi_obat: Treatment plan (tatalaksana) - pharmacological therapy prescribed to the patient, including drug name, dosage, frequency, route of administration, and duration of use
+8. edukasi: Patient education (edukasi) - any educational information provided to the patient, including instructions on medication use, lifestyle changes, or other health-related advice
 
 OUTPUT FORMAT:
 Respond ONLY with a valid JSON object in Bahasa Indonesia following the template guidelines. If information is not available, use "Informasi tidak tersedia".
@@ -863,7 +1088,12 @@ Respond ONLY with a valid JSON object in Bahasa Indonesia following the template
   "rps": "Current medical history in Bahasa Indonesia",
   "rpd": "Past medical history in Bahasa Indonesia",
   "rpsos": "Social history in Bahasa Indonesia",
-  "tatalaksana": "Treatment plan including education and medications in Bahasa Indonesia"
+  "rpk": "Family medical history in Bahasa Indonesia",
+  "terapi_obat": "Treatment plan in Bahasa Indonesia",
+  "edukasi": "Patient education in Bahasa Indonesia",
+  "main_diagnosis": "Primary diagnosis with ICD-10 code if applicable",
+  "differential_diagnosis": "List of alternative diagnoses to consider",
+  "recommended_treatment": "Detailed treatment plan with drug names, dosages, frequency, route, and duration"
 }`;
 
       userPrompt = `TEMPLATE MEDIS: ${templates[selectedTemplateIndex].prompt}
@@ -898,6 +1128,84 @@ TASK: Analyze the conversation according to the medical template and extract the
     }
 
     const data = await response.json();
+    return data.choices[0].message.content.trim();
+  }
+
+  async generateDiagnosisAndTreatmentWithOpenAI(transcription) {
+    // Check if API key is configured
+    if (!this.settings.apiKey) {
+      throw new Error("OpenAI API key is not configured. Please go to Settings and add your API key.");
+    }
+
+    console.log("🏥 Starting diagnosis and treatment generation...");
+    console.log("🔑 API Key configured:", this.settings.apiKey ? "Yes" : "No");
+    console.log("🌐 API Provider:", this.settings.apiProvider);
+
+    const systemPrompt = `You are a medical AI assistant specialized in analyzing doctor-patient conversations and generating clinical diagnoses and treatment recommendations. Your task is to analyze the conversation and provide:
+
+DIAGNOSIS REQUIREMENTS:
+Based on the transcript and summary of the patient encounter (including chief complaint, additional symptoms, history of present illness, past medical history, and examination findings if available), suggest the most likely diagnosis. Include one primary diagnosis and up to two differential diagnoses. The suggestion should be based strictly on the available clinical information, without inventing new data.
+
+TREATMENT REQUIREMENTS:
+Based on the patient's previously mentioned diagnosis or presenting symptoms, generate a complete pharmacological treatment plan. Include the recommended medications along with their generic names, drug classes, dosages, frequency of administration, and duration of treatment. Additionally, provide a brief rationale for the use of each medication, based on the patient's symptoms or diagnosis. The final output should be presented as a structured list using accurate and professional medical terminology.
+
+OUTPUT FORMAT:
+Respond ONLY with a valid JSON object in Bahasa Indonesia. If information is not available, use "Informasi tidak tersedia".
+
+{
+  "main_diagnosis": "Primary diagnosis with ICD-10 code if applicable",
+  "differential_diagnosis": "List of alternative diagnoses to consider",
+  "recommended_treatment": "Detailed treatment plan with drug names, dosages, frequency, route, and duration"
+}
+
+GUIDELINES:
+- Be clinically accurate and evidence-based
+- Use proper medical terminology in Bahasa Indonesia
+- Consider Indonesian healthcare context and available medications
+- Maintain medical ethics and patient safety
+- If diagnosis is unclear, suggest appropriate diagnostic tests
+- Base suggestions strictly on available clinical information without inventing new data`;
+
+    const userPrompt = `Analyze the following doctor-patient conversation and generate a clinical diagnosis and treatment plan:
+
+CONVERSATION TRANSCRIPT:
+${transcription}
+
+TASK: 
+1. Based on the available clinical information, suggest one primary diagnosis and up to two differential diagnoses
+2. Generate a complete pharmacological treatment plan with generic names, drug classes, dosages, frequency, and duration
+3. Provide rationale for each medication based on symptoms or diagnosis
+4. Use only the information provided in the transcript, do not invent new clinical data
+
+Respond only with the JSON object in Bahasa Indonesia, no additional text.`;
+
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${this.settings.apiKey}`,
+      },
+      body: JSON.stringify({
+        model: this.settings.gptModel,
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt },
+        ],
+        max_tokens: 1000,
+        temperature: 0.3,
+      }),
+    });
+
+    console.log("🏥 Diagnosis API response status:", response.status);
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      console.error("🏥 Diagnosis API error:", errorData);
+      throw new Error(`OpenAI API: ${errorData.error?.message || "HTTP " + response.status}`);
+    }
+
+    const data = await response.json();
+    console.log("🏥 Diagnosis API response:", data);
     return data.choices[0].message.content.trim();
   }
 
@@ -1275,6 +1583,10 @@ TASK: Analyze the conversation according to the medical template and extract the
 
   openSettings() {
     chrome.runtime.openOptionsPage();
+    // Refresh settings after opening options page
+    setTimeout(() => {
+      this.refreshSettings();
+    }, 1000);
   }
 
   // ============================================================================

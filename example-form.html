@@ -186,7 +186,7 @@
                 <textarea 
                     id="keluhanUtama" 
                     name="keluhanUtama" 
-                    placeholder="Enter the main complaint or primary symptoms..."
+                    placeholder="Enter the main complaint or primary symptoms that made the patient come to the doctor..."
                     rows="3"
                 ></textarea>
             </div>
@@ -196,7 +196,7 @@
                 <textarea 
                     id="keluhanTambahan" 
                     name="keluhanTambahan" 
-                    placeholder="Enter additional complaints, symptoms, or details..."
+                    placeholder="Enter additional complaints or symptoms reported by the patient besides the main complaint..."
                     rows="3"
                 ></textarea>
             </div>
@@ -206,7 +206,7 @@
                 <textarea 
                     id="rps" 
                     name="rps" 
-                    placeholder="Enter current medical history, illness details, onset, progression..."
+                    placeholder="Enter current illness details: when it started, how symptoms progressed, location, nature/character of complaint, aggravating/relieving factors, associated symptoms..."
                     rows="3"
                 ></textarea>
             </div>
@@ -216,7 +216,7 @@
                 <textarea 
                     id="rpd" 
                     name="rpd" 
-                    placeholder="Enter past medical history, previous illnesses, surgeries, medications..."
+                    placeholder="Enter past medical history: previous illnesses, surgeries, medications, chronic/acute illnesses, hospitalizations, allergies, current/past medications..."
                     rows="3"
                 ></textarea>
             </div>
@@ -226,30 +226,83 @@
                 <textarea 
                     id="rpsos" 
                     name="rpsos" 
-                    placeholder="Enter social history, lifestyle, occupation, social factors affecting health..."
+                    placeholder="Enter social history: smoking, alcohol use, illicit drug use, physical activity, occupation, living environment..."
                     rows="3"
                 ></textarea>
             </div>
             
             <div class="form-group">
-                <label for="tatalaksana">Tatalaksana (Treatment Plan):</label>
+                <label for="rpk">RPK (Riwayat Penyakit Keluarga):</label>
                 <textarea 
-                    id="tatalaksana" 
-                    name="tatalaksana" 
-                    placeholder="Enter treatment plan including education given and medications prescribed..."
+                    id="rpk" 
+                    name="rpk" 
+                    placeholder="Enter family medical history: immediate family members (parents, siblings) with history of hypertension, diabetes, heart disease, cancer, mental illness, genetic disorders..."
+                    rows="3"
+                ></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="terapiObat">Terapi Obat (Pharmacological Treatment):</label>
+                <textarea 
+                    id="terapiObat" 
+                    name="terapiObat" 
+                    placeholder="Enter pharmacological therapy: drug name, dosage, frequency, route of administration, duration of use, indication..."
+                    rows="3"
+                ></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="edukasi">Edukasi (Patient Education):</label>
+                <textarea 
+                    id="edukasi" 
+                    name="edukasi" 
+                    placeholder="Enter patient education: instructions on medication use, lifestyle changes, health-related advice..."
                     rows="3"
                 ></textarea>
             </div>
         </div>
         
         <div class="form-section">
-            <h3>📝 Additional Notes</h3>
+            <h3>🏥 AI-Generated Diagnosis & Treatment</h3>
             <div class="form-group">
-                <label for="diagnosis">Diagnosis:</label>
+                <label for="mainDiagnosis">Main Diagnosis:</label>
+                <textarea 
+                    id="mainDiagnosis" 
+                    name="mainDiagnosis" 
+                    placeholder="AI-generated main diagnosis will appear here..."
+                    rows="3"
+                ></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="differentialDiagnosis">Differential Diagnosis:</label>
+                <textarea 
+                    id="differentialDiagnosis" 
+                    name="differentialDiagnosis" 
+                    placeholder="AI-generated differential diagnosis will appear here..."
+                    rows="3"
+                ></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="recommendedTreatment">Recommended Treatment:</label>
+                <textarea 
+                    id="recommendedTreatment" 
+                    name="recommendedTreatment" 
+                    placeholder="AI-generated treatment recommendations will appear here..."
+                    rows="3"
+                ></textarea>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <h3>📝 Doctor's Notes</h3>
+            <div class="form-group">
+                <label for="diagnosis">Final Diagnosis:</label>
                 <textarea 
                     id="diagnosis" 
                     name="diagnosis" 
-                    placeholder="Enter diagnosis..."
+                    placeholder="Enter final diagnosis..."
                     rows="3"
                 ></textarea>
             </div>
@@ -316,14 +369,19 @@
                                 if (jsonMatch) {
                                     const parsed = JSON.parse(jsonMatch[0]);
                                     
-                                    // Populate all available fields
+                                    // Populate all available fields with new structure
                                     const fieldMappings = {
                                         'keluhan_utama': 'keluhanUtama',
                                         'keluhan_tambahan': 'keluhanTambahan',
                                         'rps': 'rps',
                                         'rpd': 'rpd',
                                         'rpsos': 'rpsos',
-                                        'tatalaksana': 'tatalaksana'
+                                        'rpk': 'rpk',
+                                        'terapi_obat': 'terapiObat',
+                                        'edukasi': 'edukasi',
+                                        'main_diagnosis': 'mainDiagnosis',
+                                        'differential_diagnosis': 'differentialDiagnosis',
+                                        'recommended_treatment': 'recommendedTreatment'
                                     };
                                     
                                     let populatedCount = 0;

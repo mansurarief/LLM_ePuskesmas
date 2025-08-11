@@ -403,10 +403,12 @@
         <button id="copyTranscript" class="btn-secondary">📋 Copy</button>
         <button id="clearTranscript" class="btn-warning">🗑️ Clear</button>
         <button id="summarizeTranscript" class="btn-success">🤖 Summarize</button>
+        <button id="generateDiagnosisAndTreatment" class="btn-primary">🏥 Generate Diagnosis & Treatment</button>
       </div>
       <div class="timing-info">
         <div id="transcriptionTime" style="display: none;">⏱️ Transcription: <span class="time-value">--</span></div>
         <div id="summarizationTime" style="display: none;">⏱️ Summarization: <span class="time-value">--</span></div>
+        <div id="diagnosisTime" style="display: none;">🏥 Diagnosis & Treatment: <span class="time-value">--</span></div>
       </div>
     </div>
 
@@ -455,6 +457,8 @@
     
     <div class="settings-link">
       <a href="#" id="openSettings">⚙️ Settings & API Configuration</a>
+      <button id="refreshSettings" class="btn-secondary" style="margin-top: 10px; width: 100%; padding: 8px; font-size: 12px;">🔄 Refresh Settings</button>
+      <button id="testApiKey" class="btn-info" style="margin-top: 5px; width: 100%; padding: 8px; font-size: 12px;">🔍 Test API Key</button>
     </div>
   </div>
 

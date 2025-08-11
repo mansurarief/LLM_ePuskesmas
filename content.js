@@ -233,7 +233,7 @@ class ContentIntegrator {
           const parsed = JSON.parse(jsonString);
           
           // Check if it has the expected structure
-          if (parsed.keluhan_utama || parsed.keluhan_tambahan || parsed.rps || parsed.rpd || parsed.rpsos || parsed.tatalaksana) {
+          if (parsed.keluhan_utama || parsed.keluhan_tambahan || parsed.rps || parsed.rpd || parsed.rpsos || parsed.rpk || parsed.terapi_obat || parsed.edukasi || parsed.main_diagnosis || parsed.differential_diagnosis || parsed.recommended_treatment) {
             console.log("✅ Successfully parsed JSON data:", parsed);
             return parsed;
           } else {
@@ -251,7 +251,7 @@ class ContentIntegrator {
         const parsed = JSON.parse(extractedJson);
         
         // Check if it has the expected structure
-        if (parsed.keluhan_utama || parsed.keluhan_tambahan || parsed.rps || parsed.rpd || parsed.rpsos || parsed.tatalaksana) {
+        if (parsed.keluhan_utama || parsed.keluhan_tambahan || parsed.rps || parsed.rpd || parsed.rpsos || parsed.rpk || parsed.terapi_obat || parsed.edukasi || parsed.main_diagnosis || parsed.differential_diagnosis || parsed.recommended_treatment) {
           console.log("✅ Successfully parsed JSON data from pattern match:", parsed);
           return parsed;
         } else {
@@ -339,18 +339,85 @@ class ContentIntegrator {
         ]
       },
       {
-        jsonKey: 'tatalaksana',
+        jsonKey: 'rpk',
         selectors: [
-          '#tatalaksana',
-          '[name="tatalaksana"]',
+          '#rpk',
+          '[name="rpk"]',
+          'textarea[placeholder*="riwayat penyakit keluarga"]',
+          'textarea[placeholder*="family medical history"]',
+          'input[name*="rpk"]',
+          'textarea[name*="rpk"]',
+          'textarea[placeholder*="family history"]',
+          'input[placeholder*="family history"]'
+        ]
+      },
+      {
+        jsonKey: 'terapi_obat',
+        selectors: [
+          '#terapiObat',
+          '[name="terapiObat"]',
+          'textarea[placeholder*="terapi obat"]',
+          'textarea[placeholder*="pharmacological treatment"]',
+          'input[name*="terapi"]',
+          'textarea[name*="terapi"]',
+          'textarea[placeholder*="medication"]',
+          'input[placeholder*="medication"]',
+          'textarea[placeholder*="drug"]',
+          'input[placeholder*="drug"]'
+        ]
+      },
+      {
+        jsonKey: 'edukasi',
+        selectors: [
+          '#edukasi',
+          '[name="edukasi"]',
+          'textarea[placeholder*="edukasi"]',
+          'textarea[placeholder*="patient education"]',
+          'input[name*="edukasi"]',
+          'textarea[name*="edukasi"]',
+          'textarea[placeholder*="education"]',
+          'input[placeholder*="education"]',
+          'textarea[placeholder*="instruction"]',
+          'input[placeholder*="instruction"]'
+        ]
+      },
+      {
+        jsonKey: 'main_diagnosis',
+        selectors: [
+          '#mainDiagnosis',
+          '[name="mainDiagnosis"]',
+          'textarea[placeholder*="main diagnosis"]',
+          'textarea[placeholder*="diagnosis"]',
+          'input[name*="mainDiagnosis"]',
+          'textarea[name*="mainDiagnosis"]',
+          'textarea[placeholder*="primary diagnosis"]',
+          'input[placeholder*="primary diagnosis"]'
+        ]
+      },
+      {
+        jsonKey: 'differential_diagnosis',
+        selectors: [
+          '#differentialDiagnosis',
+          '[name="differentialDiagnosis"]',
+          'textarea[placeholder*="differential diagnosis"]',
+          'textarea[placeholder*="differential"]',
+          'input[name*="differentialDiagnosis"]',
+          'textarea[name*="differentialDiagnosis"]',
+          'textarea[placeholder*="differential diagnoses"]',
+          'input[placeholder*="differential diagnoses"]'
+        ]
+      },
+      {
+        jsonKey: 'recommended_treatment',
+        selectors: [
+          '#recommendedTreatment',
+          '[name="recommendedTreatment"]',
+          'textarea[placeholder*="recommended treatment"]',
+          'textarea[placeholder*="treatment recommendation"]',
+          'input[name*="recommendedTreatment"]',
+          'textarea[name*="recommendedTreatment"]',
           'textarea[placeholder*="treatment plan"]',
-          'textarea[placeholder*="tatalaksana"]',
-          'input[name*="tatalaksana"]',
-          'textarea[name*="tatalaksana"]',
-          'textarea[placeholder*="treatment"]',
-          'input[placeholder*="treatment"]',
-          'textarea[placeholder*="plan"]',
-          'input[placeholder*="plan"]'
+          'input[placeholder*="treatment plan"]'
         ]
       }
     ];
@@ -446,8 +513,18 @@ class ContentIntegrator {
           ${parsedData.rpd || 'N/A'}<br><br>
           <strong>RPSos (Riwayat Penyakit Sosial):</strong><br>
           ${parsedData.rpsos || 'N/A'}<br><br>
-          <strong>Tatalaksana:</strong><br>
-          ${parsedData.tatalaksana || 'N/A'}
+          <strong>RPK (Riwayat Penyakit Keluarga):</strong><br>
+          ${parsedData.rpk || 'N/A'}<br><br>
+          <strong>Terapi Obat:</strong><br>
+          ${parsedData.terapi_obat || 'N/A'}<br><br>
+          <strong>Edukasi:</strong><br>
+          ${parsedData.edukasi || 'N/A'}<br><br>
+          <strong>Main Diagnosis:</strong><br>
+          ${parsedData.main_diagnosis || 'N/A'}<br><br>
+          <strong>Differential Diagnosis:</strong><br>
+          ${parsedData.differential_diagnosis || 'N/A'}<br><br>
+          <strong>Recommended Treatment:</strong><br>
+          ${parsedData.recommended_treatment || 'N/A'}
         </div>
       </div>
     `;
