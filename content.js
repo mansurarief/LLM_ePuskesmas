@@ -40,10 +40,6 @@ class ContentIntegrator {
           console.log("Processing updateSummary action");
           this.insertSummary(request.summary);
           sendResponse({ success: true });
-        } else if (request.action === "detectFields") {
-          console.log("Processing detectFields action");
-          const fields = this.detectMedicalFields();
-          sendResponse({ fields: fields });
         } else if (request.action === "ping") {
           console.log("Content script ping received");
           sendResponse({ success: true, message: "Content script is active" });
@@ -85,98 +81,11 @@ class ContentIntegrator {
   }
 
   // ============================================================================
-  // FIELD DETECTION METHODS
-  // ============================================================================
-
-  detectMedicalFields() {
-    const fields = [];
-    
-    this.targetSelectors.forEach(selector => {
-      const elements = document.querySelectorAll(selector);
-      elements.forEach(element => {
-        if (element && this.isVisible(element)) {
-          fields.push(this.createFieldInfo(element, selector));
-        }
-      });
-    });
-    
-    return fields;
-  }
-
-  createFieldInfo(element, selector) {
-    return {
-      id: element.id,
-      name: element.name,
-      placeholder: element.placeholder,
-      selector: selector,
-      tagName: element.tagName,
-      type: this.determineMedicalFieldType(element)
-    };
-  }
-
-  determineMedicalFieldType(element) {
-    const text = (element.placeholder + ' ' + element.name + ' ' + element.id).toLowerCase();
-    
-    const fieldTypes = {
-      diagnosis: ['diagnosis', 'diagnos'],
-      symptoms: ['symptom', 'gejala'],
-      treatment: ['treatment', 'terapi', 'pengobatan'],
-      notes: ['note', 'catatan'],
-      complaint: ['complaint', 'keluhan']
-    };
-    
-    for (const [type, keywords] of Object.entries(fieldTypes)) {
-      if (keywords.some(keyword => text.includes(keyword))) {
-        return type;
-      }
-    }
-    
-    return 'general';
-  }
-
-  isVisible(element) {
-    const style = window.getComputedStyle(element);
-    return style.display !== 'none' && 
-           style.visibility !== 'hidden' && 
-           element.offsetParent !== null;
-  }
-
-  // ============================================================================
-  // DEBUG METHODS
-  // ============================================================================
-
-  scanAvailableFields() {
-    console.log("🔍 Scanning for available form fields...");
-    
-    const allInputs = document.querySelectorAll('input, textarea');
-    const availableFields = [];
-    
-    allInputs.forEach((element, index) => {
-      const fieldInfo = {
-        index: index,
-        tagName: element.tagName,
-        id: element.id,
-        name: element.name,
-        placeholder: element.placeholder,
-        type: element.type,
-        visible: this.isVisible(element)
-      };
-      availableFields.push(fieldInfo);
-    });
-    
-    console.log("Available form fields:", availableFields);
-    return availableFields;
-  }
-
-  // ============================================================================
   // SUMMARY INSERTION METHODS
   // ============================================================================
 
   insertSummary(summary) {
     console.log("Received summary:", summary);
-    
-    // Scan available fields for debugging
-    this.scanAvailableFields();
     
     // Try to parse JSON summary first
     const parsedData = this.parseSummaryJSON(summary);
@@ -582,6 +491,13 @@ class ContentIntegrator {
     setTimeout(() => {
       element.style.cssText = originalStyle;
     }, 3000);
+  }
+
+  isVisible(element) {
+    const style = window.getComputedStyle(element);
+    return style.display !== 'none' && 
+           style.visibility !== 'hidden' && 
+           element.offsetParent !== null;
   }
 
   // ============================================================================

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -36,7 +37,7 @@
       border-radius: 15px;
       padding: 20px;
       color: #333;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     }
 
     .status-bar {
@@ -169,18 +170,6 @@
       margin: 10px 0;
     }
 
-    .template-selector {
-      margin-bottom: 15px;
-    }
-
-    .template-selector select {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      font-size: 14px;
-    }
-
     .progress-bar {
       width: 100%;
       height: 6px;
@@ -284,9 +273,20 @@
     }
 
     @keyframes pulse {
-      0% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.5; transform: scale(1.2); }
-      100% { opacity: 1; transform: scale(1); }
+      0% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 0.5;
+        transform: scale(1.2);
+      }
+
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
     }
 
     .error-message {
@@ -335,29 +335,31 @@
     }
 
     .timing-info {
-        margin-top: 10px;
-        font-size: 12px;
-        color: #666;
-        background: #f8f9fa;
-        padding: 8px 12px;
-        border-radius: 5px;
-        border-left: 3px solid #3498db;
+      margin-top: 10px;
+      margin-bottom: 10px;
+      font-size: 12px;
+      color: #666;
+      background: #f8f9fa;
+      padding: 8px 12px;
+      border-radius: 5px;
+      border-left: 3px solid #3498db;
     }
-    
+
     .timing-info div {
-        margin-bottom: 5px;
+      margin-bottom: 5px;
     }
-    
+
     .timing-info div:last-child {
-        margin-bottom: 0;
+      margin-bottom: 0;
     }
-    
+
     .time-value {
-        font-weight: 600;
-        color: #2c3e50;
+      font-weight: 600;
+      color: #2c3e50;
     }
   </style>
 </head>
+
 <body>
   <div class="header">
     <h1>🏥 Medical Audio Recorder</h1>
@@ -375,13 +377,6 @@
     <div class="status-bar" id="statusBar">
       <div id="statusText">Ready to start recording</div>
       <div class="timer" id="timer" style="display: none;">00:00</div>
-    </div>
-
-    <div class="template-selector">
-      <label for="templateSelect" style="font-size: 13px; color: #666; margin-bottom: 5px; display: block;">Medical Template:</label>
-      <select id="templateSelect">
-        <option value="">Select template...</option>
-      </select>
     </div>
 
     <div class="audio-controls" id="audioControls" style="display: none;">
@@ -403,13 +398,12 @@
         <button id="copyTranscript" class="btn-secondary">📋 Copy</button>
         <button id="clearTranscript" class="btn-warning">🗑️ Clear</button>
         <button id="summarizeTranscript" class="btn-success">🤖 Summarize</button>
-        <button id="generateDiagnosisAndTreatment" class="btn-primary">🏥 Generate Diagnosis & Treatment</button>
       </div>
-      <div class="timing-info">
-        <div id="transcriptionTime" style="display: none;">⏱️ Transcription: <span class="time-value">--</span></div>
-        <div id="summarizationTime" style="display: none;">⏱️ Summarization: <span class="time-value">--</span></div>
-        <div id="diagnosisTime" style="display: none;">🏥 Diagnosis & Treatment: <span class="time-value">--</span></div>
-      </div>
+    </div>
+
+    <div class="timing-info">
+      <div id="transcriptionTime">⏱️ Transcription: <span class="time-value">--</span></div>
+      <div id="summarizationTime">⏱️ Summarization: <span class="time-value">--</span></div>
     </div>
 
     <div class="controls">
@@ -421,7 +415,7 @@
           ⏹️ Stop
         </button>
       </div>
-      
+
       <div class="control-row">
         <button id="playRecording" class="btn-secondary" disabled>
           ▶️ Play
@@ -430,7 +424,7 @@
           🎯 Transcribe
         </button>
       </div>
-      
+
       <div class="control-row">
         <button id="clearRecording" class="btn-warning" disabled>
           🗑️ Clear
@@ -439,7 +433,7 @@
           📁 Upload Audio
         </button>
       </div>
-      
+
       <div class="control-row">
         <button id="openWelcomePage" class="btn-secondary" style="display: none;">
           🎤 Grant Mic Access
@@ -454,14 +448,17 @@
     </div>
 
     <div id="result" class="result-area" style="display: none;"></div>
-    
+
     <div class="settings-link">
       <a href="#" id="openSettings">⚙️ Settings & API Configuration</a>
-      <button id="refreshSettings" class="btn-secondary" style="margin-top: 10px; width: 100%; padding: 8px; font-size: 12px;">🔄 Refresh Settings</button>
-      <button id="testApiKey" class="btn-info" style="margin-top: 5px; width: 100%; padding: 8px; font-size: 12px;">🔍 Test API Key</button>
+      <button id="refreshSettings" class="btn-secondary"
+        style="margin-top: 10px; width: 100%; padding: 8px; font-size: 12px;">🔄 Refresh Settings</button>
+      <button id="testApiKey" class="btn-info" style="margin-top: 5px; width: 100%; padding: 8px; font-size: 12px;">🔍
+        Test API Key</button>
     </div>
   </div>
 
   <script src="popup.js"></script>
 </body>
+
 </html>

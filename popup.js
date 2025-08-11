@@ -9,8 +9,7 @@ class MedicalAudioRecorder {
     this.initializeEventListeners();
     this.loadSettings();
     this.checkMicrophoneAccess();
-    this.logSupportedFormats(); // Debug logging
-    
+
     // Additional API key check
     setTimeout(() => {
       this.checkApiKeyInStorage();
@@ -32,14 +31,12 @@ class MedicalAudioRecorder {
     this.maxRetries = 3;
     this.currentStep = 1;
     this.transcriptionResult = null;
-    
+
     // Timing properties
     this.transcriptionStartTime = null;
     this.transcriptionEndTime = null;
     this.summarizationStartTime = null;
     this.summarizationEndTime = null;
-    this.diagnosisStartTime = null;
-    this.diagnosisEndTime = null;
   }
 
   initializeElements() {
@@ -50,81 +47,108 @@ class MedicalAudioRecorder {
       playRecording: document.getElementById("playRecording"),
       transcribeAudio: document.getElementById("transcribeAudio"),
       clearRecording: document.getElementById("clearRecording"),
-      
+
       // File upload
       uploadAudio: document.getElementById("uploadAudio"),
       audioFileInput: document.getElementById("audioFileInput"),
-      
+
       // Navigation
       openWelcomePage: document.getElementById("openWelcomePage"),
       openSettings: document.getElementById("openSettings"),
       refreshSettings: document.getElementById("refreshSettings"),
       testApiKey: document.getElementById("testApiKey"),
-      
+
       // UI elements
       statusBar: document.getElementById("statusBar"),
       statusText: document.getElementById("statusText"),
       timer: document.getElementById("timer"),
-      templateSelect: document.getElementById("templateSelect"),
-      
+
       // Audio playback
       audioControls: document.getElementById("audioControls"),
       audioPlayback: document.getElementById("audioPlayback"),
       volumeSlider: document.getElementById("volumeSlider"),
       volumeValue: document.getElementById("volumeValue"),
-      
+
       // Progress and results
       progressBar: document.getElementById("progressBar"),
       progressFill: document.getElementById("progressFill"),
       result: document.getElementById("result"),
-      
+
       // Transcript editor
       transcriptEditor: document.getElementById("transcriptEditor"),
       transcriptTextarea: document.getElementById("transcriptTextarea"),
       copyTranscript: document.getElementById("copyTranscript"),
       clearTranscript: document.getElementById("clearTranscript"),
       summarizeTranscript: document.getElementById("summarizeTranscript"),
-      
+
       // Step indicators
       step1: document.getElementById("step1"),
       step2: document.getElementById("step2"),
       step3: document.getElementById("step3"),
       step4: document.getElementById("step4"),
-      
+
       // Timing displays
       transcriptionTime: document.getElementById("transcriptionTime"),
       summarizationTime: document.getElementById("summarizationTime"),
-      diagnosisTime: document.getElementById("diagnosisTime")
     };
   }
 
   initializeEventListeners() {
     // Recording event listeners
-    this.elements.startRecording.addEventListener("click", () => this.startRecording());
-    this.elements.stopRecording.addEventListener("click", () => this.stopRecording());
-    this.elements.playRecording.addEventListener("click", () => this.playRecording());
-    this.elements.transcribeAudio.addEventListener("click", () => this.transcribeAudio());
-    this.elements.clearRecording.addEventListener("click", () => this.clearRecording());
-    
+    this.elements.startRecording.addEventListener("click", () =>
+      this.startRecording()
+    );
+    this.elements.stopRecording.addEventListener("click", () =>
+      this.stopRecording()
+    );
+    this.elements.playRecording.addEventListener("click", () =>
+      this.playRecording()
+    );
+    this.elements.transcribeAudio.addEventListener("click", () =>
+      this.transcribeAudio()
+    );
+    this.elements.clearRecording.addEventListener("click", () =>
+      this.clearRecording()
+    );
+
     // File upload event listeners
-    this.elements.uploadAudio.addEventListener("click", () => this.openFileDialog());
-    this.elements.audioFileInput.addEventListener("change", (event) => this.handleFileUpload(event));
-    
+    this.elements.uploadAudio.addEventListener("click", () =>
+      this.openFileDialog()
+    );
+    this.elements.audioFileInput.addEventListener("change", (event) =>
+      this.handleFileUpload(event)
+    );
+
     // Navigation event listeners
-    this.elements.openWelcomePage.addEventListener("click", () => this.openWelcomePage());
-    this.elements.openSettings.addEventListener("click", () => this.openSettings());
-    this.elements.refreshSettings.addEventListener("click", () => this.refreshSettings());
+    this.elements.openWelcomePage.addEventListener("click", () =>
+      this.openWelcomePage()
+    );
+    this.elements.openSettings.addEventListener("click", () =>
+      this.openSettings()
+    );
+    this.elements.refreshSettings.addEventListener("click", () =>
+      this.refreshSettings()
+    );
     this.elements.testApiKey.addEventListener("click", () => this.testApiKey());
 
     // Audio control event listeners
-    this.elements.volumeSlider.addEventListener("input", () => this.updateVolume());
-    this.elements.audioPlayback.addEventListener("loadedmetadata", () => this.updateAudioControls());
-    
+    this.elements.volumeSlider.addEventListener("input", () =>
+      this.updateVolume()
+    );
+    this.elements.audioPlayback.addEventListener("loadedmetadata", () =>
+      this.updateAudioControls()
+    );
+
     // Transcript editor event listeners
-    this.elements.copyTranscript.addEventListener("click", () => this.copyTranscript());
-    this.elements.clearTranscript.addEventListener("click", () => this.clearTranscript());
-    this.elements.summarizeTranscript.addEventListener("click", () => this.summarizeTranscript());
-    this.elements.generateDiagnosisAndTreatment.addEventListener("click", () => this.generateDiagnosisAndTreatment());
+    this.elements.copyTranscript.addEventListener("click", () =>
+      this.copyTranscript()
+    );
+    this.elements.clearTranscript.addEventListener("click", () =>
+      this.clearTranscript()
+    );
+    this.elements.summarizeTranscript.addEventListener("click", () =>
+      this.summarizeTranscript()
+    );
   }
 
   // ============================================================================
@@ -140,77 +164,43 @@ class MedicalAudioRecorder {
       "maxRecordingTime",
       "enableRetry",
       "saveRecordings",
-      "enableOfflineMode",
-      "medicalTemplates",
       "apiProvider",
-      "transcriptionUrl",
-      "summarizationUrl",
-      "enableTranslation",
     ]);
 
-    console.log("🔧 Loaded settings:", this.settings);
-    console.log("🔑 API Key loaded:", this.settings.apiKey ? "Yes" : "No");
-    console.log("🌐 API Provider:", this.settings.apiProvider);
-
     this.setDefaultSettings();
-    this.loadTemplates();
   }
 
   setDefaultSettings() {
     const defaults = {
       apiProvider: "openai",
-      transcriptionUrl: "http://localhost:5001",
-      summarizationUrl: "http://localhost:5002",
       language: "id",
       gptModel: "gpt-3.5-turbo",
-      audioQuality: "medium",
-      maxRecordingTime: 10,
+      audioQuality: "high",
+      maxRecordingTime: 20,
       enableRetry: true,
-      enableTranslation: false,
+      saveRecordings: false,
     };
 
-    Object.keys(defaults).forEach(key => {
+    Object.keys(defaults).forEach((key) => {
       if (this.settings[key] === undefined) {
         this.settings[key] = defaults[key];
       }
     });
   }
 
-  loadTemplates() {
-    const defaultTemplates = [
-      {
-        name: "General Consultation",
-        prompt: "Summarize this medical consultation focusing on: chief complaint, symptoms, physical examination findings, diagnosis, and treatment plan. Extract all 11 medical fields: keluhan_utama, keluhan_tambahan, rps, rpd, rpsos, rpk, terapi_obat, edukasi, main_diagnosis, differential_diagnosis, and recommended_treatment. Format in Indonesian.",
-      },
-      {
-        name: "Follow-up Visit",
-        prompt: "Summarize this follow-up visit focusing on: current condition, response to previous treatment, any new symptoms, and adjusted treatment plan. Extract all 11 medical fields: keluhan_utama, keluhan_tambahan, rps, rpd, rpsos, rpk, terapi_obat, edukasi, main_diagnosis, differential_diagnosis, and recommended_treatment. Format in Indonesian.",
-      },
-      {
-        name: "Emergency Case",
-        prompt: "Summarize this emergency case focusing on: presenting complaint, vital signs, immediate interventions, diagnosis, and urgent treatment required. Extract all 11 medical fields: keluhan_utama, keluhan_tambahan, rps, rpd, rpsos, rpk, terapi_obat, edukasi, main_diagnosis, differential_diagnosis, and recommended_treatment. Format in Indonesian.",
-      },
-    ];
-
-    const templates = this.settings.medicalTemplates || defaultTemplates;
-    this.elements.templateSelect.innerHTML = '<option value="">Select template...</option>';
-
-    templates.forEach((template, index) => {
-      const option = document.createElement("option");
-      option.value = index;
-      option.textContent = template.name;
-      this.elements.templateSelect.appendChild(option);
-    });
-  }
-
   async checkMicrophoneAccess() {
-    const { microphoneAccess } = await chrome.storage.local.get("microphoneAccess");
+    const { microphoneAccess } = await chrome.storage.local.get(
+      "microphoneAccess"
+    );
 
     if (microphoneAccess) {
       this.elements.startRecording.disabled = false;
       this.elements.openWelcomePage.style.display = "none";
     } else {
-      this.updateStatus("Please grant microphone access to continue", "warning");
+      this.updateStatus(
+        "Please grant microphone access to continue",
+        "warning"
+      );
       this.elements.openWelcomePage.style.display = "block";
     }
 
@@ -218,39 +208,25 @@ class MedicalAudioRecorder {
   }
 
   validateApiConfiguration() {
-    console.log("🔍 Validating API configuration...");
-    console.log("Current settings:", this.settings);
-    
-    if (this.settings.apiProvider === "openai" || this.settings.apiProvider === "hybrid") {
+    if (this.settings.apiProvider === "openai") {
       if (!this.settings.apiKey) {
-        this.showMessage("⚠️ OpenAI API key not configured. Click 'Settings' to add your API key.", "error");
-        console.log("❌ API Key status: Not configured");
-        console.log("🌐 API Provider:", this.settings.apiProvider);
-      } else {
-        console.log("✅ OpenAI API key is configured");
-        console.log("🔑 API Key length:", this.settings.apiKey.length);
+        this.showMessage(
+          "⚠️ OpenAI API key not configured. Click 'Settings' to add your API key.",
+          "error"
+        );
       }
-    }
-
-    if (this.settings.apiProvider === "local" || this.settings.apiProvider === "hybrid") {
-      this.checkLocalApiStatus();
     }
   }
 
   async refreshSettings() {
-    console.log("🔄 Refreshing settings...");
     await this.loadSettings();
     this.validateApiConfiguration();
-    
-    // Show a message to the user
-    this.showMessage("Settings refreshed. Check console for details.", "success");
+    this.showMessage("Settings refreshed.", "success");
   }
 
   async checkApiKeyInStorage() {
     try {
       const result = await chrome.storage.local.get("apiKey");
-      console.log("🔍 Direct storage check - API Key:", result.apiKey ? "Present" : "Not found");
-      console.log("🔍 API Key length:", result.apiKey ? result.apiKey.length : 0);
       return result.apiKey;
     } catch (error) {
       console.error("Error checking API key in storage:", error);
@@ -260,24 +236,21 @@ class MedicalAudioRecorder {
 
   async testApiKey() {
     try {
-      console.log("🧪 Testing API key...");
-      
-      // Check storage directly
       const storageKey = await this.checkApiKeyInStorage();
-      console.log("📦 Storage API Key:", storageKey ? "Found" : "Not found");
-      
-      // Check loaded settings
-      console.log("⚙️ Settings API Key:", this.settings.apiKey ? "Found" : "Not found");
-      console.log("🌐 API Provider:", this.settings.apiProvider);
-      
+
       if (storageKey && !this.settings.apiKey) {
-        this.showMessage("⚠️ API key in storage but not loaded. Try refreshing settings.", "error");
+        this.showMessage(
+          "⚠️ API key in storage but not loaded. Try refreshing settings.",
+          "error"
+        );
       } else if (!storageKey) {
-        this.showMessage("❌ No API key found in storage. Please configure in Settings.", "error");
+        this.showMessage(
+          "❌ No API key found in storage. Please configure in Settings.",
+          "error"
+        );
       } else if (this.settings.apiKey) {
         this.showMessage("✅ API key is configured and loaded!", "success");
       }
-      
     } catch (error) {
       console.error("Error testing API key:", error);
       this.showMessage("Error testing API key: " + error.message, "error");
@@ -290,9 +263,8 @@ class MedicalAudioRecorder {
 
   startTranscriptionTimer() {
     this.transcriptionStartTime = Date.now();
-    this.elements.transcriptionTime.style.display = "block";
     this.updateTranscriptionTime();
-    
+
     // Set up real-time updates
     this.transcriptionTimerInterval = setInterval(() => {
       this.updateTranscriptionTime();
@@ -302,7 +274,7 @@ class MedicalAudioRecorder {
   endTranscriptionTimer() {
     this.transcriptionEndTime = Date.now();
     this.updateTranscriptionTime();
-    
+
     // Clear the interval
     if (this.transcriptionTimerInterval) {
       clearInterval(this.transcriptionTimerInterval);
@@ -315,15 +287,15 @@ class MedicalAudioRecorder {
       const endTime = this.transcriptionEndTime || Date.now();
       const duration = endTime - this.transcriptionStartTime;
       const timeString = this.formatDuration(duration);
-      this.elements.transcriptionTime.querySelector('.time-value').textContent = timeString;
+      this.elements.transcriptionTime.querySelector(".time-value").textContent =
+        timeString;
     }
   }
 
   startSummarizationTimer() {
     this.summarizationStartTime = Date.now();
-    this.elements.summarizationTime.style.display = "block";
     this.updateSummarizationTime();
-    
+
     // Set up real-time updates
     this.summarizationTimerInterval = setInterval(() => {
       this.updateSummarizationTime();
@@ -333,7 +305,7 @@ class MedicalAudioRecorder {
   endSummarizationTimer() {
     this.summarizationEndTime = Date.now();
     this.updateSummarizationTime();
-    
+
     // Clear the interval
     if (this.summarizationTimerInterval) {
       clearInterval(this.summarizationTimerInterval);
@@ -346,38 +318,8 @@ class MedicalAudioRecorder {
       const endTime = this.summarizationEndTime || Date.now();
       const duration = endTime - this.summarizationStartTime;
       const timeString = this.formatDuration(duration);
-      this.elements.summarizationTime.querySelector('.time-value').textContent = timeString;
-    }
-  }
-
-  startDiagnosisTimer() {
-    this.diagnosisStartTime = Date.now();
-    this.elements.diagnosisTime.style.display = "block";
-    this.updateDiagnosisTime();
-    
-    // Set up real-time updates
-    this.diagnosisTimerInterval = setInterval(() => {
-      this.updateDiagnosisTime();
-    }, 1000);
-  }
-
-  endDiagnosisTimer() {
-    this.diagnosisEndTime = Date.now();
-    this.updateDiagnosisTime();
-    
-    // Clear the interval
-    if (this.diagnosisTimerInterval) {
-      clearInterval(this.diagnosisTimerInterval);
-      this.diagnosisTimerInterval = null;
-    }
-  }
-
-  updateDiagnosisTime() {
-    if (this.diagnosisStartTime) {
-      const endTime = this.diagnosisEndTime || Date.now();
-      const duration = endTime - this.diagnosisStartTime;
-      const timeString = this.formatDuration(duration);
-      this.elements.diagnosisTime.querySelector('.time-value').textContent = timeString;
+      this.elements.summarizationTime.querySelector(".time-value").textContent =
+        timeString;
     }
   }
 
@@ -385,7 +327,7 @@ class MedicalAudioRecorder {
     const seconds = Math.floor(milliseconds / 1000);
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
-    
+
     if (minutes > 0) {
       return `${minutes}m ${remainingSeconds}s`;
     } else {
@@ -398,9 +340,7 @@ class MedicalAudioRecorder {
     this.transcriptionEndTime = null;
     this.summarizationStartTime = null;
     this.summarizationEndTime = null;
-    this.diagnosisStartTime = null;
-    this.diagnosisEndTime = null;
-    
+
     // Clear intervals
     if (this.transcriptionTimerInterval) {
       clearInterval(this.transcriptionTimerInterval);
@@ -410,14 +350,10 @@ class MedicalAudioRecorder {
       clearInterval(this.summarizationTimerInterval);
       this.summarizationTimerInterval = null;
     }
-    if (this.diagnosisTimerInterval) {
-      clearInterval(this.diagnosisTimerInterval);
-      this.diagnosisTimerInterval = null;
-    }
-    
-    this.elements.transcriptionTime.style.display = "none";
-    this.elements.summarizationTime.style.display = "none";
-    this.elements.diagnosisTime.style.display = "none";
+
+    // Reset timing displays to show "--"
+    this.elements.transcriptionTime.querySelector(".time-value").textContent = "--";
+    this.elements.summarizationTime.querySelector(".time-value").textContent = "--";
   }
 
   // ============================================================================
@@ -426,7 +362,12 @@ class MedicalAudioRecorder {
 
   updateStepIndicator(step, customText = null) {
     // Reset all steps
-    [this.elements.step1, this.elements.step2, this.elements.step3, this.elements.step4].forEach(stepEl => {
+    [
+      this.elements.step1,
+      this.elements.step2,
+      this.elements.step3,
+      this.elements.step4,
+    ].forEach((stepEl) => {
       stepEl.className = "step";
     });
 
@@ -443,7 +384,7 @@ class MedicalAudioRecorder {
         }
       }
     }
-    
+
     this.currentStep = step;
   }
 
@@ -471,39 +412,42 @@ class MedicalAudioRecorder {
   }
 
   setupMediaRecorder() {
-      this.audioChunks = [];
-      this.recordingStartTime = Date.now();
+    this.audioChunks = [];
+    this.recordingStartTime = Date.now();
 
-      this.mediaRecorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          this.audioChunks.push(event.data);
-        }
-      };
+    this.mediaRecorder.ondataavailable = (event) => {
+      if (event.data.size > 0) {
+        this.audioChunks.push(event.data);
+      }
+    };
 
     this.mediaRecorder.onstop = () => this.onRecordingStop();
-      this.mediaRecorder.start(1000); // Collect data every second
+    this.mediaRecorder.start(1000); // Collect data every second
   }
 
   startRecordingUI() {
-      this.elements.startRecording.disabled = true;
-      this.elements.stopRecording.disabled = false;
-      this.elements.clearRecording.disabled = true;
-      this.updateStatus("Recording in progress...", "recording");
+    this.elements.startRecording.disabled = true;
+    this.elements.stopRecording.disabled = false;
+    this.elements.clearRecording.disabled = true;
+    this.updateStatus("Recording in progress...", "recording");
   }
 
   setupAutoStop() {
-      setTimeout(() => {
-        if (this.mediaRecorder && this.mediaRecorder.state === "recording") {
-          this.stopRecording();
-        }
-      }, this.settings.maxRecordingTime * 60 * 1000);
+    setTimeout(() => {
+      if (this.mediaRecorder && this.mediaRecorder.state === "recording") {
+        this.stopRecording();
+      }
+    }, this.settings.maxRecordingTime * 60 * 1000);
   }
 
   handleRecordingError(error) {
-      console.error("Error accessing microphone:", error);
-      this.updateStatus("Error: Could not access microphone");
-    this.showMessage("Microphone access denied. Please check permissions.", "error");
-      this.elements.openWelcomePage.style.display = "block";
+    console.error("Error accessing microphone:", error);
+    this.updateStatus("Error: Could not access microphone");
+    this.showMessage(
+      "Microphone access denied. Please check permissions.",
+      "error"
+    );
+    this.elements.openWelcomePage.style.display = "block";
   }
 
   stopRecording() {
@@ -526,7 +470,7 @@ class MedicalAudioRecorder {
 
     this.createAudioBlob();
     this.setupAudioPlayback();
-    
+
     if (this.settings.saveRecordings) {
       this.saveRecordingLocally();
     }
@@ -583,7 +527,6 @@ class MedicalAudioRecorder {
       return;
     }
 
-    this.logAudioBlobDetails();
     this.validateApiConfiguration();
 
     this.retryCount = 0;
@@ -599,7 +542,6 @@ class MedicalAudioRecorder {
 
       this.updateProgress(20, "Transcribing audio...");
       const transcription = await this.transcribeAudioOnly();
-      console.log("Transcription result:", transcription);
 
       if (!transcription) {
         throw new Error("Transcription failed");
@@ -609,11 +551,10 @@ class MedicalAudioRecorder {
       this.transcriptionResult = transcription;
       this.showTranscriptEditor(transcription);
       this.updateStepIndicator(3);
-      
+
       this.updateProgress(100, "Transcription completed!");
       this.updateStatus("Transcription completed successfully");
       setTimeout(() => this.hideProgress(), 2000);
-
     } catch (error) {
       this.endTranscriptionTimer();
       this.handleTranscriptionError(error);
@@ -621,20 +562,6 @@ class MedicalAudioRecorder {
   }
 
   async transcribeAudioOnly() {
-    if (this.settings.apiProvider === "local" || this.settings.apiProvider === "hybrid") {
-      try {
-        return await this.transcribeWithLocalAPI();
-      } catch (error) {
-        console.warn("Local transcription failed:", error);
-        if (this.settings.apiProvider === "hybrid" && this.settings.apiKey) {
-          console.log("Falling back to OpenAI API");
-          return await this.transcribeWithOpenAI();
-        }
-        throw error;
-      }
-    } else if (this.settings.apiProvider === "hf") {
-      return await this.transcribeWithHF();
-    }
     return await this.transcribeWithOpenAI();
   }
 
@@ -645,17 +572,18 @@ class MedicalAudioRecorder {
   }
 
   handleTranscriptionError(error) {
-      console.error("Transcription error:", error);
-      console.error("Error stack:", error.stack);
+    console.error("Transcription error:", error);
 
-      if (this.settings.enableRetry && this.retryCount < this.maxRetries) {
-        this.retryCount++;
-      this.updateStatus(`Retrying transcription... (${this.retryCount}/${this.maxRetries})`);
-        setTimeout(() => this.transcribeWithRetry(), 2000);
-      } else {
-        this.updateStatus("Transcription failed");
-        this.showMessage(`Transcription failed: ${error.message}`, "error");
-        this.hideProgress();
+    if (this.settings.enableRetry && this.retryCount < this.maxRetries) {
+      this.retryCount++;
+      this.updateStatus(
+        `Retrying transcription... (${this.retryCount}/${this.maxRetries})`
+      );
+      setTimeout(() => this.transcribeWithRetry(), 2000);
+    } else {
+      this.updateStatus("Transcription failed");
+      this.showMessage(`Transcription failed: ${error.message}`, "error");
+      this.hideProgress();
     }
   }
 
@@ -666,11 +594,14 @@ class MedicalAudioRecorder {
   copyTranscript() {
     const transcript = this.elements.transcriptTextarea.value;
     if (transcript) {
-      navigator.clipboard.writeText(transcript).then(() => {
-        this.showMessage("Transcript copied to clipboard", "success");
-      }).catch(() => {
-        this.showMessage("Failed to copy transcript", "error");
-      });
+      navigator.clipboard
+        .writeText(transcript)
+        .then(() => {
+          this.showMessage("Transcript copied to clipboard", "success");
+        })
+        .catch(() => {
+          this.showMessage("Failed to copy transcript", "error");
+        });
     }
   }
 
@@ -697,7 +628,6 @@ class MedicalAudioRecorder {
 
       this.updateProgress(20, "Generating summary...");
       const summary = await this.generateSummary(transcript);
-      console.log("Summary result:", summary);
 
       this.endSummarizationTimer();
       this.updateProgress(90, "Inserting summary...");
@@ -707,7 +637,6 @@ class MedicalAudioRecorder {
       this.updateStatus("Summary generated and inserted successfully");
       this.showResults(transcript, summary);
       setTimeout(() => this.hideProgress(), 2000);
-
     } catch (error) {
       this.endSummarizationTimer();
       console.error("Summarization error:", error);
@@ -717,93 +646,37 @@ class MedicalAudioRecorder {
     }
   }
 
-  async generateDiagnosisAndTreatment() {
-    const transcript = this.elements.transcriptTextarea.value.trim();
-    if (!transcript) {
-      this.showMessage("Please enter or transcribe some text first", "error");
-      return;
-    }
-
-    try {
-      this.updateStatus("Generating diagnosis and treatment...", "processing");
-      this.showProgress();
-      this.updateStepIndicator(4, "4. Diagnosis & Treatment");
-      this.startDiagnosisTimer();
-
-      this.updateProgress(20, "Analyzing symptoms and history...");
-      const diagnosisAndTreatment = await this.generateDiagnosisAndTreatmentSummary(transcript);
-      console.log("Diagnosis and treatment result:", diagnosisAndTreatment);
-
-      this.endDiagnosisTimer();
-      this.updateProgress(90, "Inserting diagnosis and treatment...");
-      await this.insertSummary(diagnosisAndTreatment);
-
-      this.updateProgress(100, "Complete!");
-      this.updateStatus("Diagnosis and treatment generated successfully");
-      this.showResults(transcript, diagnosisAndTreatment);
-      this.updateStepIndicator(4, "4. Summarize"); // Reset to normal text
-      setTimeout(() => this.hideProgress(), 2000);
-
-    } catch (error) {
-      this.endDiagnosisTimer();
-      console.error("Diagnosis and treatment generation error:", error);
-      this.updateStatus("Diagnosis and treatment generation failed");
-      this.showMessage(`Diagnosis and treatment generation failed: ${error.message}`, "error");
-      this.updateStepIndicator(4, "4. Summarize"); // Reset to normal text
-      this.hideProgress();
-    }
-  }
-
   // ============================================================================
   // TRANSCRIPTION API METHODS
   // ============================================================================
 
-  async transcribeWithLocalAPI() {
-    const formData = this.createTranscriptionFormData();
-    
-    console.log("Local API - Original audio blob type:", this.audioBlob.type);
-    console.log("Local API - Compatible blob type:", formData.get("file").type);
-    console.log("Local API - Filename:", formData.get("file").name);
-
-    const response = await fetch(`${this.settings.transcriptionUrl}/transcribe`, {
-        method: "POST",
-        body: formData,
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(`Local API: ${errorData.error || "HTTP " + response.status}`);
-    }
-
-    const data = await response.json();
-    return data.text;
-  }
-
   async transcribeWithOpenAI() {
     // Check if API key is configured
     if (!this.settings.apiKey) {
-      throw new Error("OpenAI API key is not configured. Please go to Settings and add your API key.");
+      throw new Error(
+        "OpenAI API key is not configured. Please go to Settings and add your API key."
+      );
     }
 
     const formData = this.createTranscriptionFormData();
     formData.append("model", "whisper-1");
 
-    console.log("Original audio blob type:", this.audioBlob.type);
-    console.log("Compatible blob type:", formData.get("file").type);
-    console.log("Filename:", formData.get("file").name);
-    console.log("API Key configured:", this.settings.apiKey ? "Yes" : "No");
-
-    const response = await fetch("https://api.openai.com/v1/audio/transcriptions", {
+    const response = await fetch(
+      "https://api.openai.com/v1/audio/transcriptions",
+      {
         method: "POST",
         headers: {
           Authorization: `Bearer ${this.settings.apiKey}`,
         },
         body: formData,
-    });
+      }
+    );
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(`OpenAI API: ${errorData.error?.message || "HTTP " + response.status}`);
+      throw new Error(
+        `OpenAI API: ${errorData.error?.message || "HTTP " + response.status}`
+      );
     }
 
     const data = await response.json();
@@ -816,7 +689,7 @@ class MedicalAudioRecorder {
     const mimeType = compatibleBlob.type;
     const fileExtension = this.getFileExtension(mimeType);
     const filename = `recording.${fileExtension}`;
-    
+
     formData.append("file", compatibleBlob, filename);
 
     if (this.settings.language !== "auto") {
@@ -826,198 +699,30 @@ class MedicalAudioRecorder {
     return formData;
   }
 
-  async transcribeWithHF() {
-    try {
-      const arrayBuffer = await this.audioBlob.arrayBuffer();
-      const base64Audio = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
-      
-      const payload = {
-        data: [
-          {
-            path: `data:audio/webm;base64,${base64Audio}`,
-            meta: { _type: "gradio.FileData" }
-          },
-          this.settings.language
-        ]
-      };
-
-      const response = await fetch("https://naimackerman-whisper-transcription.hf.space/gradio_api/call/transcribe_audio", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-
-      if (!response.ok) {
-        throw new Error(`HF API: HTTP ${response.status}`);
-      }
-
-      const responseData = await response.json();
-      const eventId = responseData.event_id;
-
-      return await this.pollHFResult(eventId);
-      
-    } catch (error) {
-      console.error("HF transcription error:", error);
-      throw new Error(`HF API: ${error.message}`);
-    }
-  }
-
-  async pollHFResult(eventId) {
-      let attempts = 0;
-    const maxAttempts = 30;
-      
-      while (attempts < maxAttempts) {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        const resultResponse = await fetch(`https://naimackerman-whisper-transcription.hf.space/gradio_api/call/transcribe_audio/${eventId}`);
-        
-        if (!resultResponse.ok) {
-          attempts++;
-          continue;
-        }
-
-        const resultData = await resultResponse.json();
-        
-        if (resultData.status === "completed") {
-        return resultData.data[0].text;
-        } else if (resultData.status === "failed") {
-          throw new Error("Transcription failed");
-        }
-        
-        attempts++;
-      }
-      
-      throw new Error("Transcription timeout");
-  }
-
   // ============================================================================
   // SUMMARIZATION METHODS
   // ============================================================================
 
   async generateSummary(transcription) {
     try {
-      if (this.settings.apiProvider === "local" || this.settings.apiProvider === "hybrid") {
-        try {
-          return await this.generateSummaryWithLocalAPI(transcription);
-        } catch (error) {
-          console.warn("Local summarization failed:", error);
-          if (this.settings.apiProvider === "hybrid" && this.settings.apiKey) {
-            console.log("Falling back to OpenAI API");
-            return await this.generateSummaryWithOpenAI(transcription);
-          }
-          throw error;
-        }
-      }
       return await this.generateSummaryWithOpenAI(transcription);
-      } catch (summaryError) {
-        console.warn("Summary generation failed:", summaryError);
+    } catch (summaryError) {
+      console.warn("Summary generation failed:", summaryError);
       if (summaryError.message && summaryError.message.includes("too short")) {
         const fallbackSummary = `Summary: ${transcription}`;
-          console.log("Used fallback summary for short text");
         return fallbackSummary;
       }
-          throw summaryError;
-        }
-      }
-
-  async generateDiagnosisAndTreatmentSummary(transcription) {
-    try {
-      if (this.settings.apiProvider === "local" || this.settings.apiProvider === "hybrid") {
-        try {
-          return await this.generateDiagnosisAndTreatmentWithLocalAPI(transcription);
-        } catch (error) {
-          console.warn("Local diagnosis generation failed:", error);
-          if (this.settings.apiProvider === "hybrid" && this.settings.apiKey) {
-            console.log("Falling back to OpenAI API");
-            return await this.generateDiagnosisAndTreatmentWithOpenAI(transcription);
-          }
-          throw error;
-        }
-      }
-      return await this.generateDiagnosisAndTreatmentWithOpenAI(transcription);
-    } catch (diagnosisError) {
-      console.warn("Diagnosis generation failed:", diagnosisError);
-      if (diagnosisError.message && diagnosisError.message.includes("too short")) {
-        const fallbackDiagnosis = `Diagnosis: ${transcription}`;
-        console.log("Used fallback diagnosis for short text");
-        return fallbackDiagnosis;
-      }
-      throw diagnosisError;
+      throw summaryError;
     }
-  }
-
-  async generateSummaryWithLocalAPI(transcription) {
-    const templates = this.settings.medicalTemplates || [];
-    const selectedTemplateIndex = this.elements.templateSelect.value;
-
-    let templatePrompt = "";
-    if (selectedTemplateIndex !== "" && templates[selectedTemplateIndex]) {
-      templatePrompt = templates[selectedTemplateIndex].prompt;
-    }
-
-    const requestBody = {
-      text: transcription,
-      template_prompt: templatePrompt,
-      max_length: 300,
-      min_length: 100,
-    };
-
-    const response = await fetch(`${this.settings.summarizationUrl}/summarize`, {
-        method: "POST",
-      headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(requestBody),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(`Local API: ${errorData.error || "HTTP " + response.status}`);
-    }
-
-    const data = await response.json();
-
-    if (data.error) {
-      throw new Error(data.error + (data.details ? ": " + data.details : ""));
-    }
-
-    return data.summary;
-  }
-
-  async generateDiagnosisAndTreatmentWithLocalAPI(transcription) {
-    const requestBody = {
-      text: transcription,
-      template_prompt: "Based on the transcript and summary of the patient encounter (including chief complaint, additional symptoms, history of present illness, past medical history, and examination findings if available), suggest the most likely diagnosis. Include one primary diagnosis and up to two differential diagnoses. The suggestion should be based strictly on the available clinical information, without inventing new data. Based on the patient's previously mentioned diagnosis or presenting symptoms, generate a complete pharmacological treatment plan. Include the recommended medications along with their generic names, drug classes, dosages, frequency of administration, and duration of treatment. Additionally, provide a brief rationale for the use of each medication, based on the patient's symptoms or diagnosis. The final output should be presented as a structured list using accurate and professional medical terminology.",
-      max_length: 500,
-      min_length: 200,
-    };
-
-    const response = await fetch(`${this.settings.summarizationUrl}/summarize`, {
-        method: "POST",
-      headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(requestBody),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(`Local API: ${errorData.error || "HTTP " + response.status}`);
-    }
-
-    const data = await response.json();
-
-    if (data.error) {
-      throw new Error(data.error + (data.details ? ": " + data.details : ""));
-    }
-
-    return data.summary;
   }
 
   async generateSummaryWithOpenAI(transcription) {
     // Check if API key is configured
     if (!this.settings.apiKey) {
-      throw new Error("OpenAI API key is not configured. Please go to Settings and add your API key.");
+      throw new Error(
+        "OpenAI API key is not configured. Please go to Settings and add your API key."
+      );
     }
-
-    const templates = this.settings.medicalTemplates || [];
-    const selectedTemplateIndex = this.elements.templateSelect.value;
 
     // Enhanced medical extraction prompt in English with Indonesian output
     let systemPrompt = `You are a medical assistant specialized in analyzing doctor-patient conversations in Bahasa Indonesia. Your task is to extract and structure medical information into a comprehensive JSON format.
@@ -1063,47 +768,6 @@ ${transcription}
 
 TASK: Extract and structure the medical information into the JSON format described above. Respond only with the JSON object in Bahasa Indonesia, no additional text.`;
 
-    if (selectedTemplateIndex !== "" && templates[selectedTemplateIndex]) {
-      // Use template-specific prompting with enhanced structure
-      systemPrompt = `You are a medical assistant specialized in analyzing doctor-patient conversations according to specific medical templates.
-
-TEMPLATE: ${templates[selectedTemplateIndex].prompt}
-
-EXTRACTION REQUIREMENTS:
-1. keluhan_utama: Main complaint/symptoms (keluhan utama) - only one main complaint that makes patient come to the doctor
-2. keluhan_tambahan: Additional complaints or supporting details (keluhan tambahan) - any additional complaints or symptoms reported by the patient besides the main complaint
-3. rps: Current medical history (riwayat penyakit sekarang) - current illness details that describe the patient's main complaint in a chronological manner
-4. rpd: Past medical history (riwayat penyakit dahulu) - previous illnesses, surgeries, medications, and any other relevant medical history
-5. rpsos: Social history (riwayat penyakit sosial) - patient's social habits and lifestyle factors that may influence their health
-6. rpk: Family medical history (riwayat penyakit keluarga) - any immediate family members (parents, siblings) have a history of significant medical conditions
-7. terapi_obat: Treatment plan (tatalaksana) - pharmacological therapy prescribed to the patient, including drug name, dosage, frequency, route of administration, and duration of use
-8. edukasi: Patient education (edukasi) - any educational information provided to the patient, including instructions on medication use, lifestyle changes, or other health-related advice
-
-OUTPUT FORMAT:
-Respond ONLY with a valid JSON object in Bahasa Indonesia following the template guidelines. If information is not available, use "Informasi tidak tersedia".
-
-{
-  "keluhan_utama": "Main complaint in Bahasa Indonesia",
-  "keluhan_tambahan": "Additional complaints in Bahasa Indonesia", 
-  "rps": "Current medical history in Bahasa Indonesia",
-  "rpd": "Past medical history in Bahasa Indonesia",
-  "rpsos": "Social history in Bahasa Indonesia",
-  "rpk": "Family medical history in Bahasa Indonesia",
-  "terapi_obat": "Treatment plan in Bahasa Indonesia",
-  "edukasi": "Patient education in Bahasa Indonesia",
-  "main_diagnosis": "Primary diagnosis with ICD-10 code if applicable",
-  "differential_diagnosis": "List of alternative diagnoses to consider",
-  "recommended_treatment": "Detailed treatment plan with drug names, dosages, frequency, route, and duration"
-}`;
-
-      userPrompt = `TEMPLATE MEDIS: ${templates[selectedTemplateIndex].prompt}
-
-CONVERSATION TRANSCRIPT:
-${transcription}
-
-TASK: Analyze the conversation according to the medical template and extract the information into the JSON format described above. Respond only with the JSON object in Bahasa Indonesia, no additional text.`;
-    }
-
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -1116,102 +780,24 @@ TASK: Analyze the conversation according to the medical template and extract the
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt },
         ],
-        max_tokens: 800, // Increased for more comprehensive extraction
-        temperature: 0.2, // Lower temperature for more consistent JSON output
-        // response_format: { type: "json_object" }, // Force JSON response (GPT-4+)
+        max_tokens: 800,
+        temperature: 0.2,
       }),
     });
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(`OpenAI API: ${errorData.error?.message || "HTTP " + response.status}`);
+      throw new Error(
+        `OpenAI API: ${errorData.error?.message || "HTTP " + response.status}`
+      );
     }
 
     const data = await response.json();
-    return data.choices[0].message.content.trim();
-  }
-
-  async generateDiagnosisAndTreatmentWithOpenAI(transcription) {
-    // Check if API key is configured
-    if (!this.settings.apiKey) {
-      throw new Error("OpenAI API key is not configured. Please go to Settings and add your API key.");
-    }
-
-    console.log("🏥 Starting diagnosis and treatment generation...");
-    console.log("🔑 API Key configured:", this.settings.apiKey ? "Yes" : "No");
-    console.log("🌐 API Provider:", this.settings.apiProvider);
-
-    const systemPrompt = `You are a medical AI assistant specialized in analyzing doctor-patient conversations and generating clinical diagnoses and treatment recommendations. Your task is to analyze the conversation and provide:
-
-DIAGNOSIS REQUIREMENTS:
-Based on the transcript and summary of the patient encounter (including chief complaint, additional symptoms, history of present illness, past medical history, and examination findings if available), suggest the most likely diagnosis. Include one primary diagnosis and up to two differential diagnoses. The suggestion should be based strictly on the available clinical information, without inventing new data.
-
-TREATMENT REQUIREMENTS:
-Based on the patient's previously mentioned diagnosis or presenting symptoms, generate a complete pharmacological treatment plan. Include the recommended medications along with their generic names, drug classes, dosages, frequency of administration, and duration of treatment. Additionally, provide a brief rationale for the use of each medication, based on the patient's symptoms or diagnosis. The final output should be presented as a structured list using accurate and professional medical terminology.
-
-OUTPUT FORMAT:
-Respond ONLY with a valid JSON object in Bahasa Indonesia. If information is not available, use "Informasi tidak tersedia".
-
-{
-  "main_diagnosis": "Primary diagnosis with ICD-10 code if applicable",
-  "differential_diagnosis": "List of alternative diagnoses to consider",
-  "recommended_treatment": "Detailed treatment plan with drug names, dosages, frequency, route, and duration"
-}
-
-GUIDELINES:
-- Be clinically accurate and evidence-based
-- Use proper medical terminology in Bahasa Indonesia
-- Consider Indonesian healthcare context and available medications
-- Maintain medical ethics and patient safety
-- If diagnosis is unclear, suggest appropriate diagnostic tests
-- Base suggestions strictly on available clinical information without inventing new data`;
-
-    const userPrompt = `Analyze the following doctor-patient conversation and generate a clinical diagnosis and treatment plan:
-
-CONVERSATION TRANSCRIPT:
-${transcription}
-
-TASK: 
-1. Based on the available clinical information, suggest one primary diagnosis and up to two differential diagnoses
-2. Generate a complete pharmacological treatment plan with generic names, drug classes, dosages, frequency, and duration
-3. Provide rationale for each medication based on symptoms or diagnosis
-4. Use only the information provided in the transcript, do not invent new clinical data
-
-Respond only with the JSON object in Bahasa Indonesia, no additional text.`;
-
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${this.settings.apiKey}`,
-      },
-      body: JSON.stringify({
-        model: this.settings.gptModel,
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt },
-        ],
-        max_tokens: 1000,
-        temperature: 0.3,
-      }),
-    });
-
-    console.log("🏥 Diagnosis API response status:", response.status);
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      console.error("🏥 Diagnosis API error:", errorData);
-      throw new Error(`OpenAI API: ${errorData.error?.message || "HTTP " + response.status}`);
-    }
-
-    const data = await response.json();
-    console.log("🏥 Diagnosis API response:", data);
     return data.choices[0].message.content.trim();
   }
 
   showResults(originalTranscription, summary) {
-    console.log("Showing results - Original:", originalTranscription, "Summary:", summary);
-      this.showResult(`
+    this.showResult(`
         <strong>Transcription:</strong><br>
         ${originalTranscription}<br><br>
         <strong>Summary:</strong><br>
@@ -1250,7 +836,10 @@ Respond only with the JSON object in Bahasa Indonesia, no additional text.`;
 
     const maxSize = 25 * 1024 * 1024; // 25MB
     if (file.size > maxSize) {
-      this.showMessage("File size too large. Please select a file smaller than 25MB", "error");
+      this.showMessage(
+        "File size too large. Please select a file smaller than 25MB",
+        "error"
+      );
       return false;
     }
 
@@ -1258,10 +847,6 @@ Respond only with the JSON object in Bahasa Indonesia, no additional text.`;
   }
 
   setupUploadedFilePlayback(file) {
-    console.log("Uploaded file type:", file.type);
-    console.log("Uploaded file name:", file.name);
-    console.log("Uploaded file size:", file.size);
-
     const audioUrl = URL.createObjectURL(this.audioBlob);
     this.elements.audioPlayback.src = audioUrl;
     this.elements.audioPlayback.style.display = "block";
@@ -1291,7 +876,7 @@ Respond only with the JSON object in Bahasa Indonesia, no additional text.`;
     // Keep only last 10 recordings
     if (recordings.length > 10) {
       recordings.splice(0, recordings.length - 10);
-            }
+    }
 
     await chrome.storage.local.set({ savedRecordings: recordings });
   }
@@ -1322,7 +907,7 @@ Respond only with the JSON object in Bahasa Indonesia, no additional text.`;
         channelCount: 1,
         echoCancellation: true,
       },
-      };
+    };
 
     constraints.audio = qualitySettings[quality] || qualitySettings.medium;
     return constraints;
@@ -1330,12 +915,12 @@ Respond only with the JSON object in Bahasa Indonesia, no additional text.`;
 
   getSupportedMimeType() {
     const types = [
-      "audio/webm;codecs=opus",  // Most commonly supported
+      "audio/webm;codecs=opus", // Most commonly supported
       "audio/webm",
-      "audio/mp4",               // OpenAI supports m4a
-      "audio/mp3",               // OpenAI supports mp3
-      "audio/wav",               // OpenAI supports wav
-      "audio/ogg;codecs=opus",   // OpenAI supports ogg
+      "audio/mp4", // OpenAI supports m4a
+      "audio/mp3", // OpenAI supports mp3
+      "audio/wav", // OpenAI supports wav
+      "audio/ogg;codecs=opus", // OpenAI supports ogg
       "audio/ogg",
     ];
 
@@ -1360,17 +945,17 @@ Respond only with the JSON object in Bahasa Indonesia, no additional text.`;
       "audio/mpeg": "mp3",
       "audio/mpga": "mpga",
       "audio/flac": "flac",
-      "audio/x-m4a": "m4a",  // Handle x-m4a MIME type
-      "audio/aac": "m4a",     // AAC files should use m4a extension
+      "audio/x-m4a": "m4a", // Handle x-m4a MIME type
+      "audio/aac": "m4a", // AAC files should use m4a extension
     };
-    
+
     return extensionMap[mimeType] || "webm";
   }
 
   isOpenAISupportedFormat(mimeType) {
     const supportedFormats = [
       "audio/flac",
-      "audio/m4a", 
+      "audio/m4a",
       "audio/mp3",
       "audio/mp4",
       "audio/mpeg",
@@ -1379,74 +964,29 @@ Respond only with the JSON object in Bahasa Indonesia, no additional text.`;
       "audio/ogg",
       "audio/wav",
       "audio/webm",
-      "audio/x-m4a"  // Some browsers use this MIME type for m4a files
+      "audio/x-m4a", // Some browsers use this MIME type for m4a files
     ];
-    
+
     return supportedFormats.includes(mimeType);
   }
 
   createOpenAICompatibleBlob() {
     const currentType = this.audioBlob.type;
-    console.log("Original blob type:", currentType);
-    
+
     if (this.isOpenAISupportedFormat(currentType)) {
-      console.log("Blob type is already OpenAI-compatible");
       return this.audioBlob;
     }
-    
-    console.log("Creating OpenAI-compatible blob from:", currentType);
-    
+
     // Handle specific unsupported formats
     if (currentType === "audio/x-m4a" || currentType === "audio/mp4") {
-      console.log("Converting m4a/mp4 to proper format");
       return new Blob([this.audioBlob], { type: "audio/mp4" });
     }
-    
+
     if (currentType === "audio/aac") {
-      console.log("Converting AAC to mp4");
       return new Blob([this.audioBlob], { type: "audio/mp4" });
     }
-    
-    console.log("Using webm as fallback format");
+
     return new Blob([this.audioBlob], { type: "audio/webm" });
-  }
-
-  // ============================================================================
-  // DEBUG AND UTILITY METHODS
-  // ============================================================================
-
-  logSupportedFormats() {
-    const formats = [
-      "audio/webm;codecs=opus",
-      "audio/webm",
-      "audio/mp4",
-      "audio/mp3",
-      "audio/wav",
-      "audio/ogg;codecs=opus",
-      "audio/ogg",
-      "audio/flac",
-      "audio/mpeg",
-      "audio/mpga",
-    ];
-    
-    console.log("Browser supported audio formats:");
-    formats.forEach(format => {
-      console.log(`${format}: ${MediaRecorder.isTypeSupported(format)}`);
-    });
-  }
-
-  logAudioBlobDetails() {
-    if (!this.audioBlob) {
-      console.log("No audio blob available");
-      return;
-    }
-    
-    console.log("=== Audio Blob Details ===");
-    console.log("Type:", this.audioBlob.type);
-    console.log("Size:", this.audioBlob.size, "bytes");
-    console.log("Is OpenAI supported:", this.isOpenAISupportedFormat(this.audioBlob.type));
-    console.log("File extension:", this.getFileExtension(this.audioBlob.type));
-    console.log("========================");
   }
 
   // ============================================================================
@@ -1498,11 +1038,14 @@ Respond only with the JSON object in Bahasa Indonesia, no additional text.`;
 
   showMessage(message, type) {
     const messageDiv = document.createElement("div");
-    messageDiv.className = type === "error" ? "error-message" : "success-message";
+    messageDiv.className =
+      type === "error" ? "error-message" : "success-message";
     messageDiv.textContent = message;
 
     // Remove existing messages
-    document.querySelectorAll(".error-message, .success-message").forEach((el) => el.remove());
+    document
+      .querySelectorAll(".error-message, .success-message")
+      .forEach((el) => el.remove());
 
     this.elements.result.appendChild(messageDiv);
     this.elements.result.style.display = "block";
@@ -1520,7 +1063,9 @@ Respond only with the JSON object in Bahasa Indonesia, no additional text.`;
       const elapsed = Date.now() - this.recordingStartTime;
       const minutes = Math.floor(elapsed / 60000);
       const seconds = Math.floor((elapsed % 60000) / 1000);
-      this.elements.timer.textContent = `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+      this.elements.timer.textContent = `${minutes
+        .toString()
+        .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
     }, 1000);
   }
 
@@ -1529,50 +1074,12 @@ Respond only with the JSON object in Bahasa Indonesia, no additional text.`;
     if (this.timerInterval) {
       clearInterval(this.timerInterval);
       this.timerInterval = null;
-  }
+    }
   }
 
   // ============================================================================
   // API STATUS AND NAVIGATION METHODS
   // ============================================================================
-
-  async checkLocalApiStatus() {
-    try {
-      const promises = [
-        fetch(`${this.settings.transcriptionUrl}/health`).then((r) => ({ transcription: r.ok })),
-        fetch(`${this.settings.summarizationUrl}/health`).then((r) => ({ summarization: r.ok })),
-      ];
-
-      const results = await Promise.allSettled(promises);
-
-      let transcriptionOk = false;
-      let summarizationOk = false;
-
-      results.forEach((result) => {
-        if (result.status === "fulfilled") {
-          if (result.value.transcription !== undefined) {
-            transcriptionOk = result.value.transcription;
-          }
-          if (result.value.summarization !== undefined) {
-            summarizationOk = result.value.summarization;
-          }
-        }
-      });
-
-      if (!transcriptionOk || !summarizationOk) {
-        const missingServices = [];
-        if (!transcriptionOk) missingServices.push("Transcription");
-        if (!summarizationOk) missingServices.push("Summarization");
-
-        this.showMessage(
-          `Local ${missingServices.join(" and ")} API${missingServices.length > 1 ? "s are" : " is"} not responding. Please start the APIs.`,
-          "error"
-        );
-      }
-    } catch (error) {
-      console.warn("Local API status check failed:", error);
-    }
-  }
 
   openWelcomePage() {
     chrome.tabs.create({
@@ -1593,31 +1100,6 @@ Respond only with the JSON object in Bahasa Indonesia, no additional text.`;
   // CHROME EXTENSION METHODS
   // ============================================================================
 
-  async checkContentScriptAvailability() {
-    return new Promise((resolve) => {
-      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        if (!tabs || !tabs[0]) {
-          resolve(false);
-          return;
-        }
-
-        chrome.tabs.sendMessage(
-          tabs[0].id,
-          { action: "ping" },
-          (response) => {
-            if (chrome.runtime.lastError) {
-              console.warn("Content script not available:", chrome.runtime.lastError.message);
-              resolve(false);
-            } else {
-              console.log("Content script is available");
-              resolve(true);
-            }
-          }
-        );
-      });
-    });
-  }
-
   async insertSummary(summary) {
     return new Promise((resolve) => {
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
@@ -1629,42 +1111,38 @@ Respond only with the JSON object in Bahasa Indonesia, no additional text.`;
         }
 
         const tab = tabs[0];
-        console.log("Attempting to send summary to tab:", tab.url);
 
         // First, try to ping the content script to test connection
-        chrome.tabs.sendMessage(
-          tab.id,
-          { action: "ping" },
-          (response) => {
-            if (chrome.runtime.lastError) {
-              console.warn("Content script not responding to ping:", chrome.runtime.lastError.message);
-              this.showMessage("Content script not available. Please refresh the page and try again.", "error");
-              resolve();
-              return;
-            }
-
-            console.log("Content script ping successful:", response);
-
-            // Now send the actual summary
-            chrome.tabs.sendMessage(
-              tab.id,
-              {
-                action: "updateSummary",
-                summary: summary,
-              },
-              (response) => {
-                if (chrome.runtime.lastError) {
-                  console.warn("Could not insert summary into page:", chrome.runtime.lastError.message);
-                  this.showMessage("Failed to insert summary. Please refresh the page and try again.", "error");
-                } else {
-                  console.log("Summary insertion response:", response);
-                  this.showMessage("Summary inserted successfully!", "success");
-                }
-                resolve();
-              }
+        chrome.tabs.sendMessage(tab.id, { action: "ping" }, (response) => {
+          if (chrome.runtime.lastError) {
+            this.showMessage(
+              "Content script not available. Please refresh the page and try again.",
+              "error"
             );
+            resolve();
+            return;
           }
-        );
+
+          // Now send the actual summary
+          chrome.tabs.sendMessage(
+            tab.id,
+            {
+              action: "updateSummary",
+              summary: summary,
+            },
+            (response) => {
+              if (chrome.runtime.lastError) {
+                this.showMessage(
+                  "Failed to insert summary. Please refresh the page and try again.",
+                  "error"
+                );
+              } else {
+                this.showMessage("Summary inserted successfully!", "success");
+              }
+              resolve();
+            }
+          );
+        });
       });
     });
   }
