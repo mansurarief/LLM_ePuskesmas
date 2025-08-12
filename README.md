@@ -1,207 +1,151 @@
 # Medical Notetaking for ePuskesmas
 
-A powerful Chrome extension designed specifically for Indonesian healthcare professionals using ePuskesmas and other medical management systems. This extension provides AI-powered audio recording, transcription, and medical summarization capabilities.
+Advanced medical audio recording, transcription, and AI-powered summarization for healthcare professionals.
 
-## 🌟 Features
+## Features
 
-### Core Functionality
-- **🎙️ High-Quality Audio Recording** - Crystal clear audio capture with noise cancellation
-- **🤖 AI-Powered Transcription** - Uses OpenAI Whisper for accurate speech-to-text conversion
-- **📋 Medical Summarization** - Intelligent summaries using specialized medical models
-- **🏥 Healthcare System Integration** - Seamless integration with ePuskesmas and other medical systems
+### 🎙️ Audio Recording
+- High-quality audio recording with noise cancellation
+- Support for multiple audio formats (WebM, MP3, WAV, M4A)
+- Configurable recording quality and duration limits
+- Audio playback and volume control
 
-### Advanced Features
-- **🌐 Multi-Language Support** - Indonesian, English, Malay, and auto-detection
-- **⚙️ OpenAI Integration** - Cloud-based processing with reliable API
-- **🔄 Automatic Retry & Fallback** - Robust error handling with automatic retry
-- **💾 Local Storage** - Option to save recordings locally for review
-- **🔒 Privacy-First** - Secure API communication with user control
-- **💰 Cost-Effective** - Optimized API usage with configurable settings
+### 🤖 AI Transcription & Summarization
+- **Multiple AI Providers**: Support for OpenAI and Google Gemini
+- **Flexible Configuration**: Mix and match providers for transcription and summarization
+- **Advanced Models**: 
+  - OpenAI: Whisper-1, GPT-4o Transcribe, GPT-4o Mini Transcribe
+  - Gemini: 2.5 Flash Lite, 2.0 Flash, 2.0 Flash Lite
+  - Google Cloud Speech-to-Text for Indonesian language
 
-## 🚀 Installation
+### 📋 Medical Form Integration
+- Automatic field population in healthcare systems
+- Support for Indonesian medical terminology
+- Structured JSON output for medical documentation
+- Real-time form field detection and highlighting
 
-1. **Download** or clone this repository
-2. **Open Chrome** and navigate to `chrome://extensions/`
-3. **Enable Developer Mode** (toggle in top-right corner)
-4. **Click "Load unpacked"** and select the extension directory
-5. **Pin the extension** to your toolbar for easy access
+### 🔧 Advanced Settings
+- Separate model selection for transcription and summarization
+- Mixed provider configurations (e.g., OpenAI for transcription, Gemini for summarization)
+- Configurable retry mechanisms and error handling
+- Local recording storage options
 
-## 🔧 Initial Setup
+## Installation
 
-### OpenAI Cloud API Setup (Required)
+1. Download or clone this repository
+2. Open Chrome and navigate to `chrome://extensions/`
+3. Enable "Developer mode"
+4. Click "Load unpacked" and select the extension folder
+5. Grant microphone permissions when prompted
 
-1. **Grant Microphone Permission**
-   - Click the extension icon and select "Grant Microphone Access"
-   - Allow microphone access when prompted by your browser
+## Configuration
 
-2. **Configure OpenAI API Key**
-   - Click the settings icon in the popup
-   - Enter your OpenAI API key (get one from [OpenAI](https://platform.openai.com/api-keys))
-   - Test the connection to ensure it's working
+### API Setup
 
-### General Configuration
-- Choose your preferred language (Indonesian recommended for medical use)
-- Configure audio quality based on your needs
-- Set up advanced settings for your workflow
+1. **OpenAI Configuration**:
+   - Get an API key from [OpenAI Platform](https://platform.openai.com/)
+   - Add the key in extension settings
 
-## 📖 Usage Guide
+2. **Google Gemini Configuration**:
+   - Get an API key from [Google AI Studio](https://makersuite.google.com/app/apikey)
+   - Add the key in extension settings
 
-### Basic Recording Workflow
-1. **Navigate** to any ePuskesmas or medical system page
-2. **Click** the extension icon to open the popup
-3. **Click "Start Recording"** to begin audio capture
-4. **Speak clearly** during the medical consultation
-5. **Click "Stop Recording"** when finished
-6. **Review** the audio using the play button (optional)
-7. **Click "Transcribe"** to generate transcription
-8. **Edit** the transcript if necessary
-9. **Click "Summarize"** to generate medical summary
-10. **Review** the results and insert into medical forms
+### Provider Configuration
 
-### Integration with Healthcare Systems
-The extension automatically detects and integrates with:
-- ePuskesmas systems
-- SIMRS (Hospital Information Systems)
-- Generic medical forms and text areas
+Configure your preferred providers for transcription and summarization:
 
-The AI-generated summary is automatically inserted into appropriate form fields including:
-- Keluhan Utama (Main Complaint)
-- Keluhan Tambahan (Additional Complaints)
-- RPS (Riwayat Penyakit Sekarang - Current Medical History)
-- RPD (Riwayat Penyakit Dahulu - Past Medical History)
-- RPSos (Riwayat Penyakit Sosial - Social History)
-- RPK (Riwayat Penyakit Keluarga - Family Medical History)
-- Terapi Obat (Pharmacological Treatment)
-- Edukasi (Patient Education)
-- Main Diagnosis
-- Differential Diagnosis
-- Recommended Treatment
+- **OpenAI Only**: Select OpenAI for both transcription and summarization
+- **Gemini Only**: Select Gemini for both transcription and summarization  
+- **Mixed**: Combine providers for optimal performance:
+  - **Gemini Transcription + OpenAI Summarization**: Use Gemini's speech-to-text with OpenAI's medical summarization
+  - **OpenAI Transcription + Gemini Summarization**: Use OpenAI's speech-to-text with Gemini's medical summarization
 
-## ⚙️ Configuration Options
+### Model Selection
 
-### OpenAI Settings
-- **OpenAI API Key** - Required for transcription and summarization
-- **GPT Model** - Choose between GPT-3.5 Turbo, GPT-4, or GPT-4 Turbo
+**Transcription Models**:
+- OpenAI: Whisper-1, GPT-4o Transcribe, GPT-4o Mini Transcribe
+- Gemini: Google Cloud Speech-to-Text (Indonesian)
 
-### Audio Settings
-- **Quality** - Low (faster), Medium (balanced), High (best accuracy)
-- **Max Recording Time** - Set limits to prevent accidental long recordings
-- **Volume Control** - Adjust playback volume
-- **Language** - Primary language for transcription (Indonesian, English, Malay, Auto)
+**Summarization Models**:
+- OpenAI: GPT-3.5 Turbo, GPT-5 Nano, GPT-5 Mini, GPT-4o Mini
+- Gemini: 2.5 Flash Lite, 2.0 Flash, 2.0 Flash Lite
 
-### Advanced Settings
-- **Automatic Retry** - Enable retry on API failures
-- **Save Recordings** - Keep local copies for review
+## Usage
 
-## 🔒 Privacy & Security
+1. **Open the Extension**: Click the extension icon in your browser
+2. **Grant Permissions**: Allow microphone access when prompted
+3. **Record Audio**: Click "Start Recording" to capture medical consultations
+4. **Transcribe**: Click "Transcribe" to convert audio to text
+5. **Edit**: Review and edit the transcript if needed
+6. **Summarize**: Generate structured medical summaries
+7. **Auto-Populate**: Summary automatically fills medical form fields
 
-- **Secure API Communication** - All API calls use HTTPS encryption
-- **No Permanent Storage** - Recordings are not stored permanently unless explicitly enabled
-- **User Control** - You control what data is saved and where
-- **OpenAI Privacy** - Audio is only sent to OpenAI for transcription and summarization
+## Medical Form Integration
 
-## 🛠️ Technical Details
+The extension automatically detects and populates common medical form fields:
 
-### System Requirements
-- Chrome browser (version 88+)
-- Microphone access
-- Internet connection for OpenAI API
-- OpenAI API key
+- **Keluhan Utama** (Main Complaint)
+- **Keluhan Tambahan** (Additional Complaints)  
+- **RPS** (Riwayat Penyakit Sekarang - Current Medical History)
+- **RPD** (Riwayat Penyakit Dahulu - Past Medical History)
+- **RPK** (Riwayat Penyakit Keluarga - Family Medical History)
+- **Terapi Obat** (Pharmacological Therapy)
+- **Terapi Non Obat** (Non-Pharmacological Therapy)
+- **Edukasi** (Patient Education)
 
-### Supported File Formats
-- WebM (primary)
-- OGG with Opus codec
-- WAV (fallback)
-- MP3, MP4, M4A (for uploaded files)
+## Privacy & Security
 
-### API Usage
-#### OpenAI APIs
-- **Whisper API** - For audio transcription
-- **GPT API** - For medical summarization
-- **Chrome Storage API** - For settings and preferences
+- All audio processing happens securely via API calls
+- No audio data is permanently stored without user consent
+- API keys are stored locally and encrypted
+- Configurable data retention settings
 
-### Extension Architecture
-- **Popup Interface** - Main user interface for recording and processing
-- **Content Script** - Handles integration with healthcare systems
-- **Background Service** - Manages extension lifecycle and storage
-- **Options Page** - Settings configuration
+## Technical Details
 
-## 🐛 Troubleshooting
+### Supported Audio Formats
+- WebM (Opus codec)
+- MP3
+- WAV
+- M4A/AAC
+- OGG
 
-### Common Issues
+### API Endpoints
+- OpenAI: `https://api.openai.com/v1/`
+- Google Gemini: `https://generativelanguage.googleapis.com/`
 
-**Microphone not working**
-- Check browser permissions in site settings
-- Ensure microphone is not being used by another application
-- Try refreshing the page and granting permission again
+### Browser Compatibility
+- Chrome 88+
+- Edge 88+
+- Other Chromium-based browsers
 
-**OpenAI API errors**
-- Verify your OpenAI API key is correct and has sufficient credits
-- Check your internet connection
-- Enable automatic retry in settings
+## Development
 
-**Integration not working**
-- Make sure you're on a supported healthcare website
-- Check that the page has loaded completely
-- Try refreshing the page after recording
+### Project Structure
+```
+med-notetaking-ePuskesmas/
+├── manifest.json          # Extension manifest
+├── popup.html/js          # Main extension interface
+├── options.html/js        # Settings page
+├── background.js          # Background service worker
+├── content.js             # Content script for form integration
+├── welcome.html/js        # Welcome/onboarding page
+└── example-form.html      # Test form for development
+```
 
-**Audio quality issues**
-- Adjust microphone levels in system settings
-- Choose higher audio quality in extension settings
-- Ensure stable internet connection for processing
+### Adding New Providers
 
-**Summary not inserting**
-- Check that the content script is loaded on the page
-- Refresh the page and try again
-- Verify the page has form fields that match the expected selectors
+To add a new AI provider:
 
-### Getting Help
-If you encounter issues:
-1. Check the browser console for error messages
-2. Verify all settings are configured correctly
-3. Test with a simple recording first
-4. Contact support with specific error details
+1. Update `options.html` with new provider options
+2. Add provider configuration in `options.js`
+3. Implement transcription/summarization methods in `popup.js`
+4. Update `manifest.json` with required permissions
+5. Add provider-specific API handling
 
-## 📝 Version History
-
-### v2.1.0 (Current)
-- **🆕 Code Cleanup** - Removed unused features and simplified codebase
-- **🆕 Enhanced UI/UX** - Improved user interface and experience
-- **🆕 Better Error Handling** - More robust error handling and user feedback
-- **🆕 Optimized Performance** - Reduced bundle size and improved efficiency
-- **🆕 Medical Field Integration** - Enhanced automatic field detection and population
-- **🆕 Simplified Setup** - Streamlined configuration process
-
-### v2.0.0 (Previous)
-- Complete rewrite with enhanced UI/UX
-- Added multi-language support
-- Improved error handling and retry mechanisms
-- Better healthcare system integration
-- Enhanced privacy and security features
-
-### v1.4.0 (Legacy)
-- Basic audio recording and transcription
-- Simple ePuskesmas integration
-- OpenAI API integration
-
-## 🤝 Contributing
-
-This project is designed for healthcare professionals and contributions are welcome:
-
-1. **Fork** the repository
-2. **Create** a feature branch
-3. **Make** your improvements
-4. **Test** thoroughly with medical scenarios
-5. **Submit** a pull request
-
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## ⚠️ Disclaimer
+## Support
 
-This tool is designed to assist healthcare professionals with documentation. Always review and verify AI-generated content before using it in medical records. The accuracy of transcription and summarization may vary depending on audio quality, language, and medical terminology used.
-
-## 🏥 About
-
-Developed specifically for Indonesian healthcare professionals to improve efficiency in medical documentation while maintaining high standards of patient care and data privacy.
+For issues and feature requests, please create an issue in the repository.

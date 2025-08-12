@@ -157,14 +157,17 @@ class MedicalAudioRecorder {
 
   async loadSettings() {
     this.settings = await chrome.storage.local.get([
-      "apiKey",
+      "openaiApiKey",
+      "geminiApiKey",
+      "transcriptionProvider",
+      "transcriptionModel",
+      "summarizationProvider",
+      "summarizationModel",
       "language",
-      "gptModel",
       "audioQuality",
       "maxRecordingTime",
       "enableRetry",
       "saveRecordings",
-      "apiProvider",
     ]);
 
     this.setDefaultSettings();
@@ -172,9 +175,13 @@ class MedicalAudioRecorder {
 
   setDefaultSettings() {
     const defaults = {
-      apiProvider: "openai",
+      openaiApiKey: "",
+      geminiApiKey: "",
+      transcriptionProvider: "openai",
+      transcriptionModel: "whisper-1",
+      summarizationProvider: "openai",
+      summarizationModel: "gpt-3.5-turbo",
       language: "id",
-      gptModel: "gpt-3.5-turbo",
       audioQuality: "high",
       maxRecordingTime: 20,
       enableRetry: true,
@@ -208,13 +215,32 @@ class MedicalAudioRecorder {
   }
 
   validateApiConfiguration() {
-    if (this.settings.apiProvider === "openai") {
-      if (!this.settings.apiKey) {
-        this.showMessage(
-          "⚠️ OpenAI API key not configured. Click 'Settings' to add your API key.",
-          "error"
-        );
-      }
+    const transcriptionProvider = this.settings.transcriptionProvider || "openai";
+    const summarizationProvider = this.settings.summarizationProvider || "openai";
+    let missingKeys = [];
+
+    // Check transcription provider requirements
+    if (transcriptionProvider === "openai" && !this.settings.openaiApiKey) {
+      missingKeys.push("OpenAI API key (for transcription)");
+    } else if (transcriptionProvider === "gemini" && !this.settings.geminiApiKey) {
+      missingKeys.push("Gemini API key (for transcription)");
+    }
+
+    // Check summarization provider requirements
+    if (summarizationProvider === "openai" && !this.settings.openaiApiKey) {
+      missingKeys.push("OpenAI API key (for summarization)");
+    } else if (summarizationProvider === "gemini" && !this.settings.geminiApiKey) {
+      missingKeys.push("Gemini API key (for summarization)");
+    }
+
+    // Remove duplicates
+    missingKeys = [...new Set(missingKeys)];
+
+    if (missingKeys.length > 0) {
+      this.showMessage(
+        `⚠️ ${missingKeys.join(", ")} not configured. Click 'Settings' to add your API keys.`,
+        "error"
+      );
     }
   }
 
@@ -226,8 +252,20 @@ class MedicalAudioRecorder {
 
   async checkApiKeyInStorage() {
     try {
-      const result = await chrome.storage.local.get("apiKey");
-      return result.apiKey;
+      const result = await chrome.storage.local.get([
+        "openaiApiKey", 
+        "geminiApiKey", 
+        "transcriptionProvider",
+        "summarizationProvider"
+      ]);
+
+      if ((result.transcriptionProvider === "openai" || result.summarizationProvider === "openai") && result.openaiApiKey === "") {
+        this.showMessage("OpenAI API key is not configured. Please go to Settings and add your API key.", "error");
+      } else if ((result.transcriptionProvider === "gemini" || result.summarizationProvider === "gemini") && result.geminiApiKey === "") {
+        this.showMessage("Gemini API key is not configured. Please go to Settings and add your API key.", "error");
+      }
+      
+      return result;
     } catch (error) {
       console.error("Error checking API key in storage:", error);
       return null;
@@ -236,21 +274,28 @@ class MedicalAudioRecorder {
 
   async testApiKey() {
     try {
-      const storageKey = await this.checkApiKeyInStorage();
+      const transcriptionProvider = this.settings.transcriptionProvider || "openai";
+      const summarizationProvider = this.settings.summarizationProvider || "openai";
+      let testResults = [];
 
-      if (storageKey && !this.settings.apiKey) {
-        this.showMessage(
-          "⚠️ API key in storage but not loaded. Try refreshing settings.",
-          "error"
-        );
-      } else if (!storageKey) {
-        this.showMessage(
-          "❌ No API key found in storage. Please configure in Settings.",
-          "error"
-        );
-      } else if (this.settings.apiKey) {
-        this.showMessage("✅ API key is configured and loaded!", "success");
+      // Test OpenAI API key if needed
+      if ((transcriptionProvider === "openai" || summarizationProvider === "openai") && this.settings.openaiApiKey) {
+        testResults.push("✅ OpenAI API key configured");
+      } else if (transcriptionProvider === "openai" || summarizationProvider === "openai") {
+        testResults.push("❌ OpenAI API key missing");
       }
+
+      // Test Gemini API key if needed
+      if ((transcriptionProvider === "gemini" || summarizationProvider === "gemini") && this.settings.geminiApiKey) {
+        testResults.push("✅ Gemini API key configured");
+      } else if (transcriptionProvider === "gemini" || summarizationProvider === "gemini") {
+        testResults.push("❌ Gemini API key missing");
+      }
+
+      const message = testResults.join(" | ");
+      const hasErrors = testResults.some(result => result.includes("❌"));
+      
+      this.showMessage(message, hasErrors ? "error" : "success");
     } catch (error) {
       console.error("Error testing API key:", error);
       this.showMessage("Error testing API key: " + error.message, "error");
@@ -352,8 +397,10 @@ class MedicalAudioRecorder {
     }
 
     // Reset timing displays to show "--"
-    this.elements.transcriptionTime.querySelector(".time-value").textContent = "--";
-    this.elements.summarizationTime.querySelector(".time-value").textContent = "--";
+    this.elements.transcriptionTime.querySelector(".time-value").textContent =
+      "--";
+    this.elements.summarizationTime.querySelector(".time-value").textContent =
+      "--";
   }
 
   // ============================================================================
@@ -562,7 +609,15 @@ class MedicalAudioRecorder {
   }
 
   async transcribeAudioOnly() {
-    return await this.transcribeWithOpenAI();
+    const transcriptionProvider = this.settings.transcriptionProvider || "openai";
+    
+    if (transcriptionProvider === "openai") {
+      return await this.transcribeWithOpenAI();
+    } else if (transcriptionProvider === "gemini") {
+      return await this.transcribeWithGemini();
+    } else {
+      throw new Error(`Unsupported transcription provider: ${transcriptionProvider}`);
+    }
   }
 
   showTranscriptEditor(transcription) {
@@ -652,21 +707,21 @@ class MedicalAudioRecorder {
 
   async transcribeWithOpenAI() {
     // Check if API key is configured
-    if (!this.settings.apiKey) {
+    if (!this.settings.openaiApiKey) {
       throw new Error(
         "OpenAI API key is not configured. Please go to Settings and add your API key."
       );
     }
 
     const formData = this.createTranscriptionFormData();
-    formData.append("model", "whisper-1");
+    formData.append("model", this.settings.transcriptionModel || "whisper-1");
 
     const response = await fetch(
       "https://api.openai.com/v1/audio/transcriptions",
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${this.settings.apiKey}`,
+          Authorization: `Bearer ${this.settings.openaiApiKey}`,
         },
         body: formData,
       }
@@ -681,6 +736,19 @@ class MedicalAudioRecorder {
 
     const data = await response.json();
     return data.text;
+  }
+
+  async transcribeWithGemini() {
+    // Check if API key is configured
+    if (!this.settings.geminiApiKey) {
+      throw new Error(
+        "Gemini API key is not configured. Please go to Settings and add your API key."
+      );
+    }
+
+    // Placeholder for Gemini transcription implementation
+    // You'll implement the actual Google Cloud Speech-to-Text API call here
+    throw new Error("Gemini transcription not yet implemented. Please use OpenAI for now.");
   }
 
   createTranscriptionFormData() {
@@ -705,12 +773,29 @@ class MedicalAudioRecorder {
 
   async generateSummary(transcription) {
     try {
-      return await this.generateSummaryWithOpenAI(transcription);
+      const summarizationProvider = this.settings.summarizationProvider || "openai";
+      
+      if (summarizationProvider === "openai") {
+        return await this.generateSummaryWithOpenAI(transcription);
+      } else if (summarizationProvider === "gemini") {
+        return await this.generateSummaryWithGemini(transcription);
+      } else {
+        throw new Error(`Unsupported summarization provider: ${summarizationProvider}`);
+      }
     } catch (summaryError) {
       console.warn("Summary generation failed:", summaryError);
       if (summaryError.message && summaryError.message.includes("too short")) {
-        const fallbackSummary = `Summary: ${transcription}`;
-        return fallbackSummary;
+        const fallbackJson = {
+          chief_complaint: "Informasi tidak tersedia",
+          additional_complaint: "Informasi tidak tersedia",
+          history_of_present_illness: "Informasi tidak tersedia",
+          past_medical_history: "Informasi tidak tersedia",
+          family_history: "Informasi tidak tersedia",
+          recommended_medication_therapy: "Informasi tidak tersedia",
+          recommended_non_medication_therapy: "Informasi tidak tersedia",
+          education: "Informasi tidak tersedia",
+        };
+        return JSON.stringify(fallbackJson);
       }
       throw summaryError;
     }
@@ -718,69 +803,68 @@ class MedicalAudioRecorder {
 
   async generateSummaryWithOpenAI(transcription) {
     // Check if API key is configured
-    if (!this.settings.apiKey) {
+    if (!this.settings.openaiApiKey) {
       throw new Error(
         "OpenAI API key is not configured. Please go to Settings and add your API key."
       );
     }
 
-    // Enhanced medical extraction prompt in English with Indonesian output
-    let systemPrompt = `You are a medical assistant specialized in analyzing doctor-patient conversations in Bahasa Indonesia. Your task is to extract and structure medical information into a comprehensive JSON format.
+    // System
+    let systemPrompt = `
+    You are a highly skilled medical transcriber and summarizer. Your task is to accurately and concisely summarize a doctor-patient conversation transcript provided in Bahasa Indonesia. Focus on extracting key medical information relevant to the patient's visit, including:
 
-EXTRACTION REQUIREMENTS:
-1. keluhan_utama: Main complaint/symptoms (keluhan utama) - only one main complaint that makes patient come to the doctor
-2. keluhan_tambahan: Additional symptoms or supporting details (keluhan tambahan) - any additional symptoms reported by the patient besides the main complaint, including those that occurred simultaneously or prior to the main complaint. Avoid repeating the main complaint.
-3. rps: Current medical history (riwayat penyakit sekarang) - current illness details that describe the patient's main complaint in a chronological manner: when it started, how the symptoms have progressed, the location, the nature/character of the complaint, aggravating or relieving factors, and any associated symptoms.
-4. rpd: Past medical history (riwayat penyakit dahulu) - previous illnesses, surgeries, medications, and any other relevant medical history that may have contributed to the current complaint, including any chronic or acute illnesses, prior hospitalizations, surgeries, known allergies, and current or past medications.
-5. rpsos: Social history (riwayat penyakit sosial) - patient's social habits and lifestyle factors that may influence their health, including smoking, alcohol use, illicit drug use, physical activity, occupation, and living environment.
-6. rpk: Family medical history (riwayat penyakit keluarga) - any immediate family members (parents, siblings) have a history of significant medical conditions such as hypertension, diabetes, heart disease, cancer, mental illness, or genetic disorders.
-7. terapi_obat: Treatment plan (tatalaksana) - pharmacological therapy prescribed to the patient, including the drug name, dosage, frequency, route of administration, and duration of use. Mention the indication if relevant, identify and convert any layman's terms or general descriptions of medications into their correct pharmacological drug classes.
-8. edukasi: Patient education (edukasi) - any educational information provided to the patient, including instructions on medication use, lifestyle changes, or other health-related advice.
+    1.  Chief Complaint (CC): The primary reason for the visit in the patient's own words, and how long it has been present.
+    2.  Additional Complaint: Any secondary or additional complaints mentioned by the patient, including those that occurred simultaneously or prior to the main chief complaint. Avoid repeating the chief complaint in this section.
+    3.  History of Present Illness (HPI): Detailed description of the chief complaint, including onset, duration, character, location, radiation, aggravating/alleviating factors, and associated symptoms.
+    4.  Past Medical History (PMH): Relevant pre-existing conditions, significant illnesses, surgeries, or hospitalizations.
+    5.  Family History (FH): Significant medical conditions in immediate family members.
+    6.  Recommended Medication Therapy: Specific medication treatments advised by the doctor. For each medication, include the drug name, dosage, frequency, route of administration, and duration of use. Mention the indication if relevant. Identify and convert any layman's terms or general descriptions of medications (e.g., "obat demam", "obat pereda nyeri", "obat sakit perut") into their correct pharmacological drug classes or specific drug names.
+    7.  Recommended Non-Medication Therapy: Non-pharmacological treatments or lifestyle changes advised (e.g., diet, exercise, physiotherapy).
+    8.  Education: Key information or advice given to the patient for understanding their condition or managing their health.
 
-OUTPUT FORMAT:
-Respond ONLY with a valid JSON object in Bahasa Indonesia. If information is not available, use "Informasi tidak tersedia".
+    Instructions for Summarization:
 
-{
-  "keluhan_utama": "Main complaint in Bahasa Indonesia",
-  "keluhan_tambahan": "Additional symptoms in Bahasa Indonesia", 
-  "rps": "Current medical history in Bahasa Indonesia",
-  "rpd": "Past medical history in Bahasa Indonesia",
-  "rpsos": "Social history in Bahasa Indonesia",
-  "rpk": "Family medical history in Bahasa Indonesia",
-  "terapi_obat": "Treatment plan in Bahasa Indonesia",
-  "edukasi": "Patient education in Bahasa Indonesia",
-  "main_diagnosis": "Primary diagnosis with ICD-10 code if applicable",
-  "differential_diagnosis": "List of alternative diagnoses to consider",
-  "recommended_treatment": "Detailed treatment plan with drug names, dosages, frequency, route, and duration"
-}
+    * Language Input: The input transcript will be in Bahasa Indonesia. Summarize the content from this language.
+    * Conciseness: Be as brief as possible while retaining all critical medical information.
+    * Accuracy: Ensure all summarized information is directly supported by the transcript.
+    * Objectivity: Present facts without interpretation or inference.
+    * Completeness: Include all the specified categories if present in the transcript. If a category is not present in the transcript, its value should be set to "Informasi tidak tersedia".
+    * Language Output: The summarized values in the JSON should be derived from the Indonesian transcript.
 
-GUIDELINES:
-- Use proper medical terminology in Bahasa Indonesia
-- Be concise but comprehensive
-- Focus on clinically relevant information
-- If a section is not mentioned in the conversation, use "Informasi tidak tersedia"
-- Maintain medical accuracy and professionalism and bio-ethics in Indonesia`;
+    Output Format:
 
-    let userPrompt = `Analyze the following doctor-patient conversation in Bahasa Indonesia and extract the medical information as specified:
+    Provide the summary as a JSON object with the following structure. The keys should be as listed below, and values should be strings summarizing the respective categories. If a category has no information in the transcript, its value will be "Informasi tidak tersedia".
 
-CONVERSATION TRANSCRIPT:
-${transcription}
+    {
+      "chief_complaint": "Summary of the chief complaint.",
+      "additional_complaint": "Summary of additional complaints.",
+      "history_of_present_illness": "Summary of HPI.",
+      "past_medical_history": "Summary of PMH.",
+      "family_history": "Summary of family history.",
+      "recommended_medication_therapy": "Summary of recommended medication therapy.",
+      "recommended_non_medication_therapy": "Summary of recommended non-medication therapy.",
+      "education": "Summary of education provided."
+    }
+    `;
 
-TASK: Extract and structure the medical information into the JSON format described above. Respond only with the JSON object in Bahasa Indonesia, no additional text.`;
+    let userPrompt = `
+    Transcript to summarize:
+    ${transcription}
+    `;
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${this.settings.apiKey}`,
+        Authorization: `Bearer ${this.settings.openaiApiKey}`,
       },
       body: JSON.stringify({
-        model: this.settings.gptModel,
+        model: this.settings.summarizationModel || "gpt-3.5-turbo",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt },
         ],
-        max_tokens: 800,
+        max_tokens: 500,
         temperature: 0.2,
       }),
     });
@@ -794,6 +878,19 @@ TASK: Extract and structure the medical information into the JSON format describ
 
     const data = await response.json();
     return data.choices[0].message.content.trim();
+  }
+
+  async generateSummaryWithGemini(transcription) {
+    // Check if API key is configured
+    if (!this.settings.geminiApiKey) {
+      throw new Error(
+        "Gemini API key is not configured. Please go to Settings and add your API key."
+      );
+    }
+
+    // Placeholder for Gemini summarization implementation
+    // You'll implement the actual Gemini API call here
+    throw new Error("Gemini summarization not yet implemented. Please use OpenAI for now.");
   }
 
   showResults(originalTranscription, summary) {

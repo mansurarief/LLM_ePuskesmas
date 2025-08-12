@@ -138,31 +138,57 @@
     <div class="section">
       <h2>🔑 API Configuration</h2>
 
-      <label for="apiProvider">API Provider:</label>
-      <select id="apiProvider">
-        <option value="openai" selected>OpenAI (Cloud)</option>
-      </select>
-
-      <div id="openaiConfig" class="api-config">
-        <label for="apiKey">OpenAI API Key:</label>
-        <input type="password" id="apiKey" placeholder="sk-..." />
-        <small>Your API key is stored securely and only used for transcription and
-          summarization.</small>
-      </div>
+      <label for="openaiApiKey">OpenAI API Key:</label>
+      <input type="password" id="openaiApiKey" placeholder="sk-..." />
+      <small>Required for OpenAI transcription and summarization. Get your key from <a href="https://platform.openai.com/api-keys" target="_blank">OpenAI Platform</a>.</small>
+      
+      <label for="geminiApiKey" style="margin-top: 15px;">Google Gemini API Key:</label>
+      <input type="password" id="geminiApiKey" placeholder="AIza..." />
+      <small>Required for Gemini transcription and summarization. Get your key from <a href="https://makersuite.google.com/app/apikey" target="_blank">Google AI Studio</a>.</small>
     </div>
 
     <div class="section">
-      <h2>🌐 Language & Model Settings</h2>
+      <h2>🎯 Transcription Settings</h2>
+      <label for="transcriptionProvider">Transcription Provider:</label>
+      <select id="transcriptionProvider">
+        <option value="openai" selected>OpenAI</option>
+        <option value="gemini">Google</option>
+      </select>
+
+      <label for="transcriptionModel" style="display: block; margin-top: 10px">Transcription Model:</label>
+      <select id="transcriptionModel">
+        <option value="whisper-1" selected>Whisper-1</option>
+        <option value="gpt-4o-transcribe">GPT-4o Transcribe</option>
+        <option value="gpt-4o-mini-transcribe">GPT-4o Mini Transcribe</option>
+        <option value="google-speech-id">Google Speech-to-Text (Indonesian)</option>
+      </select>
+    </div>
+
+    <div class="section">
+      <h2>🤖 Summarization Settings</h2>
+      <label for="summarizationProvider">Summarization Provider:</label>
+      <select id="summarizationProvider">
+        <option value="openai" selected>OpenAI GPT</option>
+        <option value="gemini">Google Gemini</option>
+      </select>
+
+      <label for="summarizationModel" style="display: block; margin-top: 10px">Summarization Model:</label>
+      <select id="summarizationModel">
+        <option value="gpt-3.5-turbo" selected>GPT-3.5 Turbo</option>
+        <option value="gpt-5-nano">GPT-5 Nano</option>
+        <option value="gpt-5-mini">GPT-5 Mini</option>
+        <option value="gpt-4o-mini">GPT-4o Mini</option>
+        <option value="2.5flash-lite">Gemini 2.5 Flash Lite</option>
+        <option value="2.0flash">Gemini 2.0 Flash</option>
+        <option value="2.0flash-lite">Gemini 2.0 Flash Lite</option>
+      </select>
+    </div>
+
+    <div class="section">
+      <h2>🌐 Language Settings</h2>
       <label for="language">Primary Language:</label>
       <select id="language">
         <option value="id" selected>Bahasa Indonesia</option>
-      </select>
-
-      <label for="gptModel" style="display: block; margin-top: 10px">GPT Model:</label>
-      <select id="gptModel">
-        <option value="gpt-3.5-turbo">GPT-3.5 Turbo (Faster, Cheaper)</option>
-        <option value="gpt-4">GPT-4 (Better Quality)</option>
-        <option value="gpt-4-turbo">GPT-4 Turbo (Best Balance)</option>
       </select>
     </div>
 

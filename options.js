@@ -16,18 +16,19 @@ class OptionsManager {
   initializeElements() {
     this.elements = {
       // Form elements
-      apiProvider: document.getElementById("apiProvider"),
-      apiKey: document.getElementById("apiKey"),
-      gptModel: document.getElementById("gptModel"),
+      openaiApiKey: document.getElementById("openaiApiKey"),
+      geminiApiKey: document.getElementById("geminiApiKey"),
+      transcriptionProvider: document.getElementById("transcriptionProvider"),
+      transcriptionModel: document.getElementById("transcriptionModel"),
+      summarizationProvider: document.getElementById("summarizationProvider"),
+      summarizationModel: document.getElementById("summarizationModel"),
+      language: document.getElementById("language"),
       enableRetry: document.getElementById("enableRetry"),
       saveRecordings: document.getElementById("saveRecordings"),
 
       // Buttons
       saveSettings: document.getElementById("saveSettings"),
       testConnection: document.getElementById("testConnection"),
-
-      // Containers
-      openaiConfig: document.getElementById("openaiConfig"),
 
       // Messages
       successMessage: document.getElementById("successMessage"),
@@ -45,8 +46,11 @@ class OptionsManager {
     );
 
     // Form event listeners
-    this.elements.apiProvider.addEventListener("change", () =>
-      this.toggleApiConfig()
+    this.elements.transcriptionProvider.addEventListener("change", () =>
+      this.updateTranscriptionModels()
+    );
+    this.elements.summarizationProvider.addEventListener("change", () =>
+      this.updateSummarizationModels()
     );
   }
 
@@ -57,15 +61,20 @@ class OptionsManager {
   async loadSettings() {
     try {
       const settings = await chrome.storage.local.get([
-        "apiKey",
-        "gptModel",
+        "openaiApiKey",
+        "geminiApiKey",
+        "transcriptionProvider",
+        "transcriptionModel",
+        "summarizationProvider",
+        "summarizationModel",
+        "language",
         "enableRetry",
-        "apiProvider",
         "saveRecordings",
       ]);
 
       this.populateFormFields(settings);
-      this.toggleApiConfig();
+      this.updateTranscriptionModels();
+      this.updateSummarizationModels();
     } catch (error) {
       console.error("Error loading settings:", error);
       this.showMessage("Error loading settings: " + error.message, "error");
@@ -74,9 +83,13 @@ class OptionsManager {
 
   populateFormFields(settings) {
     const fieldMappings = {
-      apiProvider: settings.apiProvider || "openai",
-      apiKey: settings.apiKey || "",
-      gptModel: settings.gptModel || "gpt-3.5-turbo",
+      openaiApiKey: settings.openaiApiKey || "",
+      geminiApiKey: settings.geminiApiKey || "",
+      transcriptionProvider: settings.transcriptionProvider || "openai",
+      transcriptionModel: settings.transcriptionModel || "whisper-1",
+      summarizationProvider: settings.summarizationProvider || "openai",
+      summarizationModel: settings.summarizationModel || "gpt-3.5-turbo",
+      language: settings.language || "id",
       enableRetry: settings.enableRetry !== false,
       saveRecordings: settings.saveRecordings || false,
     };
@@ -88,6 +101,20 @@ class OptionsManager {
           element.checked = value;
         } else {
           element.value = value;
+          // Ensure selects have a valid option selected in case of deprecated values
+          if (element.tagName === "SELECT") {
+            const optionValues = Array.from(element.options).map((opt) => opt.value);
+            if (!optionValues.includes(String(value))) {
+              const fallbackMap = {
+                transcriptionProvider: "openai",
+                transcriptionModel: "whisper-1",
+                summarizationProvider: "openai",
+                summarizationModel: "gpt-3.5-turbo",
+                language: "id",
+              };
+              element.value = fallbackMap[fieldName] || optionValues[0] || "";
+            }
+          }
         }
       }
     });
@@ -105,29 +132,96 @@ class OptionsManager {
   }
 
   collectFormData() {
-    return {
-      apiProvider: this.elements.apiProvider.value,
-      apiKey: this.elements.apiKey.value,
-      gptModel: this.elements.gptModel.value,
+    const baseSettings = {
+      openaiApiKey: this.elements.openaiApiKey.value,
+      geminiApiKey: this.elements.geminiApiKey.value,
+      transcriptionProvider: this.elements.transcriptionProvider.value,
+      transcriptionModel: this.elements.transcriptionModel.value,
+      summarizationProvider: this.elements.summarizationProvider.value,
+      summarizationModel: this.elements.summarizationModel.value,
+      language: this.elements.language.value,
       enableRetry: this.elements.enableRetry.checked,
       saveRecordings: this.elements.saveRecordings.checked,
     };
+
+    return baseSettings;
   }
 
-  toggleApiConfig() {
-    const apiProvider = this.elements.apiProvider.value;
-    const configVisibility = {
-      openai: { openai: true, local: false },
-    };
+  updateTranscriptionModels() {
+    const provider = this.elements.transcriptionProvider.value;
+    const modelSelect = this.elements.transcriptionModel;
+    
+    // Clear existing options
+    modelSelect.innerHTML = "";
+    
+    if (provider === "openai") {
+      const openaiModels = [
+        { value: "whisper-1", label: "Whisper-1" },
+        { value: "gpt-4o-transcribe", label: "GPT-4o Transcribe" },
+        { value: "gpt-4o-mini-transcribe", label: "GPT-4o Mini Transcribe" }
+      ];
+      
+      openaiModels.forEach(model => {
+        const option = document.createElement("option");
+        option.value = model.value;
+        option.textContent = model.label;
+        modelSelect.appendChild(option);
+      });
+    } else if (provider === "gemini") {
+      const geminiModels = [
+        { value: "google-speech-id", label: "Google Speech-to-Text (Indonesian)" }
+      ];
+      
+      geminiModels.forEach(model => {
+        const option = document.createElement("option");
+        option.value = model.value;
+        option.textContent = model.label;
+        modelSelect.appendChild(option);
+      });
+    }
+    
+    // Set default value
+    modelSelect.value = provider === "openai" ? "whisper-1" : "google-speech-id";
+  }
 
-    const visibility = configVisibility[apiProvider] || {
-      openai: false,
-      local: false,
-    };
-
-    this.elements.openaiConfig.style.display = visibility.openai
-      ? "block"
-      : "none";
+  updateSummarizationModels() {
+    const provider = this.elements.summarizationProvider.value;
+    const modelSelect = this.elements.summarizationModel;
+    
+    // Clear existing options
+    modelSelect.innerHTML = "";
+    
+    if (provider === "openai") {
+      const openaiModels = [
+        { value: "gpt-3.5-turbo", label: "GPT-3.5 Turbo" },
+        { value: "gpt-5-nano", label: "GPT-5 Nano" },
+        { value: "gpt-5-mini", label: "GPT-5 Mini" },
+        { value: "gpt-4o-mini", label: "GPT-4o Mini" }
+      ];
+      
+      openaiModels.forEach(model => {
+        const option = document.createElement("option");
+        option.value = model.value;
+        option.textContent = model.label;
+        modelSelect.appendChild(option);
+      });
+    } else if (provider === "gemini") {
+      const geminiModels = [
+        { value: "2.5flash-lite", label: "Gemini 2.5 Flash Lite" },
+        { value: "2.0flash", label: "Gemini 2.0 Flash" },
+        { value: "2.0flash-lite", label: "Gemini 2.0 Flash Lite" }
+      ];
+      
+      geminiModels.forEach(model => {
+        const option = document.createElement("option");
+        option.value = model.value;
+        option.textContent = model.label;
+        modelSelect.appendChild(option);
+      });
+    }
+    
+    // Set default value
+    modelSelect.value = provider === "openai" ? "gpt-3.5-turbo" : "2.5flash-lite";
   }
 
   // ============================================================================
@@ -136,28 +230,65 @@ class OptionsManager {
 
   async testConnection() {
     try {
-      const { apiKey } = await chrome.storage.local.get("apiKey");
+      const openaiKey = this.elements.openaiApiKey.value;
+      const geminiKey = this.elements.geminiApiKey.value;
+      let testResults = [];
 
-      if (!apiKey) {
-        this.showMessage("Please enter your API key first.", "error");
-        return;
+      if (openaiKey) {
+        const openaiResult = await this.testOpenAIConnection(openaiKey);
+        testResults.push(`OpenAI: ${openaiResult}`);
+      } else {
+        testResults.push("OpenAI: No API key provided");
       }
 
+      if (geminiKey) {
+        const geminiResult = await this.testGeminiConnection(geminiKey);
+        testResults.push(`Gemini: ${geminiResult}`);
+      } else {
+        testResults.push("Gemini: No API key provided");
+      }
+
+      const allSuccessful = testResults.every(result => result.includes("successful"));
+      const message = testResults.join(" | ");
+      
+      if (allSuccessful) {
+        this.showMessage(message, "success");
+      } else {
+        this.showMessage(message, "error");
+      }
+    } catch (error) {
+      console.error("Connection test failed:", error);
+      this.showMessage("Connection test failed: " + error.message, "error");
+    }
+  }
+
+  async testOpenAIConnection(apiKey) {
+    try {
       const response = await fetch("https://api.openai.com/v1/models", {
         headers: { Authorization: `Bearer ${apiKey}` },
       });
 
       if (response.ok) {
-        this.showMessage("API connection successful!", "success");
+        return "Connection successful!";
       } else {
-        this.showMessage(
-          "API connection failed. Please check your API key.",
-          "error"
-        );
+        return "Connection failed. Please check your API key.";
       }
     } catch (error) {
-      console.error("Connection test failed:", error);
-      this.showMessage("Connection test failed: " + error.message, "error");
+      return "Connection failed: " + error.message;
+    }
+  }
+
+  async testGeminiConnection(apiKey) {
+    try {
+      // Test Gemini API connection - you'll implement the actual API call later
+      // For now, we'll just validate the API key format
+      if (apiKey.startsWith("AIza")) {
+        return "API key format valid (connection test pending implementation)";
+      } else {
+        return "Invalid API key format. Gemini API keys should start with 'AIza'";
+      }
+    } catch (error) {
+      return "Connection failed: " + error.message;
     }
   }
 

@@ -140,13 +140,15 @@ class ContentIntegrator {
       if (jsonString.startsWith('{') && jsonString.endsWith('}')) {
         try {
           const parsed = JSON.parse(jsonString);
+          console.log("Raw parsed JSON:", parsed);
           
           // Check if it has the expected structure
-          if (parsed.keluhan_utama || parsed.keluhan_tambahan || parsed.rps || parsed.rpd || parsed.rpsos || parsed.rpk || parsed.terapi_obat || parsed.edukasi || parsed.main_diagnosis || parsed.differential_diagnosis || parsed.recommended_treatment) {
+          if (parsed.chief_complaint || parsed.additional_complaint || parsed.history_of_present_illness || parsed.past_medical_history || parsed.family_history || parsed.recommended_medication_therapy || parsed.recommended_non_medication_therapy || parsed.education) {
             console.log("✅ Successfully parsed JSON data:", parsed);
             return parsed;
           } else {
-            console.log("Parsed JSON but missing expected fields:", parsed);
+            console.log("Parsed JSON but missing expected fields. Available fields:", Object.keys(parsed));
+            console.log("Expected fields: chief_complaint, additional_complaint, history_of_present_illness, past_medical_history, family_history, recommended_medication_therapy, recommended_non_medication_therapy, education");
           }
         } catch (parseError) {
           console.log("Failed to parse as JSON:", parseError.message);
@@ -157,17 +159,19 @@ class ContentIntegrator {
       const jsonMatch = jsonString.match(/\{.*\}/);
       if (jsonMatch) {
         const extractedJson = jsonMatch[0];
+        console.log("Found JSON pattern:", extractedJson);
         const parsed = JSON.parse(extractedJson);
         
         // Check if it has the expected structure
-        if (parsed.keluhan_utama || parsed.keluhan_tambahan || parsed.rps || parsed.rpd || parsed.rpsos || parsed.rpk || parsed.terapi_obat || parsed.edukasi || parsed.main_diagnosis || parsed.differential_diagnosis || parsed.recommended_treatment) {
+        if (parsed.chief_complaint || parsed.additional_complaint || parsed.history_of_present_illness || parsed.past_medical_history || parsed.family_history || parsed.recommended_medication_therapy || parsed.recommended_non_medication_therapy || parsed.education) {
           console.log("✅ Successfully parsed JSON data from pattern match:", parsed);
           return parsed;
         } else {
-          console.log("Parsed JSON but missing expected fields:", parsed);
+          console.log("Parsed JSON but missing expected fields. Available fields:", Object.keys(parsed));
         }
       } else {
         console.log("No JSON pattern found in summary");
+        console.log("Summary content:", summary);
       }
     } catch (error) {
       console.error("Error parsing JSON summary:", error);
@@ -180,153 +184,94 @@ class ContentIntegrator {
     let fieldsPopulated = 0;
     console.log("Starting to populate fields with data:", parsedData);
     
-    // Define all field mappings including the new medical fields
+    // Define field mappings for ePuskesmas form structure
     const fieldMappings = [
       {
-        jsonKey: 'keluhan_utama',
+        jsonKey: 'chief_complaint',
         selectors: [
-          '#keluhanUtama',
-          '[name="keluhanUtama"]',
-          'textarea[placeholder*="keluhan utama"]',
+          '[name="Anamnesa[keluhan_utama]"]',
+          '#keluhan',
+          'textarea[placeholder*="Keluhan Utama"]',
           'textarea[placeholder*="main complaint"]',
-          'input[name*="keluhan"]',
-          'textarea[name*="keluhan"]',
-          'textarea[placeholder*="complaint"]',
-          'input[placeholder*="complaint"]'
+          'input[name*="keluhan_utama"]',
+          'textarea[name*="keluhan_utama"]'
         ]
       },
       {
-        jsonKey: 'keluhan_tambahan',
+        jsonKey: 'additional_complaint',
         selectors: [
-          '#keluhanTambahan',
-          '[name="keluhanTambahan"]',
-          'textarea[placeholder*="keluhan tambahan"]',
-          'textarea[placeholder*="additional"]',
-          'input[name*="tambahan"]',
-          'textarea[name*="tambahan"]',
+          '[name="Anamnesa[keluhan_tambahan]"]',
+          '#keluhan-tambahan',
+          'textarea[placeholder*="Keluhan Tambahan"]',
           'textarea[placeholder*="additional complaint"]',
-          'input[placeholder*="additional"]'
+          'input[name*="keluhan_tambahan"]',
+          'textarea[name*="keluhan_tambahan"]'
         ]
       },
       {
-        jsonKey: 'rps',
+        jsonKey: 'history_of_present_illness',
         selectors: [
-          '#rps',
-          '[name="rps"]',
-          'textarea[placeholder*="riwayat penyakit sekarang"]',
+          '[name="MRiwayatPasien[Riwayat Penyakit Sekarang][value]"]',
+          '#text_rps',
+          'textarea[placeholder*="Riwayat Penyakit Sekarang"]',
           'textarea[placeholder*="current medical history"]',
-          'input[name*="rps"]',
           'textarea[name*="rps"]',
-          'textarea[placeholder*="current history"]',
-          'input[placeholder*="current history"]'
+          'input[name*="rps"]'
         ]
       },
       {
-        jsonKey: 'rpd',
+        jsonKey: 'past_medical_history',
         selectors: [
-          '#rpd',
-          '[name="rpd"]',
-          'textarea[placeholder*="riwayat penyakit dahulu"]',
+          '[name="MRiwayatPasien[Riwayat Penyakit Dulu][value]"]',
+          '#text_rpd',
+          'textarea[placeholder*="Riwayat Penyakit Dulu"]',
           'textarea[placeholder*="past medical history"]',
-          'input[name*="rpd"]',
           'textarea[name*="rpd"]',
-          'textarea[placeholder*="past history"]',
-          'input[placeholder*="past history"]'
+          'input[name*="rpd"]'
         ]
       },
       {
-        jsonKey: 'rpsos',
+        jsonKey: 'family_history',
         selectors: [
-          '#rpsos',
-          '[name="rpsos"]',
-          'textarea[placeholder*="riwayat penyakit sosial"]',
-          'textarea[placeholder*="social history"]',
-          'input[name*="rpsos"]',
-          'textarea[name*="rpsos"]',
-          'textarea[placeholder*="social"]',
-          'input[placeholder*="social"]'
-        ]
-      },
-      {
-        jsonKey: 'rpk',
-        selectors: [
-          '#rpk',
-          '[name="rpk"]',
-          'textarea[placeholder*="riwayat penyakit keluarga"]',
+          '[name="MRiwayatPasien[Riwayat Penyakit Keluarga][value]"]',
+          '#text_rpk',
+          'textarea[placeholder*="Riwayat Penyakit Keluarga"]',
           'textarea[placeholder*="family medical history"]',
-          'input[name*="rpk"]',
           'textarea[name*="rpk"]',
-          'textarea[placeholder*="family history"]',
-          'input[placeholder*="family history"]'
+          'input[name*="rpk"]'
         ]
       },
       {
-        jsonKey: 'terapi_obat',
+        jsonKey: 'recommended_medication_therapy',
         selectors: [
-          '#terapiObat',
-          '[name="terapiObat"]',
-          'textarea[placeholder*="terapi obat"]',
-          'textarea[placeholder*="pharmacological treatment"]',
-          'input[name*="terapi"]',
+          '[name="Anamnesa[terapi]"]',
+          '#text_terapi',
+          'textarea[placeholder*="Terapi Obat"]',
+          'textarea[placeholder*="medication therapy"]',
           'textarea[name*="terapi"]',
-          'textarea[placeholder*="medication"]',
-          'input[placeholder*="medication"]',
-          'textarea[placeholder*="drug"]',
-          'input[placeholder*="drug"]'
+          'input[name*="terapi"]'
         ]
       },
       {
-        jsonKey: 'edukasi',
+        jsonKey: 'recommended_non_medication_therapy',
         selectors: [
-          '#edukasi',
-          '[name="edukasi"]',
-          'textarea[placeholder*="edukasi"]',
+          '[name="Anamnesa[terapi_non_obat]"]',
+          '#text_terapi_non_obat',
+          'textarea[placeholder*="Terapi Non Obat"]',
+          'textarea[placeholder*="non-medication therapy"]',
+          'textarea[name*="terapi_non_obat"]',
+          'input[name*="terapi_non_obat"]'
+        ]
+      },
+      {
+        jsonKey: 'education',
+        selectors: [
+          '[name="Anamnesa[edukasi]"]',
+          '#text_edukasi',
+          'textarea[placeholder*="Edukasi"]',
           'textarea[placeholder*="patient education"]',
-          'input[name*="edukasi"]',
           'textarea[name*="edukasi"]',
-          'textarea[placeholder*="education"]',
-          'input[placeholder*="education"]',
-          'textarea[placeholder*="instruction"]',
-          'input[placeholder*="instruction"]'
-        ]
-      },
-      {
-        jsonKey: 'main_diagnosis',
-        selectors: [
-          '#mainDiagnosis',
-          '[name="mainDiagnosis"]',
-          'textarea[placeholder*="main diagnosis"]',
-          'textarea[placeholder*="diagnosis"]',
-          'input[name*="mainDiagnosis"]',
-          'textarea[name*="mainDiagnosis"]',
-          'textarea[placeholder*="primary diagnosis"]',
-          'input[placeholder*="primary diagnosis"]'
-        ]
-      },
-      {
-        jsonKey: 'differential_diagnosis',
-        selectors: [
-          '#differentialDiagnosis',
-          '[name="differentialDiagnosis"]',
-          'textarea[placeholder*="differential diagnosis"]',
-          'textarea[placeholder*="differential"]',
-          'input[name*="differentialDiagnosis"]',
-          'textarea[name*="differentialDiagnosis"]',
-          'textarea[placeholder*="differential diagnoses"]',
-          'input[placeholder*="differential diagnoses"]'
-        ]
-      },
-      {
-        jsonKey: 'recommended_treatment',
-        selectors: [
-          '#recommendedTreatment',
-          '[name="recommendedTreatment"]',
-          'textarea[placeholder*="recommended treatment"]',
-          'textarea[placeholder*="treatment recommendation"]',
-          'input[name*="recommendedTreatment"]',
-          'textarea[name*="recommendedTreatment"]',
-          'textarea[placeholder*="treatment plan"]',
-          'input[placeholder*="treatment plan"]'
+          'input[name*="edukasi"]'
         ]
       }
     ];
@@ -413,27 +358,21 @@ class ContentIntegrator {
           color: #333;
         ">
           <strong>Keluhan Utama:</strong><br>
-          ${parsedData.keluhan_utama || 'N/A'}<br><br>
+          ${parsedData.chief_complaint || 'N/A'}<br><br>
           <strong>Keluhan Tambahan:</strong><br>
-          ${parsedData.keluhan_tambahan || 'N/A'}<br><br>
+          ${parsedData.additional_complaint || 'N/A'}<br><br>
           <strong>RPS (Riwayat Penyakit Sekarang):</strong><br>
-          ${parsedData.rps || 'N/A'}<br><br>
+          ${parsedData.history_of_present_illness || 'N/A'}<br><br>
           <strong>RPD (Riwayat Penyakit Dahulu):</strong><br>
-          ${parsedData.rpd || 'N/A'}<br><br>
-          <strong>RPSos (Riwayat Penyakit Sosial):</strong><br>
-          ${parsedData.rpsos || 'N/A'}<br><br>
+          ${parsedData.past_medical_history || 'N/A'}<br><br>
           <strong>RPK (Riwayat Penyakit Keluarga):</strong><br>
-          ${parsedData.rpk || 'N/A'}<br><br>
-          <strong>Terapi Obat:</strong><br>
-          ${parsedData.terapi_obat || 'N/A'}<br><br>
+          ${parsedData.family_history || 'N/A'}<br><br>
+          <strong>Terapi Obat yang Dianjurkan:</strong><br>
+          ${parsedData.recommended_medication_therapy || 'N/A'}<br><br>
+          <strong>Terapi Non Obat yang Dianjurkan:</strong><br>
+          ${parsedData.recommended_non_medication_therapy || 'N/A'}<br><br>
           <strong>Edukasi:</strong><br>
-          ${parsedData.edukasi || 'N/A'}<br><br>
-          <strong>Main Diagnosis:</strong><br>
-          ${parsedData.main_diagnosis || 'N/A'}<br><br>
-          <strong>Differential Diagnosis:</strong><br>
-          ${parsedData.differential_diagnosis || 'N/A'}<br><br>
-          <strong>Recommended Treatment:</strong><br>
-          ${parsedData.recommended_treatment || 'N/A'}
+          ${parsedData.education || 'N/A'}
         </div>
       </div>
     `;

@@ -121,10 +121,14 @@ class BackgroundService {
 
   async setDefaultSettings() {
     const defaultSettings = {
+      openaiApiKey: "",
+      geminiApiKey: "",
+      transcriptionProvider: "openai",
+      transcriptionModel: "whisper-1",
+      summarizationProvider: "openai",
+      summarizationModel: "gpt-3.5-turbo",
       language: "id",
-      gptModel: "gpt-3.5-turbo",
       audioQuality: "high",
-      apiProvider: "openai",
       maxRecordingTime: 20,
       enableRetry: true,
       saveRecordings: false,

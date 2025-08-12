@@ -12,132 +12,68 @@
             padding: 20px;
             background-color: #f5f5f5;
         }
-        
         .container {
             background: white;
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
-        
         h1 {
             color: #2c3e50;
             text-align: center;
             margin-bottom: 30px;
-            border-bottom: 2px solid #3498db;
-            padding-bottom: 10px;
         }
-        
         .form-group {
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
-        
         label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 5px;
             font-weight: 600;
-            color: #2c3e50;
+            color: #333;
         }
-        
-        textarea, input[type="text"] {
+        input, textarea, select {
             width: 100%;
             padding: 12px;
             border: 2px solid #ddd;
             border-radius: 5px;
             font-size: 14px;
-            font-family: inherit;
-            transition: border-color 0.3s ease;
+            box-sizing: border-box;
         }
-        
-        textarea:focus, input[type="text"]:focus {
-            outline: none;
-            border-color: #3498db;
-            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
-        }
-        
         textarea {
             min-height: 100px;
             resize: vertical;
         }
-        
-        .highlight {
-            background-color: #fff3cd !important;
-            border-color: #ffc107 !important;
-            transition: all 0.3s ease;
-        }
-        
-        .patient-info {
-            background: #ecf0f1;
-            padding: 20px;
-            border-radius: 5px;
-            margin-bottom: 30px;
-        }
-        
-        .patient-info h3 {
-            margin-top: 0;
-            color: #2c3e50;
-        }
-        
-        .info-grid {
+        .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            gap: 20px;
         }
-        
-        .form-section {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-        }
-        
-        .form-section h3 {
-            margin-top: 0;
-            color: #2c3e50;
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 10px;
-        }
-        
-        .status-indicator {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 10px 15px;
-            border-radius: 5px;
+        .btn {
+            background: #007bff;
             color: white;
-            font-weight: 600;
-            z-index: 1000;
-            display: none;
-        }
-        
-        .status-success {
-            background-color: #27ae60;
-        }
-        
-        .status-error {
-            background-color: #e74c3c;
-        }
-        
-        .extension-info {
-            background: #e8f4fd;
-            border: 1px solid #3498db;
-            padding: 15px;
+            padding: 12px 24px;
+            border: none;
             border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+        .btn-secondary {
+            background: #6c757d;
+        }
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+        .info-box {
+            background: #e3f2fd;
+            border: 1px solid #2196f3;
+            border-radius: 5px;
+            padding: 15px;
             margin-bottom: 20px;
-        }
-        
-        .extension-info h4 {
-            margin-top: 0;
-            color: #2980b9;
-        }
-        
-        .extension-info ul {
-            margin: 10px 0;
-            padding-left: 20px;
-        }
-        
-        .extension-info li {
-            margin-bottom: 5px;
         }
     </style>
 </head>
@@ -145,282 +81,93 @@
     <div class="container">
         <h1>🏥 Medical Consultation Form</h1>
         
-        <div class="extension-info">
-            <h4>📋 Extension Instructions:</h4>
-            <ul>
-                <li>1. Record or upload audio using the Medical Audio Recorder extension</li>
-                <li>2. Transcribe the audio to get the conversation text</li>
-                <li>3. Edit the transcript if needed</li>
-                <li>4. Click "Summarize" to generate medical summary</li>
-                <li>5. The summary will automatically populate the fields below</li>
-            </ul>
+        <div class="info-box">
+            <strong>Testing Instructions:</strong><br>
+            1. Open the Medical Audio Recorder extension<br>
+            2. Record or upload audio<br>
+            3. Transcribe and summarize<br>
+            4. The AI summary should automatically populate the fields below
         </div>
-        
-        <div class="patient-info">
-            <h3>👤 Patient Information</h3>
-            <div class="info-grid">
+
+        <form>
+            <div class="form-row">
                 <div class="form-group">
-                    <label for="patientName">Patient Name:</label>
-                    <input type="text" id="patientName" name="patientName" placeholder="Enter patient name">
+                    <label for="keluhanUtama">Keluhan Utama:</label>
+                    <textarea id="keluhanUtama" name="keluhanUtama" placeholder="Masukkan keluhan utama pasien..."></textarea>
                 </div>
                 <div class="form-group">
-                    <label for="patientAge">Age:</label>
-                    <input type="text" id="patientAge" name="patientAge" placeholder="Enter age">
-                </div>
-                <div class="form-group">
-                    <label for="patientId">Patient ID:</label>
-                    <input type="text" id="patientId" name="patientId" placeholder="Enter patient ID">
-                </div>
-                <div class="form-group">
-                    <label for="visitDate">Visit Date:</label>
-                    <input type="text" id="visitDate" name="visitDate" placeholder="DD/MM/YYYY">
+                    <label for="keluhanTambahan">Keluhan Tambahan:</label>
+                    <textarea id="keluhanTambahan" name="keluhanTambahan" placeholder="Masukkan keluhan tambahan..."></textarea>
                 </div>
             </div>
-        </div>
-        
-        <div class="form-section">
-            <h3>🏥 Medical Consultation</h3>
-            
-            <div class="form-group">
-                <label for="keluhanUtama">Keluhan Utama (Main Complaint):</label>
-                <textarea 
-                    id="keluhanUtama" 
-                    name="keluhanUtama" 
-                    placeholder="Enter the main complaint or primary symptoms that made the patient come to the doctor..."
-                    rows="3"
-                ></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label for="keluhanTambahan">Keluhan Tambahan (Additional Complaints):</label>
-                <textarea 
-                    id="keluhanTambahan" 
-                    name="keluhanTambahan" 
-                    placeholder="Enter additional complaints or symptoms reported by the patient besides the main complaint..."
-                    rows="3"
-                ></textarea>
-            </div>
-            
+
             <div class="form-group">
                 <label for="rps">RPS (Riwayat Penyakit Sekarang):</label>
-                <textarea 
-                    id="rps" 
-                    name="rps" 
-                    placeholder="Enter current illness details: when it started, how symptoms progressed, location, nature/character of complaint, aggravating/relieving factors, associated symptoms..."
-                    rows="3"
-                ></textarea>
+                <textarea id="rps" name="rps" placeholder="Riwayat penyakit saat ini..."></textarea>
             </div>
-            
+
             <div class="form-group">
                 <label for="rpd">RPD (Riwayat Penyakit Dahulu):</label>
-                <textarea 
-                    id="rpd" 
-                    name="rpd" 
-                    placeholder="Enter past medical history: previous illnesses, surgeries, medications, chronic/acute illnesses, hospitalizations, allergies, current/past medications..."
-                    rows="3"
-                ></textarea>
+                <textarea id="rpd" name="rpd" placeholder="Riwayat penyakit sebelumnya..."></textarea>
             </div>
-            
-            <div class="form-group">
-                <label for="rpsos">RPSos (Riwayat Penyakit Sosial):</label>
-                <textarea 
-                    id="rpsos" 
-                    name="rpsos" 
-                    placeholder="Enter social history: smoking, alcohol use, illicit drug use, physical activity, occupation, living environment..."
-                    rows="3"
-                ></textarea>
-            </div>
-            
+
             <div class="form-group">
                 <label for="rpk">RPK (Riwayat Penyakit Keluarga):</label>
-                <textarea 
-                    id="rpk" 
-                    name="rpk" 
-                    placeholder="Enter family medical history: immediate family members (parents, siblings) with history of hypertension, diabetes, heart disease, cancer, mental illness, genetic disorders..."
-                    rows="3"
-                ></textarea>
+                <textarea id="rpk" name="rpk" placeholder="Riwayat penyakit keluarga..."></textarea>
             </div>
-            
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="terapiObat">Terapi Obat:</label>
+                    <textarea id="terapiObat" name="terapiObat" placeholder="Obat yang diresepkan..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="terapiNonObat">Terapi Non Obat:</label>
+                    <textarea id="terapiNonObat" name="terapiNonObat" placeholder="Terapi non-farmakologis..."></textarea>
+                </div>
+            </div>
+
             <div class="form-group">
-                <label for="terapiObat">Terapi Obat (Pharmacological Treatment):</label>
-                <textarea 
-                    id="terapiObat" 
-                    name="terapiObat" 
-                    placeholder="Enter pharmacological therapy: drug name, dosage, frequency, route of administration, duration of use, indication..."
-                    rows="3"
-                ></textarea>
+                <label for="edukasi">Edukasi:</label>
+                <textarea id="edukasi" name="edukasi" placeholder="Edukasi yang diberikan kepada pasien..."></textarea>
             </div>
-            
+
             <div class="form-group">
-                <label for="edukasi">Edukasi (Patient Education):</label>
-                <textarea 
-                    id="edukasi" 
-                    name="edukasi" 
-                    placeholder="Enter patient education: instructions on medication use, lifestyle changes, health-related advice..."
-                    rows="3"
-                ></textarea>
+                <button type="button" class="btn" onclick="clearForm()">Clear Form</button>
+                <button type="button" class="btn btn-secondary" onclick="testPopulate()">Test Populate</button>
             </div>
-        </div>
-        
-        <div class="form-section">
-            <h3>🏥 AI-Generated Diagnosis & Treatment</h3>
-            <div class="form-group">
-                <label for="mainDiagnosis">Main Diagnosis:</label>
-                <textarea 
-                    id="mainDiagnosis" 
-                    name="mainDiagnosis" 
-                    placeholder="AI-generated main diagnosis will appear here..."
-                    rows="3"
-                ></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label for="differentialDiagnosis">Differential Diagnosis:</label>
-                <textarea 
-                    id="differentialDiagnosis" 
-                    name="differentialDiagnosis" 
-                    placeholder="AI-generated differential diagnosis will appear here..."
-                    rows="3"
-                ></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label for="recommendedTreatment">Recommended Treatment:</label>
-                <textarea 
-                    id="recommendedTreatment" 
-                    name="recommendedTreatment" 
-                    placeholder="AI-generated treatment recommendations will appear here..."
-                    rows="3"
-                ></textarea>
-            </div>
-        </div>
-        
-        <div class="form-section">
-            <h3>📝 Doctor's Notes</h3>
-            <div class="form-group">
-                <label for="diagnosis">Final Diagnosis:</label>
-                <textarea 
-                    id="diagnosis" 
-                    name="diagnosis" 
-                    placeholder="Enter final diagnosis..."
-                    rows="3"
-                ></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label for="treatment">Treatment Plan:</label>
-                <textarea 
-                    id="treatment" 
-                    name="treatment" 
-                    placeholder="Enter treatment plan..."
-                    rows="3"
-                ></textarea>
-            </div>
-        </div>
+        </form>
     </div>
-    
-    <div id="statusIndicator" class="status-indicator"></div>
-    
+
     <script>
-        // Simple form validation and status indicators
-        document.addEventListener('DOMContentLoaded', function() {
-            const form = document.querySelector('.container');
-            const statusIndicator = document.getElementById('statusIndicator');
-            
-            // Auto-fill current date
-            const today = new Date();
-            const dateString = today.toLocaleDateString('id-ID');
-            document.getElementById('visitDate').value = dateString;
-            
-            // Show status when fields are updated
-            function showStatus(message, type) {
-                statusIndicator.textContent = message;
-                statusIndicator.className = `status-indicator status-${type}`;
-                statusIndicator.style.display = 'block';
-                
-                setTimeout(() => {
-                    statusIndicator.style.display = 'none';
-                }, 3000);
-            }
-            
-            // Highlight fields when they receive focus
-            const textareas = document.querySelectorAll('textarea');
-            textareas.forEach(textarea => {
-                textarea.addEventListener('focus', function() {
-                    this.classList.add('highlight');
-                });
-                
-                textarea.addEventListener('blur', function() {
-                    this.classList.remove('highlight');
-                });
+        function clearForm() {
+            const fields = ['keluhanUtama', 'keluhanTambahan', 'rps', 'rpd', 'rpk', 'terapiObat', 'terapiNonObat', 'edukasi'];
+            fields.forEach(fieldId => {
+                document.getElementById(fieldId).value = '';
             });
-            
-            // Listen for extension messages (if extension is installed)
-            if (typeof chrome !== 'undefined' && chrome.runtime) {
-                chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-                    if (request.action === "updateSummary") {
-                        // Parse the summary and populate fields
-                        const summary = request.summary;
-                        
-                        try {
-                            // Try to parse JSON format
-                            if (summary.includes('{') && summary.includes('}')) {
-                                const jsonMatch = summary.match(/\{.*\}/);
-                                if (jsonMatch) {
-                                    const parsed = JSON.parse(jsonMatch[0]);
-                                    
-                                    // Populate all available fields with new structure
-                                    const fieldMappings = {
-                                        'keluhan_utama': 'keluhanUtama',
-                                        'keluhan_tambahan': 'keluhanTambahan',
-                                        'rps': 'rps',
-                                        'rpd': 'rpd',
-                                        'rpsos': 'rpsos',
-                                        'rpk': 'rpk',
-                                        'terapi_obat': 'terapiObat',
-                                        'edukasi': 'edukasi',
-                                        'main_diagnosis': 'mainDiagnosis',
-                                        'differential_diagnosis': 'differentialDiagnosis',
-                                        'recommended_treatment': 'recommendedTreatment'
-                                    };
-                                    
-                                    let populatedCount = 0;
-                                    for (const [jsonKey, fieldId] of Object.entries(fieldMappings)) {
-                                        if (parsed[jsonKey] && document.getElementById(fieldId)) {
-                                            document.getElementById(fieldId).value = parsed[jsonKey];
-                                            populatedCount++;
-                                        }
-                                    }
-                                    
-                                    if (populatedCount > 0) {
-                                        showStatus(`✅ Summary populated successfully! (${populatedCount} fields)`, 'success');
-                                    } else {
-                                        showStatus('⚠️ No matching fields found', 'error');
-                                    }
-                                }
-                            } else {
-                                // Fallback: split by lines or use the whole text
-                                const lines = summary.split('\n');
-                                if (lines.length >= 2) {
-                                    document.getElementById('keluhanUtama').value = lines[0];
-                                    document.getElementById('keluhanTambahan').value = lines.slice(1).join('\n');
-                                } else {
-                                    document.getElementById('keluhanUtama').value = summary;
-                                }
-                                showStatus('✅ Summary populated (fallback method)', 'success');
-                            }
-                        } catch (error) {
-                            console.error('Error parsing summary:', error);
-                            // Fallback: put everything in keluhan utama
-                            document.getElementById('keluhanUtama').value = summary;
-                            showStatus('⚠️ Summary populated (parsing failed)', 'error');
-                        }
-                        
-                        sendResponse({ success: true });
-                    }
-                });
-            }
-        });
+        }
+
+        function testPopulate() {
+            const testData = {
+                keluhan_utama: "Pasien mengeluh sakit kepala sejak 3 hari yang lalu",
+                keluhan_tambahan: "Mual dan muntah ringan",
+                rps: "Sakit kepala berdenyut di bagian temporal, intensitas sedang",
+                rpd: "Riwayat migrain 2 tahun lalu",
+                rpk: "Ayah pasien memiliki riwayat hipertensi",
+                terapi_obat: "Paracetamol 500mg 3x1 tablet",
+                terapi_non_obat: "Istirahat cukup, hindari stres",
+                edukasi: "Minum obat teratur, kontrol tekanan darah"
+            };
+
+            document.getElementById('keluhanUtama').value = testData.keluhan_utama;
+            document.getElementById('keluhanTambahan').value = testData.keluhan_tambahan;
+            document.getElementById('rps').value = testData.rps;
+            document.getElementById('rpd').value = testData.rpd;
+            document.getElementById('rpk').value = testData.rpk;
+            document.getElementById('terapiObat').value = testData.terapi_obat;
+            document.getElementById('terapiNonObat').value = testData.terapi_non_obat;
+            document.getElementById('edukasi').value = testData.edukasi;
+        }
     </script>
 </body>
 </html> 
