@@ -149,3 +149,22 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## Support
 
 For issues and feature requests, please create an issue in the repository.
+
+## Next TODO
+1.  **Patient Demographics (if explicitly mentioned):** Age, gender. [unused yet]
+2.  **Chief Complaint (CC):** The primary reason for the visit in the patient's own words, and how long it has been present.
+3.  **Additional Complaint (Additional Complaint):** Any secondary or additional complaints mentioned by the patient, including those that occurred simultaneously or prior to the main chief complaint. Avoid repeating the chief complaint in this section.
+4.  **History of Present Illness (HPI):** Detailed description of the chief complaint, including onset, duration, character, location, radiation, aggravating/alleviating factors, and associated symptoms.
+5.  **Past Medical History (PMH):** Relevant pre-existing conditions, significant illnesses, surgeries, or hospitalizations.
+6.  **Medications:** Current medications, dosages, and frequency. [unused yet]
+7.  **Allergies:** Any known allergies to medications, food, or environment. [unused yet]
+8.  **Social History (SH):** Relevant lifestyle factors (e.g., smoking, alcohol, occupation). [unused yet]
+9.  **Family History (FH):** Significant medical conditions in immediate family members.
+10. **Review of Systems (ROS):** Any other relevant symptoms or body system complaints. [unused yet]
+11. **Physical Examination Findings (PE):** Objective findings noted by the doctor. [unused yet]
+12. **Assessment:** The doctor's differential diagnoses or preliminary diagnosis. [unused yet]
+13. **Plan:** The recommended course of action, including investigations (labs, imaging), referrals, and follow-up instructions. [unused yet]
+14. **Recommended Medication Therapy (Terapi Obat yang dianjurkan):** Specific medication treatments advised by the doctor. For each medication, include the drug name, dosage, frequency, route of administration, and duration of use. Mention the indication if relevant. Identify and convert any layman's terms or general descriptions of medications (e.g., "obat demam", "obat pereda nyeri", "obat sakit perut") into their correct pharmacological drug classes or specific drug names.
+15. **Recommended Non-Medication Therapy (Terapi Non Obat yang dianjurkan):** Non-pharmacological treatments or lifestyle changes advised (e.g., diet, exercise, physiotherapy).
+16. **Education (Edukasi):** Key information or advice given to the patient for understanding their condition or managing their health.
+17. **Patient Questions/Concerns:** Any specific questions or concerns raised by the patient. [unused yet]
