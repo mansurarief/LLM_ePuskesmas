@@ -3,88 +3,253 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Welcome to Audio Recorder</title>
+  <title>Welcome to Medical Audio Recorder</title>
   <style>
-    /* Base styles */
     body {
-      font-family: Arial, sans-serif;
-      width: 320px;
-      padding: 20px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       margin: 0;
-      background-color: #f4f4f4;
-      text-align: center;
-    }
-
-    h1 {
-      font-size: 24px;
-      color: #333;
-      margin-bottom: 20px;
-    }
-
-    p {
-      font-size: 16px;
-      color: #555;
-      margin-bottom: 30px;
-    }
-
-    .button-container {
+      padding: 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
       display: flex;
+      align-items: center;
       justify-content: center;
     }
 
+    .container {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 500px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    .header {
+      margin-bottom: 30px;
+    }
+
+    .header h1 {
+      font-size: 28px;
+      color: #2c3e50;
+      margin: 0 0 10px 0;
+      font-weight: 600;
+    }
+
+    .header p {
+      font-size: 16px;
+      color: #666;
+      margin: 0;
+    }
+
+    .features {
+      margin: 30px 0;
+      text-align: left;
+    }
+
+    .feature {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 10px;
+    }
+
+    .feature-icon {
+      font-size: 24px;
+      margin-right: 15px;
+      width: 40px;
+      text-align: center;
+    }
+
+    .feature-text {
+      flex: 1;
+    }
+
+    .feature-title {
+      font-weight: 600;
+      color: #2c3e50;
+      margin-bottom: 5px;
+    }
+
+    .feature-desc {
+      font-size: 14px;
+      color: #666;
+    }
+
+    .permission-section {
+      background: #fff3cd;
+      border: 1px solid #ffeaa7;
+      border-radius: 10px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+
+    .permission-section h3 {
+      color: #856404;
+      margin-top: 0;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 15px;
+      margin-top: 30px;
+    }
+
     button {
-      padding: 10px 20px;
+      flex: 1;
+      padding: 15px 20px;
       border: none;
-      border-radius: 5px;
+      border-radius: 10px;
       cursor: pointer;
       font-size: 16px;
-      color: #fff;
-      background-color: #007BFF;
-      transition: background-color 0.2s, transform 0.2s;
+      font-weight: 500;
+      transition: all 0.2s ease;
     }
 
-    button:hover {
-      background-color: #0056b3;
+    .btn-primary {
+      background: #007bff;
+      color: white;
     }
 
-    button:active {
-      transform: scale(0.98);
+    .btn-primary:hover {
+      background: #0056b3;
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: #545b62;
     }
 
     #status {
       margin-top: 20px;
-      font-size: 14px;
-      color: #333;
+      padding: 15px;
+      border-radius: 10px;
+      font-weight: 500;
     }
 
-    /* Responsive design */
-    @media (max-width: 400px) {
-      body {
-        width: 100%;
-        padding: 10px;
-      }
+    .status-success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
 
-      h1 {
-        font-size: 20px;
-      }
+    .status-error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
 
-      p {
-        font-size: 14px;
-      }
+    .next-steps {
+      margin-top: 20px;
+      text-align: left;
+      background: #e3f2fd;
+      padding: 20px;
+      border-radius: 10px;
+    }
 
-      button {
-        width: 100%;
-      }
+    .next-steps h3 {
+      color: #1565c0;
+      margin-top: 0;
+    }
+
+    .next-steps ol {
+      color: #333;
+      padding-left: 20px;
+    }
+
+    .next-steps li {
+      margin-bottom: 8px;
+    }
+
+    .footer {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid #eee;
+      font-size: 14px;
+      color: #666;
     }
   </style>
 </head>
 <body>
-  <h1>Welcome to Audio Recorder</h1>
-  <p>To use this extension, we need access to your microphone.</p>
-  <div class="button-container">
-    <button id="requestAccess">Grant Microphone Access</button>
+  <div class="container">
+    <div class="header">
+      <h1>🏥 Medical Audio Recorder</h1>
+      <p>AI-powered transcription and summarization for healthcare professionals</p>
+    </div>
+
+    <div class="features">
+      <div class="feature">
+        <div class="feature-icon">🎙️</div>
+        <div class="feature-text">
+          <div class="feature-title">High-Quality Recording</div>
+          <div class="feature-desc">Crystal clear audio capture with noise cancellation</div>
+        </div>
+      </div>
+      
+      <div class="feature">
+        <div class="feature-icon">🤖</div>
+        <div class="feature-text">
+          <div class="feature-title">AI Transcription</div>
+          <div class="feature-desc">Powered by OpenAI Whisper for accurate speech-to-text</div>
+        </div>
+      </div>
+      
+      <div class="feature">
+        <div class="feature-icon">📋</div>
+        <div class="feature-text">
+          <div class="feature-title">Medical Summarization</div>
+          <div class="feature-desc">Intelligent summaries tailored for medical documentation</div>
+        </div>
+      </div>
+      
+      <div class="feature">
+        <div class="feature-icon">🔧</div>
+        <div class="feature-text">
+          <div class="feature-title">ePuskesmas Integration</div>
+          <div class="feature-desc">Seamless integration with healthcare management systems</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="permission-section">
+      <h3>🔒 Microphone Permission Required</h3>
+      <p>To record audio consultations, we need access to your microphone. Your audio is processed securely and never stored permanently without your consent.</p>
+    </div>
+
+    <div class="button-group">
+      <button id="requestAccess" class="btn-primary">
+        Grant Microphone Access
+      </button>
+      <button id="configureSettings" class="btn-secondary">
+        Configure Settings
+      </button>
+    </div>
+
+    <div id="status"></div>
+
+    <div id="nextSteps" class="next-steps" style="display: none;">
+      <h3>🎉 Setup Complete!</h3>
+      <p>Your Medical Audio Recorder is ready to use. Here's what to do next:</p>
+      <ol>
+        <li><strong>Configure your OpenAI API key</strong> in the settings page</li>
+        <li><strong>Choose your preferred language</strong> and medical templates</li>
+        <li><strong>Start recording</strong> medical consultations from any ePuskesmas page</li>
+        <li><strong>Review and edit</strong> AI-generated summaries before saving</li>
+      </ol>
+    </div>
+
+    <div class="footer">
+      <p><strong>Privacy:</strong> All recordings are processed securely. Configure data retention in settings.</p>
+    </div>
   </div>
-  <div id="status"></div>
+
   <script src="welcome.js"></script>
 </body>
 </html>
