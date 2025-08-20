@@ -1,8 +1,27 @@
 /**
- * Options Page Manager - Chrome Extension
- * Handles settings configuration and API testing
+ * @fileoverview Options Page Manager for Medical Audio Recorder Chrome Extension
+ * This file manages the extension's settings page, including API key configuration,
+ * provider selection, and connection testing for healthcare documentation features.
+ * 
+ * @author LLM ePuskesmas Team
+ * @license MIT
+ * @version 1.0.0
+ */
+
+/**
+ * Manages the options/settings page for the Medical Audio Recorder extension.
+ * Handles configuration of API keys, AI providers, language settings,
+ * and connection testing for transcription and summarization services.
+ * 
+ * @class OptionsManager
  */
 class OptionsManager {
+  /**
+   * Initializes the OptionsManager instance.
+   * Sets up DOM element references, event listeners, and loads current settings.
+   * 
+   * @constructor
+   */
   constructor() {
     this.initializeElements();
     this.setupEventListeners();
@@ -13,6 +32,12 @@ class OptionsManager {
   // INITIALIZATION METHODS
   // ============================================================================
 
+  /**
+   * Initializes and caches references to form elements.
+   * Stores references to input fields, buttons, and message containers.
+   * 
+   * @private
+   */
   initializeElements() {
     this.elements = {
       // Form elements
@@ -36,6 +61,12 @@ class OptionsManager {
     };
   }
 
+  /**
+   * Sets up event listeners for form interactions.
+   * Handles save, test, and provider change events.
+   * 
+   * @private
+   */
   setupEventListeners() {
     // Button event listeners
     this.elements.saveSettings.addEventListener("click", () =>
@@ -58,6 +89,14 @@ class OptionsManager {
   // SETTINGS MANAGEMENT
   // ============================================================================
 
+  /**
+   * Loads settings from Chrome storage and populates form fields.
+   * Retrieves API keys, provider settings, and other configuration options.
+   * 
+   * @async
+   * @private
+   * @throws {Error} When storage access fails
+   */
   async loadSettings() {
     try {
       const settings = await chrome.storage.local.get([
@@ -81,6 +120,13 @@ class OptionsManager {
     }
   }
 
+  /**
+   * Populates form fields with loaded settings.
+   * Handles different input types and validates select options.
+   * 
+   * @private
+   * @param {Object} settings - Settings object from storage
+   */
   populateFormFields(settings) {
     const fieldMappings = {
       openaiApiKey: settings.openaiApiKey || "",
@@ -120,6 +166,13 @@ class OptionsManager {
     });
   }
 
+  /**
+   * Saves form data to Chrome storage.
+   * Collects form values and persists them to extension storage.
+   * 
+   * @async
+   * @throws {Error} When storage write fails
+   */
   async saveSettings() {
     try {
       const settings = this.collectFormData();
@@ -131,6 +184,13 @@ class OptionsManager {
     }
   }
 
+  /**
+   * Collects data from form fields.
+   * Gathers all configuration values from the options form.
+   * 
+   * @private
+   * @returns {Object} Form data object with all settings
+   */
   collectFormData() {
     const baseSettings = {
       openaiApiKey: this.elements.openaiApiKey.value,
@@ -147,6 +207,12 @@ class OptionsManager {
     return baseSettings;
   }
 
+  /**
+   * Updates available transcription models based on selected provider.
+   * Dynamically populates model dropdown when provider changes.
+   * 
+   * @private
+   */
   updateTranscriptionModels() {
     const provider = this.elements.transcriptionProvider.value;
     const modelSelect = this.elements.transcriptionModel;
@@ -184,6 +250,12 @@ class OptionsManager {
     modelSelect.value = provider === "openai" ? "whisper-1" : "google-speech-id";
   }
 
+  /**
+   * Updates available summarization models based on selected provider.
+   * Dynamically populates model dropdown when provider changes.
+   * 
+   * @private
+   */
   updateSummarizationModels() {
     const provider = this.elements.summarizationProvider.value;
     const modelSelect = this.elements.summarizationModel;
@@ -228,6 +300,12 @@ class OptionsManager {
   // API TESTING METHODS
   // ============================================================================
 
+  /**
+   * Tests API connections for configured providers.
+   * Validates API keys by making test requests to each configured service.
+   * 
+   * @async
+   */
   async testConnection() {
     try {
       const openaiKey = this.elements.openaiApiKey.value;
@@ -262,6 +340,15 @@ class OptionsManager {
     }
   }
 
+  /**
+   * Tests OpenAI API connection.
+   * Makes a test request to OpenAI's models endpoint to validate the API key.
+   * 
+   * @async
+   * @private
+   * @param {string} apiKey - OpenAI API key to test
+   * @returns {Promise<string>} Test result message
+   */
   async testOpenAIConnection(apiKey) {
     try {
       const response = await fetch("https://api.openai.com/v1/models", {
@@ -278,6 +365,15 @@ class OptionsManager {
     }
   }
 
+  /**
+   * Tests Gemini API connection.
+   * Validates Gemini API key format (placeholder for full implementation).
+   * 
+   * @async
+   * @private
+   * @param {string} apiKey - Gemini API key to test
+   * @returns {Promise<string>} Test result message
+   */
   async testGeminiConnection(apiKey) {
     try {
       // Test Gemini API connection - you'll implement the actual API call later
@@ -296,6 +392,14 @@ class OptionsManager {
   // UI UTILITY METHODS
   // ============================================================================
 
+  /**
+   * Displays a message to the user.
+   * Shows success or error messages with auto-hide functionality.
+   * 
+   * @param {string} message - Message text to display
+   * @param {string} type - Message type ('success' or 'error')
+   * @private
+   */
   showMessage(message, type) {
     this.elements.successMessage.style.display = "none";
     this.elements.errorMessage.style.display = "none";

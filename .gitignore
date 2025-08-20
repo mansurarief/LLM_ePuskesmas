@@ -1,1 +1,91 @@
+# API Keys and Configuration
+*.key
+*.env
 .env
+.env.*
+config.json
+settings.json
+
+# Chrome Extension Build Files
+*.crx
+*.pem
+*.zip
+
+# IDE and Editor Files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Operating System Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime Data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Temporary Files
+*.tmp
+*.temp
+temp/
+tmp/
+
+# Audio Files (for development)
+*.mp3
+*.wav
+*.webm
+*.m4a
+audio_recordings/
+test_audio/
+
+# Node Modules (if used in future)
+node_modules/
+npm-debug.log
+
+# Archive Files
+*.tar.gz
+*.rar
+*.zip
+
+# Medical Data (NEVER commit patient data)
+patient_data/
+medical_records/
+*.medical
+*.patient
+
+# Test Results
+test-results/
+coverage/
+
+# Documentation Build Files
+docs/_build/
+docs/.doctrees/
+
+# Python (if used for scripts)
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# AI and Personal Notes
+CLAUDE.md
+PROMPTS.md
+NOTES.md
+TODO.md
+personal/

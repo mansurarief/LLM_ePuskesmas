@@ -1,8 +1,28 @@
 /**
- * Welcome Page Manager - Chrome Extension
- * Handles microphone permission requests and initial setup
+ * @fileoverview Welcome Page Manager for Medical Audio Recorder Chrome Extension
+ * This file manages the initial setup and onboarding experience for users.
+ * Handles microphone permission requests, API key validation, and guides users
+ * through the initial configuration process for the medical documentation system.
+ * 
+ * @author LLM ePuskesmas Team
+ * @license MIT
+ * @version 1.0.0
+ */
+
+/**
+ * Manages the welcome/onboarding page for the Medical Audio Recorder extension.
+ * Handles microphone permission requests, initial setup guidance,
+ * and user onboarding for the medical documentation system.
+ * 
+ * @class WelcomeManager
  */
 class WelcomeManager {
+  /**
+   * Initializes the WelcomeManager instance.
+   * Sets up DOM elements, event listeners, and checks current permissions.
+   * 
+   * @constructor
+   */
   constructor() {
     this.initializeElements();
     this.setupEventListeners();
@@ -13,6 +33,12 @@ class WelcomeManager {
   // INITIALIZATION METHODS
   // ============================================================================
 
+  /**
+   * Initializes and caches references to DOM elements.
+   * Stores references to status displays, buttons, and navigation elements.
+   * 
+   * @private
+   */
   initializeElements() {
     this.elements = {
       status: document.getElementById('status'),
@@ -22,6 +48,12 @@ class WelcomeManager {
     };
   }
 
+  /**
+   * Sets up event listeners for user interactions.
+   * Handles microphone permission requests and settings navigation.
+   * 
+   * @private
+   */
   setupEventListeners() {
     this.elements.requestAccess.addEventListener('click', () => this.requestMicrophoneAccess());
     this.elements.configureSettings.addEventListener('click', () => this.openSettings());
@@ -31,6 +63,13 @@ class WelcomeManager {
   // PERMISSION MANAGEMENT
   // ============================================================================
 
+  /**
+   * Checks current microphone permission status.
+   * Determines if microphone access has already been granted.
+   * 
+   * @async
+   * @private
+   */
   async checkCurrentPermissions() {
     try {
       const { microphoneAccess } = await chrome.storage.local.get('microphoneAccess');
@@ -45,6 +84,13 @@ class WelcomeManager {
     }
   }
 
+  /**
+   * Requests microphone access from the user.
+   * Handles the permission request flow and updates UI accordingly.
+   * 
+   * @async
+   * @public
+   */
   async requestMicrophoneAccess() {
     const button = this.elements.requestAccess;
     const originalText = button.textContent;
@@ -62,6 +108,15 @@ class WelcomeManager {
     }
   }
 
+  /**
+   * Requests microphone stream from the browser.
+   * Configures audio constraints for optimal recording quality.
+   * 
+   * @async
+   * @private
+   * @returns {Promise<MediaStream>} Microphone media stream
+   * @throws {Error} When microphone access is denied or unavailable
+   */
   async getMicrophoneStream() {
     return await navigator.mediaDevices.getUserMedia({ 
       audio: {
@@ -72,6 +127,14 @@ class WelcomeManager {
     });
   }
 
+  /**
+   * Tests the microphone stream functionality.
+   * Validates that the microphone is working and stops the stream.
+   * 
+   * @async
+   * @private
+   * @param {MediaStream} stream - Microphone media stream to test
+   */
   async testMicrophone(stream) {
     this.showStatus('Testing microphone...', 'info');
     
@@ -79,6 +142,13 @@ class WelcomeManager {
     stream.getTracks().forEach(track => track.stop());
   }
 
+  /**
+   * Saves microphone permission status to extension storage.
+   * Records permission grant timestamp for future reference.
+   * 
+   * @async
+   * @private
+   */
   async savePermissionStatus() {
     await chrome.storage.local.set({ 
       microphoneAccess: true,
@@ -86,6 +156,13 @@ class WelcomeManager {
     });
   }
 
+  /**
+   * Handles successful microphone permission grant.
+   * Updates UI to reflect successful permission and shows next steps.
+   * 
+   * @param {HTMLElement} button - Permission request button element
+   * @private
+   */
   handleSuccessfulPermission(button) {
     this.showStatus('✅ Microphone access granted successfully!', 'success');
     this.showNextSteps();
@@ -95,6 +172,15 @@ class WelcomeManager {
     button.className = 'btn-success';
   }
 
+  /**
+   * Handles microphone permission errors.
+   * Processes permission denial and displays appropriate error messages.
+   * 
+   * @param {Error} error - Permission error object
+   * @param {HTMLElement} button - Permission request button element
+   * @param {string} originalText - Original button text to restore
+   * @private
+   */
   handlePermissionError(error, button, originalText) {
     console.error('Error accessing microphone:', error);
     
@@ -106,6 +192,14 @@ class WelcomeManager {
     button.disabled = false;
   }
 
+  /**
+   * Generates user-friendly error messages for permission errors.
+   * Provides specific guidance based on the type of microphone error.
+   * 
+   * @param {Error} error - Permission error object
+   * @returns {string} User-friendly error message
+   * @private
+   */
   getErrorMessage(error) {
     let errorMessage = 'Error: Could not access microphone. ';
     
@@ -126,6 +220,15 @@ class WelcomeManager {
     return errorMessage;
   }
 
+  /**
+   * Updates button text and state.
+   * Centralizes button state management for consistency.
+   * 
+   * @param {HTMLElement} button - Button element to update
+   * @param {string} text - New button text
+   * @param {boolean} disabled - Whether button should be disabled
+   * @private
+   */
   updateButtonState(button, text, disabled) {
     button.textContent = text;
     button.disabled = disabled;
@@ -135,6 +238,12 @@ class WelcomeManager {
   // NAVIGATION METHODS
   // ============================================================================
 
+  /**
+   * Opens the extension settings page.
+   * Navigates user to the options page for configuration.
+   * 
+   * @public
+   */
   openSettings() {
     chrome.runtime.openOptionsPage();
   }
@@ -143,17 +252,38 @@ class WelcomeManager {
   // UI METHODS
   // ============================================================================
 
+  /**
+   * Displays status messages to the user.
+   * Shows success, error, or informational messages.
+   * 
+   * @param {string} message - Status message to display
+   * @param {string} type - Message type ('success', 'error', 'info')
+   * @private
+   */
   showStatus(message, type) {
     this.elements.status.textContent = message;
     this.elements.status.className = `status-${type}`;
     this.elements.status.style.display = 'block';
   }
 
+  /**
+   * Shows the next steps section after successful setup.
+   * Displays configuration guidance and API key setup information.
+   * 
+   * @private
+   */
   showNextSteps() {
     this.elements.nextSteps.style.display = 'block';
     this.checkApiKeyConfiguration();
   }
 
+  /**
+   * Checks if API keys are configured in storage.
+   * Validates API key configuration status and updates UI accordingly.
+   * 
+   * @async
+   * @private
+   */
   async checkApiKeyConfiguration() {
     try {
       const { apiKey } = await chrome.storage.local.get('apiKey');
@@ -166,6 +296,12 @@ class WelcomeManager {
     }
   }
 
+  /**
+   * Updates the first setup step when API key is configured.
+   * Marks API configuration step as complete in the UI.
+   * 
+   * @private
+   */
   updateFirstStep() {
     const firstStep = this.elements.nextSteps.querySelector('ol li:first-child');
     if (firstStep) {
