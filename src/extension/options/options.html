@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>__MSG_options_title__</title>
+  <link rel="stylesheet" href="options.css" />
+</head>
+
+<body>
+  <div class="container">
+    <h1>__MSG_options_title__</h1>
+
+    <div class="section">
+      <h2>__MSG_api_configuration__</h2>
+
+      <label for="openaiApiKey">__MSG_openai_api_key__</label>
+      <input type="password" id="openaiApiKey" placeholder="sk-..." />
+      <small>__MSG_openai_api_description__ <a href="https://platform.openai.com/api-keys" target="_blank">__MSG_openai_platform_link__</a>.</small>
+
+      <label for="geminiApiKey" style="margin-top: 15px;">__MSG_gemini_api_key__</label>
+      <input type="password" id="geminiApiKey" placeholder="AIza..." />
+      <small>__MSG_gemini_api_description__ <a href="https://makersuite.google.com/app/apikey" target="_blank">__MSG_gemini_studio_link__</a>.</small>
+    </div>
+
+    <div class="section">
+      <h2>__MSG_transcription_settings__</h2>
+      <label for="transcriptionProvider">__MSG_transcription_provider__</label>
+      <select id="transcriptionProvider">
+        <option value="openai" selected>OpenAI</option>
+        <option value="gemini">Google</option>
+      </select>
+
+      <label for="transcriptionModel" style="display: block; margin-top: 10px">__MSG_transcription_model__</label>
+      <select id="transcriptionModel">
+        <option value="whisper-1" selected>__MSG_whisper_1__</option>
+        <option value="gpt-4o-transcribe">__MSG_gpt4o_transcribe__</option>
+        <option value="gpt-4o-mini-transcribe">__MSG_gpt4o_mini_transcribe__</option>
+        <option value="google-speech-id">__MSG_google_speech_id__</option>
+      </select>
+    </div>
+
+    <div class="section">
+      <h2>__MSG_summarization_settings__</h2>
+      <label for="summarizationProvider">__MSG_summarization_provider__</label>
+      <select id="summarizationProvider">
+        <option value="openai" selected>OpenAI GPT</option>
+        <option value="gemini">Google Gemini</option>
+      </select>
+
+      <label for="summarizationModel" style="display: block; margin-top: 10px">__MSG_summarization_model__</label>
+      <select id="summarizationModel">
+        <option value="gpt-3.5-turbo" selected>__MSG_gpt35_turbo__</option>
+        <option value="gpt-5-nano">__MSG_gpt5_nano__</option>
+        <option value="gpt-5-mini">__MSG_gpt5_mini__</option>
+        <option value="gpt-4o-mini">__MSG_gpt4o_mini__</option>
+        <option value="2.5flash-lite">__MSG_gemini_2_5_flash_lite__</option>
+        <option value="2.0flash">__MSG_gemini_2_0_flash__</option>
+        <option value="2.0flash-lite">__MSG_gemini_2_0_flash_lite__</option>
+      </select>
+    </div>
+
+    <div class="section">
+      <h2>__MSG_language_settings__</h2>
+      <label for="language">__MSG_primary_language__</label>
+      <select id="language">
+        <option value="id" selected>__MSG_bahasa_indonesia__</option>
+      </select>
+    </div>
+
+    <div class="section">
+      <h2>__MSG_advanced_settings__</h2>
+      <label class="checkbox-label">
+        <input type="checkbox" id="enableRetry" />
+        <span>__MSG_enable_retry__</span>
+      </label>
+      <br /><br />
+      <label class="checkbox-label">
+        <input type="checkbox" id="saveRecordings" />
+        <span>__MSG_save_recordings__</span>
+      </label>
+    </div>
+
+    <button type="button" id="saveSettings">__MSG_save_settings__</button>
+    <button type="button" id="testConnection">__MSG_test_connection__</button>
+
+    <div id="successMessage" class="success"></div>
+    <div id="errorMessage" class="error"></div>
+  </div>
+
+  <script src="options.js" type="module"></script>
+</body>
+
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>__MSG_app_name__</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+
+<body>
+  <div class="header">
+    <h1>🏥 __MSG_app_name__</h1>
+    <p>__MSG_epuskesmas_integration__</p>
+  </div>
+
+  <div class="main-container">
+    <div class="step-indicator">
+      <div class="step active" id="step1">__MSG_step_record__</div>
+      <div class="step" id="step2">__MSG_step_transcribe__</div>
+      <div class="step" id="step3">__MSG_step_edit__</div>
+      <div class="step" id="step4">__MSG_step_summarize__</div>
+    </div>
+
+    <div class="status-bar" id="statusBar">
+      <div id="statusText">__MSG_ready_to_record__</div>
+      <div class="timer" id="timer" style="display: none;">00:00</div>
+    </div>
+
+    <div class="audio-controls" id="audioControls" style="display: none;">
+      <div class="volume-control">
+        <span style="font-size: 13px;">__MSG_volume_label__</span>
+        <input type="range" id="volumeSlider" min="0" max="100" value="80">
+        <span id="volumeValue">80%</span>
+      </div>
+      <audio id="audioPlayback" controls style="width: 100%; margin-top: 10px; display: none;"></audio>
+    </div>
+
+    <div class="transcript-editor" id="transcriptEditor">
+      <div class="transcript-header">
+        <h4>__MSG_edit_transcript__</h4>
+        <span style="font-size: 12px; color: #666;">__MSG_edit_transcript_desc__</span>
+      </div>
+      <textarea id="transcriptTextarea" placeholder="__MSG_transcript_placeholder__"></textarea>
+      <div class="transcript-actions">
+        <button id="copyTranscript" class="btn-secondary">__MSG_copy_transcript__</button>
+        <button id="clearTranscript" class="btn-warning">__MSG_clear_transcript__</button>
+        <button id="summarizeTranscript" class="btn-success">__MSG_summarize_transcript__</button>
+      </div>
+    </div>
+
+    <div class="timing-info">
+      <div id="transcriptionTime">__MSG_transcription_time__ <span class="time-value">--</span></div>
+      <div id="summarizationTime">__MSG_summarization_time__ <span class="time-value">--</span></div>
+    </div>
+
+    <div class="controls">
+      <div class="control-row">
+        <button id="startRecording" class="btn-success">
+          __MSG_start_recording__
+        </button>
+        <button id="stopRecording" class="btn-danger" disabled>
+          __MSG_stop_recording__
+        </button>
+      </div>
+
+      <div class="control-row">
+        <button id="playRecording" class="btn-secondary" disabled>
+          __MSG_play_recording__
+        </button>
+        <button id="transcribeAudio" class="btn-primary" disabled>
+          __MSG_transcribe_audio__
+        </button>
+      </div>
+
+      <div class="control-row">
+        <button id="clearRecording" class="btn-warning" disabled>
+          __MSG_clear_recording__
+        </button>
+        <button id="uploadAudio" class="btn-primary">
+          __MSG_upload_audio__
+        </button>
+      </div>
+
+      <div class="control-row">
+        <button id="openWelcomePage" class="btn-secondary" style="display: none;">
+          __MSG_grant_mic_access__
+        </button>
+      </div>
+    </div>
+
+    <input type="file" id="audioFileInput" accept="audio/*" style="display: none;">
+
+    <div class="progress-bar" id="progressBar" style="display: none;">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+
+    <div id="result" class="result-area" style="display: none;"></div>
+
+    <div class="settings-link">
+      <a href="#" id="openSettings">__MSG_settings_config__</a>
+      <button id="refreshSettings" class="btn-secondary"
+        style="margin-top: 10px; width: 100%; padding: 8px; font-size: 12px;">__MSG_refresh_settings__</button>
+      <button id="testApiKey" class="btn-info" style="margin-top: 5px; width: 100%; padding: 8px; font-size: 12px;">__MSG_test_api_key__</button>
+    </div>
+  </div>
+
+  <script src="popup.js" type="module"></script>
+</body>
+
+</html>

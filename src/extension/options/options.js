@@ -1,3 +1,5 @@
+import { localizeHtmlPage } from "../utils/translations.js";
+
 /**
  * @fileoverview Options Page Manager for Medical Audio Recorder Chrome Extension
  * This file manages the extension's settings page, including API key configuration,
@@ -23,6 +25,7 @@ class OptionsManager {
    * @constructor
    */
   constructor() {
+    localizeHtmlPage();
     this.initializeElements();
     this.setupEventListeners();
     this.loadSettings();
@@ -177,7 +180,7 @@ class OptionsManager {
     try {
       const settings = this.collectFormData();
       await chrome.storage.local.set(settings);
-      this.showMessage("Settings saved successfully!", "success");
+      this.showMessage(chrome.i18n.getMessage("settings_saved"), "success");
     } catch (error) {
       console.error("Error saving settings:", error);
       this.showMessage("Error saving settings: " + error.message, "error");
@@ -222,11 +225,11 @@ class OptionsManager {
     
     if (provider === "openai") {
       const openaiModels = [
-        { value: "whisper-1", label: "Whisper-1" },
-        { value: "gpt-4o-transcribe", label: "GPT-4o Transcribe" },
-        { value: "gpt-4o-mini-transcribe", label: "GPT-4o Mini Transcribe" }
+        { value: "whisper-1", label: chrome.i18n.getMessage("whisper_1") },
+        { value: "gpt-4o-transcribe", label: chrome.i18n.getMessage("gpt4o_transcribe") },
+        { value: "gpt-4o-mini-transcribe", label: chrome.i18n.getMessage("gpt4o_mini_transcribe") }
       ];
-      
+
       openaiModels.forEach(model => {
         const option = document.createElement("option");
         option.value = model.value;
@@ -235,9 +238,9 @@ class OptionsManager {
       });
     } else if (provider === "gemini") {
       const geminiModels = [
-        { value: "google-speech-id", label: "Google Speech-to-Text (Indonesian)" }
+        { value: "google-speech-id", label: chrome.i18n.getMessage("google_speech_id") }
       ];
-      
+
       geminiModels.forEach(model => {
         const option = document.createElement("option");
         option.value = model.value;
@@ -265,12 +268,12 @@ class OptionsManager {
     
     if (provider === "openai") {
       const openaiModels = [
-        { value: "gpt-3.5-turbo", label: "GPT-3.5 Turbo" },
-        { value: "gpt-5-nano", label: "GPT-5 Nano" },
-        { value: "gpt-5-mini", label: "GPT-5 Mini" },
-        { value: "gpt-4o-mini", label: "GPT-4o Mini" }
+        { value: "gpt-3.5-turbo", label: chrome.i18n.getMessage("gpt35_turbo") },
+        { value: "gpt-5-nano", label: chrome.i18n.getMessage("gpt5_nano") },
+        { value: "gpt-5-mini", label: chrome.i18n.getMessage("gpt5_mini") },
+        { value: "gpt-4o-mini", label: chrome.i18n.getMessage("gpt4o_mini") }
       ];
-      
+
       openaiModels.forEach(model => {
         const option = document.createElement("option");
         option.value = model.value;
@@ -279,11 +282,11 @@ class OptionsManager {
       });
     } else if (provider === "gemini") {
       const geminiModels = [
-        { value: "2.5flash-lite", label: "Gemini 2.5 Flash Lite" },
-        { value: "2.0flash", label: "Gemini 2.0 Flash" },
-        { value: "2.0flash-lite", label: "Gemini 2.0 Flash Lite" }
+        { value: "2.5flash-lite", label: chrome.i18n.getMessage("gemini_2_5_flash_lite") },
+        { value: "2.0flash", label: chrome.i18n.getMessage("gemini_2_0_flash") },
+        { value: "2.0flash-lite", label: chrome.i18n.getMessage("gemini_2_0_flash_lite") }
       ];
-      
+
       geminiModels.forEach(model => {
         const option = document.createElement("option");
         option.value = model.value;
