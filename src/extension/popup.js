@@ -563,8 +563,10 @@ class MedicalAudioRecorder {
       const constraints = this.getAudioConstraints();
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
 
+      const mimeType = this.getSupportedMimeType();
+
       this.mediaRecorder = new MediaRecorder(stream, {
-        mimeType: this.getSupportedMimeType(),
+        mimeType: mimeType,
       });
 
       this.setupMediaRecorder();
@@ -586,15 +588,24 @@ class MedicalAudioRecorder {
   setupMediaRecorder() {
     this.audioChunks = [];
     this.recordingStartTime = Date.now();
+    this.recordingMimeType = this.getSupportedMimeType();
 
     this.mediaRecorder.ondataavailable = (event) => {
-      if (event.data.size > 0) {
+      if (event.data && event.data.size > 0) {
         this.audioChunks.push(event.data);
       }
     };
 
     this.mediaRecorder.onstop = () => this.onRecordingStop();
-    this.mediaRecorder.start(1000); // Collect data every second
+    this.mediaRecorder.onerror = (event) => {
+      this.handleRecordingError(event.error);
+    };
+
+    try {
+      this.mediaRecorder.start();
+    } catch (error) {
+      this.handleRecordingError(error);
+    }
   }
 
   startRecordingUI() {
@@ -661,15 +672,168 @@ class MedicalAudioRecorder {
   }
 
   createAudioBlob() {
-    this.audioBlob = new Blob(this.audioChunks, {
-      type: this.getSupportedMimeType(),
+    if (this.audioChunks.length === 0) {
+      console.warn('No audio chunks to create blob from');
+      return;
+    }
+
+    const originalBlob = new Blob(this.audioChunks, {
+      type: this.recordingMimeType || this.getSupportedMimeType(),
+    });
+
+    // Convert to MP3 for better compatibility
+    this.convertToMP3(originalBlob).then(mp3Blob => {
+      this.audioBlob = mp3Blob;
+      this.setupAudioPlayback();
+    }).catch(error => {
+      console.warn('MP3 conversion failed, using original format:', error);
+      this.audioBlob = originalBlob;
+      this.setupAudioPlayback();
     });
   }
 
+  async convertToMP3(audioBlob) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        // Create audio context
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        // Convert blob to array buffer
+        const arrayBuffer = await audioBlob.arrayBuffer();
+
+        // Decode audio data
+        const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+
+        // Create MP3 buffer using Web Audio API
+        const mp3Buffer = this.encodeMP3(audioBuffer);
+
+        // Create MP3 blob
+        const mp3Blob = new Blob([mp3Buffer], { type: 'audio/mp3' });
+
+        audioContext.close();
+        resolve(mp3Blob);
+      } catch (error) {
+        console.error('MP3 conversion error:', error);
+        reject(error);
+      }
+    });
+  }
+
+  encodeMP3(audioBuffer) {
+    // Simple WAV to MP3 conversion using Web Audio API
+
+    const length = audioBuffer.length;
+    const sampleRate = audioBuffer.sampleRate;
+    const numChannels = audioBuffer.numberOfChannels;
+
+    // Create WAV data
+    const wavBuffer = new ArrayBuffer(44 + length * numChannels * 2);
+    const wavView = new DataView(wavBuffer);
+
+    // WAV header
+    const writeString = (offset, string) => {
+      for (let i = 0; i < string.length; i++) {
+        wavView.setUint8(offset + i, string.charCodeAt(i));
+      }
+    };
+
+    writeString(0, 'RIFF');
+    wavView.setUint32(4, 36 + length * numChannels * 2, true);
+    writeString(8, 'WAVE');
+    writeString(12, 'fmt ');
+    wavView.setUint32(16, 16, true);
+    wavView.setUint16(20, 1, true);
+    wavView.setUint16(22, numChannels, true);
+    wavView.setUint32(24, sampleRate, true);
+    wavView.setUint32(28, sampleRate * numChannels * 2, true);
+    wavView.setUint16(32, numChannels * 2, true);
+    wavView.setUint16(34, 16, true);
+    writeString(36, 'data');
+    wavView.setUint32(40, length * numChannels * 2, true);
+
+    // Convert float samples to 16-bit PCM
+    let offset = 44;
+    for (let i = 0; i < length; i++) {
+      for (let channel = 0; channel < numChannels; channel++) {
+        const sample = Math.max(-1, Math.min(1, audioBuffer.getChannelData(channel)[i]));
+        wavView.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7FFF, true);
+        offset += 2;
+      }
+    }
+
+    return wavBuffer;
+  }
+
   setupAudioPlayback() {
+    if (!this.audioBlob) {
+      console.error('No audio blob available for playback');
+      return;
+    }
+
     const audioUrl = URL.createObjectURL(this.audioBlob);
     this.elements.audioPlayback.src = audioUrl;
     this.elements.audioPlayback.style.display = "block";
+
+    this.addDownloadButton();
+
+    this.elements.audioPlayback.onerror = (error) => {
+      console.error('Audio playback error:', error);
+    };
+
+    this.elements.audioPlayback.onloadeddata = () => {
+      console.log(`Audio loaded successfully: duration=${this.elements.audioPlayback.duration}s`);
+    };
+  }
+
+  addDownloadButton() {
+    // Remove existing download button if it exists
+    const existingButton = document.getElementById('downloadAudio');
+    if (existingButton) {
+      existingButton.remove();
+    }
+
+    // Create download button
+    const downloadButton = document.createElement('button');
+    downloadButton.id = 'downloadAudio';
+    downloadButton.textContent = 'Download MP3';
+    downloadButton.className = 'download-btn';
+    downloadButton.style.cssText = `
+      margin: 10px 0;
+      padding: 8px 16px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    `;
+
+    downloadButton.onclick = () => {
+      this.downloadAudioAsMP3();
+    };
+
+    // Add button after audio controls
+    const audioControls = this.elements.audioControls;
+    if (audioControls && audioControls.parentNode) {
+      audioControls.parentNode.insertBefore(downloadButton, audioControls.nextSibling);
+    }
+  }
+
+  downloadAudioAsMP3() {
+    if (!this.audioBlob) {
+      this.showMessage('No audio available to download', 'error');
+      return;
+    }
+
+    const url = URL.createObjectURL(this.audioBlob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `recording_${Date.now()}.mp3`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    this.showMessage('Audio downloaded successfully!', 'success');
   }
 
   playRecording() {
@@ -698,6 +862,12 @@ class MedicalAudioRecorder {
     if (this.elements.audioPlayback.src) {
       URL.revokeObjectURL(this.elements.audioPlayback.src);
       this.elements.audioPlayback.src = "";
+    }
+
+    // Remove download button
+    const downloadButton = document.getElementById('downloadAudio');
+    if (downloadButton) {
+      downloadButton.remove();
     }
 
     this.elements.transcriptTextarea.value = "";
@@ -1136,8 +1306,17 @@ class MedicalAudioRecorder {
    * @returns {boolean} True if file is valid, false otherwise
    */
   validateUploadedFile(file) {
-    if (!file.type.startsWith("audio/")) {
-      this.showMessage("Please select a valid audio file", "error");
+    const formats = this.getSupportedAudioFormats();
+
+    // Check file extension as fallback for files without proper MIME type
+    const fileName = file.name.toLowerCase();
+    const extension = fileName.split('.').pop();
+
+    const isSupportedByType = formats.mimeTypes.includes(file.type);
+    const isSupportedByExtension = formats.extensions.includes(extension);
+
+    if (!isSupportedByType && !isSupportedByExtension) {
+      this.showMessage(`Unsupported audio format. Please use: ${formats.extensions.join(', ')}`, "error");
       return false;
     }
 
@@ -1221,14 +1400,13 @@ class MedicalAudioRecorder {
   }
 
   getSupportedMimeType() {
+    // OpenAI supported formats only, prioritize formats with better compatibility
     const types = [
-      "audio/webm;codecs=opus", // Most commonly supported
+      "audio/webm;codecs=opus", // WebM Opus first (most compatible)
       "audio/webm",
-      "audio/mp4", // OpenAI supports m4a
-      "audio/mp3", // OpenAI supports mp3
-      "audio/wav", // OpenAI supports wav
-      "audio/ogg;codecs=opus", // OpenAI supports ogg
-      "audio/ogg",
+      "audio/mp4",
+      "audio/wav",
+      "audio/mp3",
     ];
 
     for (const type of types) {
@@ -1237,44 +1415,52 @@ class MedicalAudioRecorder {
       }
     }
 
-    return "audio/webm"; // fallback
+    return "audio/webm"; // fallback to OpenAI-supported format
   }
 
   getFileExtension(mimeType) {
-    const extensionMap = {
-      "audio/webm;codecs=opus": "webm",
-      "audio/webm": "webm",
-      "audio/ogg;codecs=opus": "ogg",
-      "audio/ogg": "ogg",
-      "audio/wav": "wav",
-      "audio/mp3": "mp3",
-      "audio/mp4": "m4a",
-      "audio/mpeg": "mp3",
-      "audio/mpga": "mpga",
-      "audio/flac": "flac",
-      "audio/x-m4a": "m4a", // Handle x-m4a MIME type
-      "audio/aac": "m4a", // AAC files should use m4a extension
-    };
+    const formats = this.getSupportedAudioFormats();
+    return formats.extensionMap[mimeType] || "webm";
+  }
 
-    return extensionMap[mimeType] || "webm";
+  // Single source of truth for supported audio formats (OpenAI supported only)
+  getSupportedAudioFormats() {
+    return {
+      // OpenAI supported MIME types only
+      mimeTypes: [
+        "audio/m4a",
+        "audio/mp3",
+        "audio/mp4",
+        "audio/mpeg",
+        "audio/mpga",
+        "audio/wav",
+        "audio/webm",
+        "audio/x-m4a",
+        "audio/x-wav",
+        "audio/wave",
+      ],
+      // Supported file extensions (OpenAI supported only)
+      extensions: ["mp3", "mp4", "mpeg", "mpga", "m4a", "wav", "webm"],
+      // MIME type to extension mapping (OpenAI supported only)
+      extensionMap: {
+        "audio/webm;codecs=opus": "webm",
+        "audio/webm": "webm",
+        "audio/wav": "wav",
+        "audio/wave": "wav",
+        "audio/x-wav": "wav",
+        "audio/mp3": "mp3",
+        "audio/mpeg": "mp3",
+        "audio/mp4": "m4a",
+        "audio/m4a": "m4a",
+        "audio/x-m4a": "m4a",
+        "audio/mpga": "mpga",
+      }
+    };
   }
 
   isOpenAISupportedFormat(mimeType) {
-    const supportedFormats = [
-      "audio/flac",
-      "audio/m4a",
-      "audio/mp3",
-      "audio/mp4",
-      "audio/mpeg",
-      "audio/mpga",
-      "audio/oga",
-      "audio/ogg",
-      "audio/wav",
-      "audio/webm",
-      "audio/x-m4a", // Some browsers use this MIME type for m4a files
-    ];
-
-    return supportedFormats.includes(mimeType);
+    const formats = this.getSupportedAudioFormats();
+    return formats.mimeTypes.includes(mimeType);
   }
 
   createOpenAICompatibleBlob() {
