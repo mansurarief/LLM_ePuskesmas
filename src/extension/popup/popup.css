@@ -1,0 +1,383 @@
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  width: 420px;
+  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  margin: 0;
+}
+
+/* Side panel specific styles */
+body.side-panel {
+  width: 100%;
+  min-width: 350px;
+  max-width: 450px;
+  min-height: 600px;
+}
+
+body.popup-context {
+  width: 420px;
+  height: auto;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.header h1 {
+  font-size: 20px;
+  margin: 0 0 5px 0;
+  font-weight: 600;
+}
+
+.header p {
+  font-size: 14px;
+  opacity: 0.9;
+  margin: 0;
+}
+
+.main-container {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 15px;
+  padding: 20px;
+  color: #333;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+/* Side panel specific container adjustments */
+.side-panel .main-container {
+  min-height: 500px;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  padding: 25px;
+}
+
+.status-bar {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  text-align: center;
+  border-left: 4px solid #28a745;
+}
+
+.status-bar.recording {
+  border-left-color: #dc3545;
+  background: #fff5f5;
+}
+
+.status-bar.processing {
+  border-left-color: #ffc107;
+  background: #fffbf0;
+}
+
+.controls {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.control-row {
+  display: flex;
+  gap: 10px;
+}
+
+button {
+  padding: 12px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  flex: 1;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: #007bff;
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #0056b3;
+  transform: translateY(-1px);
+}
+
+.btn-danger {
+  background: #dc3545;
+  color: white;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: #c82333;
+}
+
+.btn-success {
+  background: #28a745;
+  color: white;
+}
+
+.btn-success:hover:not(:disabled) {
+  background: #1e7e34;
+}
+
+.btn-warning {
+  background: #ffc107;
+  color: #212529;
+}
+
+.btn-warning:hover:not(:disabled) {
+  background: #e0a800;
+}
+
+.btn-secondary {
+  background: #6c757d;
+  color: white;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: #545b62;
+}
+
+.btn-info {
+  background: #17a2b8;
+  color: white;
+}
+
+.btn-info:hover:not(:disabled) {
+  background: #138496;
+}
+
+.audio-controls {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+.volume-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.volume-control input[type="range"] {
+  flex: 1;
+}
+
+.timer {
+  font-family: 'Courier New', monospace;
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+  color: #dc3545;
+  margin: 10px 0;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 6px;
+  background: #e9ecef;
+  border-radius: 3px;
+  overflow: hidden;
+  margin: 10px 0;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #007bff, #28a745);
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+.settings-link {
+  text-align: center;
+  margin-top: 15px;
+}
+
+.settings-link a {
+  color: #007bff;
+  text-decoration: none;
+  font-size: 13px;
+}
+
+.settings-link a:hover {
+  text-decoration: underline;
+}
+
+.result-area {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 10px;
+  margin-top: 15px;
+  max-height: 150px;
+  overflow-y: auto;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+/* Side panel specific result area adjustments */
+.side-panel .result-area {
+  max-height: 250px;
+}
+
+.transcript-editor {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  display: none;
+}
+
+.transcript-editor textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 10px;
+  border: 2px solid #ddd;
+  border-radius: 5px;
+  font-size: 13px;
+  font-family: inherit;
+  resize: vertical;
+  line-height: 1.4;
+}
+
+/* Side panel specific textarea adjustments */
+.side-panel .transcript-editor textarea {
+  min-height: 200px;
+  max-height: 300px;
+}
+
+.transcript-editor textarea:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+}
+
+.transcript-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.transcript-header h4 {
+  margin: 0;
+  color: #333;
+  font-size: 14px;
+}
+
+.transcript-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.transcript-actions button {
+  padding: 8px 12px;
+  font-size: 12px;
+}
+
+.recording-indicator {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: #dc3545;
+  border-radius: 50%;
+  animation: pulse 1s infinite;
+  margin-right: 8px;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.5;
+    transform: scale(1.2);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.error-message {
+  background: #f8d7da;
+  color: #721c24;
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 10px;
+  font-size: 13px;
+}
+
+.success-message {
+  background: #d4edda;
+  color: #155724;
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 10px;
+  font-size: 13px;
+}
+
+.step-indicator {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  font-size: 12px;
+}
+
+.step {
+  flex: 1;
+  text-align: center;
+  padding: 8px;
+  background: #e9ecef;
+  border-radius: 5px;
+  margin: 0 2px;
+  color: #6c757d;
+}
+
+.step.active {
+  background: #007bff;
+  color: white;
+}
+
+.step.completed {
+  background: #28a745;
+  color: white;
+}
+
+.timing-info {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-size: 12px;
+  color: #666;
+  background: #f8f9fa;
+  padding: 8px 12px;
+  border-radius: 5px;
+  border-left: 3px solid #3498db;
+}
+
+.timing-info div {
+  margin-bottom: 5px;
+}
+
+.timing-info div:last-child {
+  margin-bottom: 0;
+}
+
+.time-value {
+  font-weight: 600;
+  color: #2c3e50;
+}

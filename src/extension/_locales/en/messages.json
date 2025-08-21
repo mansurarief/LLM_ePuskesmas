@@ -1,0 +1,378 @@
+{
+  "app_name": {
+    "message": "Medical Audio Recorder"
+  },
+  "app_description": {
+    "message": "AI-powered transcription and summarization for healthcare professionals"
+  },
+  "epuskesmas_integration": {
+    "message": "ePuskesmas Integration"
+  },
+
+  "options_title": {
+    "message": "Medical Notetaking Settings"
+  },
+  "api_configuration": {
+    "message": "🔑 API Configuration"
+  },
+  "openai_api_key": {
+    "message": "OpenAI API Key:"
+  },
+  "gemini_api_key": {
+    "message": "Google Gemini API Key:"
+  },
+  "openai_api_description": {
+    "message": "Required for OpenAI transcription and summarization. Get your key from"
+  },
+  "openai_platform_link": {
+    "message": "OpenAI Platform"
+  },
+  "gemini_api_description": {
+    "message": "Required for Gemini transcription and summarization. Get your key from"
+  },
+  "gemini_studio_link": {
+    "message": "Google AI Studio"
+  },
+  "transcription_settings": {
+    "message": "🎯 Transcription Settings"
+  },
+  "transcription_provider": {
+    "message": "Transcription Provider:"
+  },
+  "transcription_model": {
+    "message": "Transcription Model:"
+  },
+  "whisper_1": {
+    "message": "Whisper-1"
+  },
+  "gpt4o_transcribe": {
+    "message": "GPT-4o Transcribe"
+  },
+  "gpt4o_mini_transcribe": {
+    "message": "GPT-4o Mini Transcribe"
+  },
+  "google_speech_id": {
+    "message": "Google Speech-to-Text (Indonesian)"
+  },
+  "summarization_settings": {
+    "message": "🤖 Summarization Settings"
+  },
+  "summarization_provider": {
+    "message": "Summarization Provider:"
+  },
+  "summarization_model": {
+    "message": "Summarization Model:"
+  },
+  "gpt35_turbo": {
+    "message": "GPT-3.5 Turbo"
+  },
+  "gpt5_nano": {
+    "message": "GPT-5 Nano"
+  },
+  "gpt5_mini": {
+    "message": "GPT-5 Mini"
+  },
+  "gpt4o_mini": {
+    "message": "GPT-4o Mini"
+  },
+  "gemini_2_5_flash_lite": {
+    "message": "Gemini 2.5 Flash Lite"
+  },
+  "gemini_2_0_flash": {
+    "message": "Gemini 2.0 Flash"
+  },
+  "gemini_2_0_flash_lite": {
+    "message": "Gemini 2.0 Flash Lite"
+  },
+  "language_settings": {
+    "message": "🌐 Language Settings"
+  },
+  "primary_language": {
+    "message": "Primary Language:"
+  },
+  "bahasa_indonesia": {
+    "message": "Bahasa Indonesia"
+  },
+  "advanced_settings": {
+    "message": "🔧 Advanced Settings"
+  },
+  "enable_retry": {
+    "message": "Enable automatic retry on API failures"
+  },
+  "save_recordings": {
+    "message": "Save recordings locally for review"
+  },
+  "save_settings": {
+    "message": "Save Settings"
+  },
+  "test_connection": {
+    "message": "Test API Connection"
+  },
+
+  "ready_to_record": {
+    "message": "Ready to start recording"
+  },
+  "recording_progress": {
+    "message": "Recording in progress..."
+  },
+  "transcribing_audio": {
+    "message": "Transcribing audio..."
+  },
+  "processing": {
+    "message": "Processing..."
+  },
+  "generating_summary": {
+    "message": "Generating medical summary..."
+  },
+  "summary_completed": {
+    "message": "Summary generated and inserted successfully"
+  },
+  "transcription_completed": {
+    "message": "Transcription completed successfully"
+  },
+  "recording_completed": {
+    "message": "Recording completed successfully"
+  },
+  "error_recording": {
+    "message": "Error: Could not access microphone"
+  },
+  "error_transcription": {
+    "message": "Transcription failed"
+  },
+  "error_summarization": {
+    "message": "Summarization failed"
+  },
+
+  "step_record": {
+    "message": "1. Record"
+  },
+  "step_transcribe": {
+    "message": "2. Transcribe"
+  },
+  "step_edit": {
+    "message": "3. Edit"
+  },
+  "step_summarize": {
+    "message": "4. Summarize"
+  },
+
+  "start_recording": {
+    "message": "🎙️ Start Recording"
+  },
+  "stop_recording": {
+    "message": "⏹️ Stop"
+  },
+  "play_recording": {
+    "message": "▶️ Play"
+  },
+  "transcribe_audio": {
+    "message": "🎯 Transcribe"
+  },
+  "clear_recording": {
+    "message": "🗑️ Clear"
+  },
+  "upload_audio": {
+    "message": "📁 Upload Audio"
+  },
+  "grant_mic_access": {
+    "message": "🎤 Grant Mic Access"
+  },
+
+  "volume_label": {
+    "message": "Volume:"
+  },
+
+  "edit_transcript": {
+    "message": "📝 Edit Transcript"
+  },
+  "edit_transcript_desc": {
+    "message": "Edit the transcript before summarizing"
+  },
+  "copy_transcript": {
+    "message": "📋 Copy"
+  },
+  "clear_transcript": {
+    "message": "🗑️ Clear"
+  },
+  "summarize_transcript": {
+    "message": "🤖 Summarize"
+  },
+
+  "transcription_time": {
+    "message": "⏱️ Transcription:"
+  },
+  "summarization_time": {
+    "message": "⏱️ Summarization:"
+  },
+
+  "settings_config": {
+    "message": "⚙️ Settings & API Configuration"
+  },
+  "refresh_settings": {
+    "message": "🔄 Refresh Settings"
+  },
+  "test_api_key": {
+    "message": "🔍 Test API Key"
+  },
+
+  "transcript_placeholder": {
+    "message": "Transcript will appear here after transcription..."
+  },
+
+  "welcome_title": {
+    "message": "Welcome to Medical Audio Recorder"
+  },
+  "welcome_subtitle": {
+    "message": "AI-powered transcription and summarization for healthcare professionals"
+  },
+
+  "feature_recording": {
+    "message": "High-Quality Recording"
+  },
+  "feature_recording_desc": {
+    "message": "Crystal clear audio capture with noise cancellation"
+  },
+  "feature_transcription": {
+    "message": "AI Transcription"
+  },
+  "feature_transcription_desc": {
+    "message": "Powered by OpenAI Whisper for accurate speech-to-text"
+  },
+  "feature_summarization": {
+    "message": "Medical Summarization"
+  },
+  "feature_summarization_desc": {
+    "message": "Intelligent summaries tailored for medical documentation"
+  },
+  "feature_integration": {
+    "message": "ePuskesmas Integration"
+  },
+  "feature_integration_desc": {
+    "message": "Seamless integration with healthcare management systems"
+  },
+
+  "permission_required": {
+    "message": "🔒 Microphone Permission Required"
+  },
+  "permission_description": {
+    "message": "To record audio consultations, we need access to your microphone. Your audio is processed securely and never stored permanently without your consent."
+  },
+  "grant_access": {
+    "message": "Grant Microphone Access"
+  },
+  "configure_settings": {
+    "message": "Configure Settings"
+  },
+  "requesting_access": {
+    "message": "Requesting Access..."
+  },
+  "access_granted": {
+    "message": "✓ Access Granted"
+  },
+  "testing_microphone": {
+    "message": "Testing microphone..."
+  },
+  "microphone_access_granted": {
+    "message": "✅ Microphone access granted successfully!"
+  },
+  "microphone_already_granted": {
+    "message": "Microphone access already granted!"
+  },
+
+  "setup_complete": {
+    "message": "🎉 Setup Complete!"
+  },
+  "setup_complete_desc": {
+    "message": "Your Medical Audio Recorder is ready to use. Here's what to do next:"
+  },
+  "step_configure_api": {
+    "message": "Configure your OpenAI API key in the settings page"
+  },
+  "step_choose_language": {
+    "message": "Choose your preferred language and medical templates"
+  },
+  "step_start_recording": {
+    "message": "Start recording medical consultations from any ePuskesmas page"
+  },
+  "step_review_summaries": {
+    "message": "Review and edit AI-generated summaries before saving"
+  },
+  "step_api_configured": {
+    "message": "✓ OpenAI API key configured"
+  },
+
+  "privacy_notice": {
+    "message": "Privacy: All recordings are processed securely. Configure data retention in settings."
+  },
+
+  "success_message": {
+    "message": "Success!"
+  },
+  "error_message": {
+    "message": "Error"
+  },
+  "info_message": {
+    "message": "Info"
+  },
+
+  "settings_saved": {
+    "message": "Settings saved successfully!"
+  },
+  "settings_refreshed": {
+    "message": "Settings refreshed."
+  },
+  "transcript_copied": {
+    "message": "Transcript copied to clipboard"
+  },
+  "failed_copy": {
+    "message": "Failed to copy transcript"
+  },
+  "audio_downloaded": {
+    "message": "Audio downloaded successfully!"
+  },
+  "summary_inserted": {
+    "message": "Summary inserted successfully!"
+  },
+  "failed_insert": {
+    "message": "Failed to insert summary. Please refresh the page and try again."
+  },
+  "content_script_unavailable": {
+    "message": "Content script not available. Please refresh the page and try again."
+  },
+
+  "permission_denied": {
+    "message": "Permission was denied. Please allow microphone access in your browser settings."
+  },
+  "no_microphone": {
+    "message": "No microphone found. Please connect a microphone and try again."
+  },
+  "microphone_in_use": {
+    "message": "Microphone is being used by another application."
+  },
+
+  "api_key_missing": {
+    "message": "API key is not configured. Please go to Settings and add your API key."
+  },
+  "no_audio_transcribe": {
+    "message": "No audio to transcribe"
+  },
+  "no_transcript_summarize": {
+    "message": "Please enter or transcribe some text first"
+  },
+  "audio_uploaded": {
+    "message": "Successfully uploaded:"
+  },
+  "unsupported_format": {
+    "message": "Unsupported audio format. Please use:"
+  },
+  "file_too_large": {
+    "message": "File size too large. Please select a file smaller than 25MB"
+  },
+
+  "download_mp3": {
+    "message": "Download MP3"
+  },
+  "no_audio_download": {
+    "message": "No audio available to download"
+  }
+}

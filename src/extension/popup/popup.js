@@ -1,3 +1,5 @@
+import { localizeHtmlPage } from "../utils/translations.js";
+
 /**
  * @fileoverview Medical Audio Recorder Chrome Extension - Main popup functionality
  * This file contains the core MedicalAudioRecorder class that handles audio recording,
@@ -25,6 +27,8 @@ class MedicalAudioRecorder {
    * @constructor
    */
   constructor() {
+    localizeHtmlPage();
+    this.detectContext();
     this.initializeProperties();
     this.initializeElements();
     this.initializeEventListeners();
@@ -40,6 +44,29 @@ class MedicalAudioRecorder {
   // ============================================================================
   // INITIALIZATION METHODS
   // ============================================================================
+
+  /**
+   * Detects whether the extension is running in popup or side panel context
+   * and applies appropriate styling adjustments
+   *
+   * @private
+   */
+  detectContext() {
+    // Check if we're in a side panel by examining the window dimensions and context
+    // Side panels typically have different dimensions than popups
+    const isSidePanel = window.innerWidth > 500 || window.innerHeight > 600;
+
+    if (isSidePanel) {
+      // Apply side panel specific styles
+      document.body.classList.add('side-panel');
+      console.log('Running in side panel context');
+    } else {
+      document.body.classList.add('popup-context');
+      console.log('Running in popup context');
+    }
+
+    this.isSidePanel = isSidePanel;
+  }
 
   /**
    * Initializes all instance properties with default values.
@@ -265,7 +292,7 @@ class MedicalAudioRecorder {
       this.elements.openWelcomePage.style.display = "none";
     } else {
       this.updateStatus(
-        "Please grant microphone access to continue",
+        chrome.i18n.getMessage("permission_denied"),
         "warning"
       );
       this.elements.openWelcomePage.style.display = "block";
@@ -304,7 +331,7 @@ class MedicalAudioRecorder {
 
     if (missingKeys.length > 0) {
       this.showMessage(
-        `⚠️ ${missingKeys.join(", ")} not configured. Click 'Settings' to add your API keys.`,
+        `⚠️ ${missingKeys.join(", ")} not configured. ${chrome.i18n.getMessage("step_configure_api")}`,
         "error"
       );
     }
@@ -319,7 +346,7 @@ class MedicalAudioRecorder {
   async refreshSettings() {
     await this.loadSettings();
     this.validateApiConfiguration();
-    this.showMessage("Settings refreshed.", "success");
+    this.showMessage(chrome.i18n.getMessage("settings_refreshed"), "success");
   }
 
   /**
@@ -340,9 +367,9 @@ class MedicalAudioRecorder {
       ]);
 
       if ((result.transcriptionProvider === "openai" || result.summarizationProvider === "openai") && result.openaiApiKey === "") {
-        this.showMessage("OpenAI API key is not configured. Please go to Settings and add your API key.", "error");
+        this.showMessage(chrome.i18n.getMessage("api_key_missing"), "error");
       } else if ((result.transcriptionProvider === "gemini" || result.summarizationProvider === "gemini") && result.geminiApiKey === "") {
-        this.showMessage("Gemini API key is not configured. Please go to Settings and add your API key.", "error");
+        this.showMessage(chrome.i18n.getMessage("api_key_missing"), "error");
       }
       
       return result;
@@ -612,7 +639,7 @@ class MedicalAudioRecorder {
     this.elements.startRecording.disabled = true;
     this.elements.stopRecording.disabled = false;
     this.elements.clearRecording.disabled = true;
-    this.updateStatus("Recording in progress...", "recording");
+    this.updateStatus(chrome.i18n.getMessage("recording_progress"), "recording");
   }
 
   setupAutoStop() {
@@ -625,9 +652,9 @@ class MedicalAudioRecorder {
 
   handleRecordingError(error) {
     console.error("Error accessing microphone:", error);
-    this.updateStatus("Error: Could not access microphone");
+    this.updateStatus(chrome.i18n.getMessage("error_recording"));
     this.showMessage(
-      "Microphone access denied. Please check permissions.",
+      chrome.i18n.getMessage("permission_denied"),
       "error"
     );
     this.elements.openWelcomePage.style.display = "block";
@@ -660,7 +687,7 @@ class MedicalAudioRecorder {
     this.elements.clearRecording.disabled = false;
 
     this.stopTimer();
-    this.updateStatus("Recording completed");
+    this.updateStatus(chrome.i18n.getMessage("recording_completed"));
     this.elements.audioControls.style.display = "block";
 
     this.createAudioBlob();
@@ -871,7 +898,7 @@ class MedicalAudioRecorder {
     }
 
     this.elements.transcriptTextarea.value = "";
-    this.updateStatus("Ready to start recording");
+    this.updateStatus(chrome.i18n.getMessage("ready_to_record"));
     this.hideProgress();
     this.updateStepIndicator(1);
     this.resetTiming();
@@ -910,7 +937,7 @@ class MedicalAudioRecorder {
    */
   async transcribeWithRetry() {
     try {
-      this.updateStatus("Transcribing audio...", "processing");
+      this.updateStatus(chrome.i18n.getMessage("transcribing_audio"), "processing");
       this.showProgress();
       this.updateStepIndicator(2);
       this.startTranscriptionTimer();
@@ -973,7 +1000,7 @@ class MedicalAudioRecorder {
       );
       setTimeout(() => this.transcribeWithRetry(), 2000);
     } else {
-      this.updateStatus("Transcription failed");
+      this.updateStatus(chrome.i18n.getMessage("error_transcription"));
       this.showMessage(`Transcription failed: ${error.message}`, "error");
       this.hideProgress();
     }
@@ -1013,7 +1040,7 @@ class MedicalAudioRecorder {
     }
 
     try {
-      this.updateStatus("Generating medical summary...", "processing");
+      this.updateStatus(chrome.i18n.getMessage("generating_summary"), "processing");
       this.showProgress();
       this.updateStepIndicator(4);
       this.startSummarizationTimer();
@@ -1026,13 +1053,13 @@ class MedicalAudioRecorder {
       await this.insertSummary(summary);
 
       this.updateProgress(100, "Complete!");
-      this.updateStatus("Summary generated and inserted successfully");
+      this.updateStatus(chrome.i18n.getMessage("summary_completed"));
       this.showResults(transcript, summary);
       setTimeout(() => this.hideProgress(), 2000);
     } catch (error) {
       this.endSummarizationTimer();
       console.error("Summarization error:", error);
-      this.updateStatus("Summarization failed");
+      this.updateStatus(chrome.i18n.getMessage("error_summarization"));
       this.showMessage(`Summarization failed: ${error.message}`, "error");
       this.hideProgress();
     }
@@ -1584,7 +1611,7 @@ class MedicalAudioRecorder {
 
   openWelcomePage() {
     chrome.tabs.create({
-      url: chrome.runtime.getURL("welcome.html"),
+      url: chrome.runtime.getURL("welcome/welcome.html"),
       active: true,
     });
   }

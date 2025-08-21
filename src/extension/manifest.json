@@ -5,14 +5,15 @@
     "description": "Advanced medical audio recording, transcription, and AI-powered summarization for healthcare professionals",
     "permissions": [
       "activeTab",
-      "storage"
+      "storage",
+      "sidePanel"
     ],
     "host_permissions": [
       "https://api.openai.com/*",
       "https://generativelanguage.googleapis.com/*"
     ],
     "action": {
-      "default_popup": "popup.html"
+      "default_popup": "popup/popup.html"
     },
     "background": {
       "service_worker": "background.js"
@@ -23,6 +24,27 @@
         "js": ["content.js"]
       }
     ],
-    "options_page": "options.html"
+    "options_page": "options/options.html",
+    "chrome_url_overrides": {
+      "welcome_page": "welcome/welcome.html"
+    },
+    "default_locale": "en",
+    "web_accessible_resources": [
+      {
+        "resources": [
+          "_locales/*/messages.json"
+        ],
+        "matches": ["<all_urls>"]
+      }
+    ],
+    "icons": {
+      "16": "assets/icon-16.png",
+      "32": "assets/icon-32.png",
+      "64": "assets/icon-64.png",
+      "128": "assets/icon-128.png"
+    },
+    "side_panel": {
+      "default_path": "popup/popup.html"
+    }
 }
   

@@ -276,7 +276,7 @@ class BackgroundService {
    */
   openWelcomePage() {
     chrome.tabs.create({
-      url: chrome.runtime.getURL("welcome.html"),
+      url: chrome.runtime.getURL("welcome/welcome.html"),
       active: true,
     });
   }

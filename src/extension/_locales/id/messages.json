@@ -1,0 +1,378 @@
+{
+  "app_name": {
+    "message": "Perekam Audio Medis"
+  },
+  "app_description": {
+    "message": "Transkripsi dan ringkasan bertenaga AI untuk profesional kesehatan"
+  },
+  "epuskesmas_integration": {
+    "message": "Integrasi ePuskesmas"
+  },
+
+  "options_title": {
+    "message": "Pengaturan Catatan Medis"
+  },
+  "api_configuration": {
+    "message": "🔑 Konfigurasi API"
+  },
+  "openai_api_key": {
+    "message": "Kunci API OpenAI:"
+  },
+  "gemini_api_key": {
+    "message": "Kunci API Google Gemini:"
+  },
+  "openai_api_description": {
+    "message": "Diperlukan untuk transkripsi dan ringkasan OpenAI. Dapatkan kunci Anda dari"
+  },
+  "openai_platform_link": {
+    "message": "Platform OpenAI"
+  },
+  "gemini_api_description": {
+    "message": "Diperlukan untuk transkripsi dan ringkasan Gemini. Dapatkan kunci Anda dari"
+  },
+  "gemini_studio_link": {
+    "message": "Google AI Studio"
+  },
+  "transcription_settings": {
+    "message": "🎯 Pengaturan Transkripsi"
+  },
+  "transcription_provider": {
+    "message": "Penyedia Transkripsi:"
+  },
+  "transcription_model": {
+    "message": "Model Transkripsi:"
+  },
+  "whisper_1": {
+    "message": "Whisper-1"
+  },
+  "gpt4o_transcribe": {
+    "message": "GPT-4o Transkripsi"
+  },
+  "gpt4o_mini_transcribe": {
+    "message": "GPT-4o Mini Transkripsi"
+  },
+  "google_speech_id": {
+    "message": "Google Speech-to-Text (Bahasa Indonesia)"
+  },
+  "summarization_settings": {
+    "message": "🤖 Pengaturan Ringkasan"
+  },
+  "summarization_provider": {
+    "message": "Penyedia Ringkasan:"
+  },
+  "summarization_model": {
+    "message": "Model Ringkasan:"
+  },
+  "gpt35_turbo": {
+    "message": "GPT-3.5 Turbo"
+  },
+  "gpt5_nano": {
+    "message": "GPT-5 Nano"
+  },
+  "gpt5_mini": {
+    "message": "GPT-5 Mini"
+  },
+  "gpt4o_mini": {
+    "message": "GPT-4o Mini"
+  },
+  "gemini_2_5_flash_lite": {
+    "message": "Gemini 2.5 Flash Lite"
+  },
+  "gemini_2_0_flash": {
+    "message": "Gemini 2.0 Flash"
+  },
+  "gemini_2_0_flash_lite": {
+    "message": "Gemini 2.0 Flash Lite"
+  },
+  "language_settings": {
+    "message": "🌐 Pengaturan Bahasa"
+  },
+  "primary_language": {
+    "message": "Bahasa Utama:"
+  },
+  "bahasa_indonesia": {
+    "message": "Bahasa Indonesia"
+  },
+  "advanced_settings": {
+    "message": "🔧 Pengaturan Lanjutan"
+  },
+  "enable_retry": {
+    "message": "Aktifkan percobaan ulang otomatis saat kegagalan API"
+  },
+  "save_recordings": {
+    "message": "Simpan rekaman secara lokal untuk ditinjau"
+  },
+  "save_settings": {
+    "message": "Simpan Pengaturan"
+  },
+  "test_connection": {
+    "message": "Uji Koneksi API"
+  },
+
+  "ready_to_record": {
+    "message": "Siap untuk mulai merekam"
+  },
+  "recording_progress": {
+    "message": "Sedang merekam..."
+  },
+  "transcribing_audio": {
+    "message": "Mentranskripsikan audio..."
+  },
+  "processing": {
+    "message": "Memproses..."
+  },
+  "generating_summary": {
+    "message": "Membuat ringkasan medis..."
+  },
+  "summary_completed": {
+    "message": "Ringkasan berhasil dibuat dan dimasukkan"
+  },
+  "transcription_completed": {
+    "message": "Transkripsi berhasil diselesaikan"
+  },
+  "recording_completed": {
+    "message": "Rekaman berhasil diselesaikan"
+  },
+  "error_recording": {
+    "message": "Error: Tidak dapat mengakses mikrofon"
+  },
+  "error_transcription": {
+    "message": "Transkripsi gagal"
+  },
+  "error_summarization": {
+    "message": "Ringkasan gagal"
+  },
+
+  "step_record": {
+    "message": "1. Rekam"
+  },
+  "step_transcribe": {
+    "message": "2. Transkripsi"
+  },
+  "step_edit": {
+    "message": "3. Edit"
+  },
+  "step_summarize": {
+    "message": "4. Ringkas"
+  },
+
+  "start_recording": {
+    "message": "🎙️ Mulai Merekam"
+  },
+  "stop_recording": {
+    "message": "⏹️ Berhenti"
+  },
+  "play_recording": {
+    "message": "▶️ Putar"
+  },
+  "transcribe_audio": {
+    "message": "🎯 Transkripsi"
+  },
+  "clear_recording": {
+    "message": "🗑️ Hapus"
+  },
+  "upload_audio": {
+    "message": "📁 Unggah Audio"
+  },
+  "grant_mic_access": {
+    "message": "🎤 Berikan Akses Mikrofon"
+  },
+
+  "volume_label": {
+    "message": "Volume:"
+  },
+
+  "edit_transcript": {
+    "message": "📝 Edit Transkrip"
+  },
+  "edit_transcript_desc": {
+    "message": "Edit transkrip sebelum merangkum"
+  },
+  "copy_transcript": {
+    "message": "📋 Salin"
+  },
+  "clear_transcript": {
+    "message": "🗑️ Hapus"
+  },
+  "summarize_transcript": {
+    "message": "🤖 Ringkas"
+  },
+
+  "transcription_time": {
+    "message": "⏱️ Transkripsi:"
+  },
+  "summarization_time": {
+    "message": "⏱️ Ringkasan:"
+  },
+
+  "settings_config": {
+    "message": "⚙️ Pengaturan & Konfigurasi API"
+  },
+  "refresh_settings": {
+    "message": "🔄 Segarkan Pengaturan"
+  },
+  "test_api_key": {
+    "message": "🔍 Uji Kunci API"
+  },
+
+  "transcript_placeholder": {
+    "message": "Transkrip akan muncul di sini setelah transkripsi..."
+  },
+
+  "welcome_title": {
+    "message": "Selamat Datang di Perekam Audio Medis"
+  },
+  "welcome_subtitle": {
+    "message": "Transkripsi dan ringkasan bertenaga AI untuk profesional kesehatan"
+  },
+
+  "feature_recording": {
+    "message": "Perekaman Berkualitas Tinggi"
+  },
+  "feature_recording_desc": {
+    "message": "Perekaman audio jernih dengan pembatalan kebisingan"
+  },
+  "feature_transcription": {
+    "message": "Transkripsi AI"
+  },
+  "feature_transcription_desc": {
+    "message": "Didukung oleh OpenAI Whisper untuk speech-to-text yang akurat"
+  },
+  "feature_summarization": {
+    "message": "Ringkasan Medis"
+  },
+  "feature_summarization_desc": {
+    "message": "Ringkasan cerdas yang disesuaikan untuk dokumentasi medis"
+  },
+  "feature_integration": {
+    "message": "Integrasi ePuskesmas"
+  },
+  "feature_integration_desc": {
+    "message": "Integrasi mulus dengan sistem manajemen kesehatan"
+  },
+
+  "permission_required": {
+    "message": "🔒 Izin Mikrofon Diperlukan"
+  },
+  "permission_description": {
+    "message": "Untuk merekam konsultasi audio, kami memerlukan akses ke mikrofon Anda. Audio Anda diproses dengan aman dan tidak pernah disimpan secara permanen tanpa persetujuan Anda."
+  },
+  "grant_access": {
+    "message": "Berikan Akses Mikrofon"
+  },
+  "configure_settings": {
+    "message": "Konfigurasi Pengaturan"
+  },
+  "requesting_access": {
+    "message": "Meminta Akses..."
+  },
+  "access_granted": {
+    "message": "✓ Akses Diberikan"
+  },
+  "testing_microphone": {
+    "message": "Menguji mikrofon..."
+  },
+  "microphone_access_granted": {
+    "message": "✅ Akses mikrofon berhasil diberikan!"
+  },
+  "microphone_already_granted": {
+    "message": "Akses mikrofon sudah diberikan!"
+  },
+
+  "setup_complete": {
+    "message": "🎉 Setup Selesai!"
+  },
+  "setup_complete_desc": {
+    "message": "Perekam Audio Medis Anda siap digunakan. Berikut yang harus dilakukan selanjutnya:"
+  },
+  "step_configure_api": {
+    "message": "Konfigurasi kunci API OpenAI Anda di halaman pengaturan"
+  },
+  "step_choose_language": {
+    "message": "Pilih bahasa dan template medis yang Anda inginkan"
+  },
+  "step_start_recording": {
+    "message": "Mulai merekam konsultasi medis dari halaman ePuskesmas mana pun"
+  },
+  "step_review_summaries": {
+    "message": "Tinjau dan edit ringkasan yang dihasilkan AI sebelum menyimpan"
+  },
+  "step_api_configured": {
+    "message": "✓ Kunci API OpenAI dikonfigurasi"
+  },
+
+  "privacy_notice": {
+    "message": "Privasi: Semua rekaman diproses dengan aman. Konfigurasikan retensi data di pengaturan."
+  },
+
+  "success_message": {
+    "message": "Berhasil!"
+  },
+  "error_message": {
+    "message": "Error"
+  },
+  "info_message": {
+    "message": "Info"
+  },
+
+  "settings_saved": {
+    "message": "Pengaturan berhasil disimpan!"
+  },
+  "settings_refreshed": {
+    "message": "Pengaturan disegarkan."
+  },
+  "transcript_copied": {
+    "message": "Transkrip disalin ke clipboard"
+  },
+  "failed_copy": {
+    "message": "Gagal menyalin transkrip"
+  },
+  "audio_downloaded": {
+    "message": "Audio berhasil diunduh!"
+  },
+  "summary_inserted": {
+    "message": "Ringkasan berhasil dimasukkan!"
+  },
+  "failed_insert": {
+    "message": "Gagal memasukkan ringkasan. Silakan segarkan halaman dan coba lagi."
+  },
+  "content_script_unavailable": {
+    "message": "Content script tidak tersedia. Silakan segarkan halaman dan coba lagi."
+  },
+
+  "permission_denied": {
+    "message": "Izin ditolak. Silakan izinkan akses mikrofon di pengaturan browser Anda."
+  },
+  "no_microphone": {
+    "message": "Tidak ada mikrofon ditemukan. Silakan hubungkan mikrofon dan coba lagi."
+  },
+  "microphone_in_use": {
+    "message": "Mikrofon sedang digunakan oleh aplikasi lain."
+  },
+
+  "api_key_missing": {
+    "message": "Kunci API tidak dikonfigurasi. Silakan buka Pengaturan dan tambahkan kunci API Anda."
+  },
+  "no_audio_transcribe": {
+    "message": "Tidak ada audio untuk ditranskripsikan"
+  },
+  "no_transcript_summarize": {
+    "message": "Silakan masukkan atau transkripsikan teks terlebih dahulu"
+  },
+  "audio_uploaded": {
+    "message": "Berhasil diunggah:"
+  },
+  "unsupported_format": {
+    "message": "Format audio tidak didukung. Silakan gunakan:"
+  },
+  "file_too_large": {
+    "message": "Ukuran file terlalu besar. Silakan pilih file yang lebih kecil dari 25MB"
+  },
+
+  "download_mp3": {
+    "message": "Unduh MP3"
+  },
+  "no_audio_download": {
+    "message": "Tidak ada audio yang tersedia untuk diunduh"
+  }
+}

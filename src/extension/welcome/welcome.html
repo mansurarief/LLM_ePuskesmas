@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>__MSG_welcome_title__</title>
+  <link rel="stylesheet" href="welcome.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🏥 __MSG_app_name__</h1>
+      <p>__MSG_welcome_subtitle__</p>
+    </div>
+
+    <div class="features">
+      <div class="feature">
+        <div class="feature-icon">🎙️</div>
+        <div class="feature-text">
+          <div class="feature-title">__MSG_feature_recording__</div>
+          <div class="feature-desc">__MSG_feature_recording_desc__</div>
+        </div>
+      </div>
+
+      <div class="feature">
+        <div class="feature-icon">🤖</div>
+        <div class="feature-text">
+          <div class="feature-title">__MSG_feature_transcription__</div>
+          <div class="feature-desc">__MSG_feature_transcription_desc__</div>
+        </div>
+      </div>
+
+      <div class="feature">
+        <div class="feature-icon">📋</div>
+        <div class="feature-text">
+          <div class="feature-title">__MSG_feature_summarization__</div>
+          <div class="feature-desc">__MSG_feature_summarization_desc__</div>
+        </div>
+      </div>
+
+      <div class="feature">
+        <div class="feature-icon">🔧</div>
+        <div class="feature-text">
+          <div class="feature-title">__MSG_feature_integration__</div>
+          <div class="feature-desc">__MSG_feature_integration_desc__</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="permission-section">
+      <h3>__MSG_permission_required__</h3>
+      <p>__MSG_permission_description__</p>
+    </div>
+
+    <div class="button-group">
+      <button id="requestAccess" class="btn-primary">
+        __MSG_grant_access__
+      </button>
+      <button id="configureSettings" class="btn-secondary">
+        __MSG_configure_settings__
+      </button>
+    </div>
+
+    <div id="status"></div>
+
+    <div id="nextSteps" class="next-steps" style="display: none;">
+      <h3>__MSG_setup_complete__</h3>
+      <p>__MSG_setup_complete_desc__</p>
+      <ol>
+        <li><strong>__MSG_step_configure_api__</strong></li>
+        <li><strong>__MSG_step_choose_language__</strong></li>
+        <li><strong>__MSG_step_start_recording__</strong></li>
+        <li><strong>__MSG_step_review_summaries__</strong></li>
+      </ol>
+    </div>
+
+    <div class="footer">
+      <p><strong>__MSG_privacy_notice__</strong></p>
+    </div>
+  </div>
+
+  <script src="welcome.js" type="module"></script>
+</body>
+</html>

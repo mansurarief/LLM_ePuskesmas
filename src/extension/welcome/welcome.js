@@ -1,3 +1,5 @@
+import { localizeHtmlPage } from "../utils/translations.js";
+
 /**
  * @fileoverview Welcome Page Manager for Medical Audio Recorder Chrome Extension
  * This file manages the initial setup and onboarding experience for users.
@@ -24,6 +26,7 @@ class WelcomeManager {
    * @constructor
    */
   constructor() {
+    localizeHtmlPage();
     this.initializeElements();
     this.setupEventListeners();
     this.checkCurrentPermissions();
@@ -136,7 +139,7 @@ class WelcomeManager {
    * @param {MediaStream} stream - Microphone media stream to test
    */
   async testMicrophone(stream) {
-    this.showStatus('Testing microphone...', 'info');
+    this.showStatus(chrome.i18n.getMessage("testing_microphone"), 'info');
     
     // Stop all tracks after testing
     stream.getTracks().forEach(track => track.stop());
@@ -164,11 +167,11 @@ class WelcomeManager {
    * @private
    */
   handleSuccessfulPermission(button) {
-    this.showStatus('✅ Microphone access granted successfully!', 'success');
+    this.showStatus(chrome.i18n.getMessage("microphone_access_granted"), 'success');
     this.showNextSteps();
     
     // Update button
-    button.textContent = '✓ Access Granted';
+    button.textContent = chrome.i18n.getMessage("access_granted");
     button.className = 'btn-success';
   }
 
@@ -305,7 +308,7 @@ class WelcomeManager {
   updateFirstStep() {
     const firstStep = this.elements.nextSteps.querySelector('ol li:first-child');
     if (firstStep) {
-      firstStep.innerHTML = '<strong>✓ OpenAI API key configured</strong>';
+      firstStep.innerHTML = `<strong>${chrome.i18n.getMessage("step_api_configured")}</strong>`;
     }
   }
 }
