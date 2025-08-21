@@ -1,8 +1,29 @@
 /**
- * Medical Audio Recorder - Chrome Extension
- * Handles audio recording, transcription, and medical summary generation
+ * @fileoverview Medical Audio Recorder Chrome Extension - Main popup functionality
+ * This file contains the core MedicalAudioRecorder class that handles audio recording,
+ * transcription using AI APIs (OpenAI/Gemini), and medical summary generation for
+ * healthcare documentation purposes.
+ * 
+ * @author LLM ePuskesmas Team
+ * @license MIT
+ * @version 1.0.0
+ */
+
+/**
+ * Main class for the Medical Audio Recorder Chrome Extension.
+ * Manages audio recording, transcription, and medical summary generation
+ * with integration to healthcare systems.
+ * 
+ * @class MedicalAudioRecorder
  */
 class MedicalAudioRecorder {
+  /**
+   * Initializes the MedicalAudioRecorder instance.
+   * Sets up properties, DOM elements, event listeners, loads settings,
+   * checks microphone access, and validates API configuration.
+   * 
+   * @constructor
+   */
   constructor() {
     this.initializeProperties();
     this.initializeElements();
@@ -20,6 +41,12 @@ class MedicalAudioRecorder {
   // INITIALIZATION METHODS
   // ============================================================================
 
+  /**
+   * Initializes all instance properties with default values.
+   * Sets up recording state, timing properties, and configuration defaults.
+   * 
+   * @private
+   */
   initializeProperties() {
     this.mediaRecorder = null;
     this.audioChunks = [];
@@ -39,6 +66,12 @@ class MedicalAudioRecorder {
     this.summarizationEndTime = null;
   }
 
+  /**
+   * Initializes and caches references to DOM elements.
+   * Improves performance by storing element references for frequent access.
+   * 
+   * @private
+   */
   initializeElements() {
     this.elements = {
       // Recording controls
@@ -93,6 +126,12 @@ class MedicalAudioRecorder {
     };
   }
 
+  /**
+   * Sets up event listeners for all interactive elements.
+   * Handles recording controls, file uploads, navigation, and audio playback.
+   * 
+   * @private
+   */
   initializeEventListeners() {
     // Recording event listeners
     this.elements.startRecording.addEventListener("click", () =>
@@ -155,6 +194,14 @@ class MedicalAudioRecorder {
   // SETTINGS AND CONFIGURATION
   // ============================================================================
 
+  /**
+   * Loads user settings from Chrome storage.
+   * Retrieves API keys, provider preferences, and configuration options.
+   * 
+   * @async
+   * @private
+   * @throws {Error} When storage access fails
+   */
   async loadSettings() {
     this.settings = await chrome.storage.local.get([
       "openaiApiKey",
@@ -173,6 +220,12 @@ class MedicalAudioRecorder {
     this.setDefaultSettings();
   }
 
+  /**
+   * Sets default values for undefined settings.
+   * Ensures all required configuration options have fallback values.
+   * 
+   * @private
+   */
   setDefaultSettings() {
     const defaults = {
       openaiApiKey: "",
@@ -195,6 +248,13 @@ class MedicalAudioRecorder {
     });
   }
 
+  /**
+   * Checks if microphone access has been granted.
+   * Updates UI state based on permission status and validates API configuration.
+   * 
+   * @async
+   * @private
+   */
   async checkMicrophoneAccess() {
     const { microphoneAccess } = await chrome.storage.local.get(
       "microphoneAccess"
@@ -214,6 +274,12 @@ class MedicalAudioRecorder {
     this.validateApiConfiguration();
   }
 
+  /**
+   * Validates API key configuration for selected providers.
+   * Checks if required API keys are present for transcription and summarization.
+   * 
+   * @private
+   */
   validateApiConfiguration() {
     const transcriptionProvider = this.settings.transcriptionProvider || "openai";
     const summarizationProvider = this.settings.summarizationProvider || "openai";
@@ -244,12 +310,26 @@ class MedicalAudioRecorder {
     }
   }
 
+  /**
+   * Refreshes settings from storage and revalidates configuration.
+   * 
+   * @async
+   * @private
+   */
   async refreshSettings() {
     await this.loadSettings();
     this.validateApiConfiguration();
     this.showMessage("Settings refreshed.", "success");
   }
 
+  /**
+   * Checks if API keys are properly configured in storage.
+   * Displays warning messages if required keys are missing.
+   * 
+   * @async
+   * @private
+   * @returns {Promise<Object|null>} Storage result or null on error
+   */
   async checkApiKeyInStorage() {
     try {
       const result = await chrome.storage.local.get([
@@ -272,6 +352,13 @@ class MedicalAudioRecorder {
     }
   }
 
+  /**
+   * Tests API key configuration and displays results.
+   * Validates both OpenAI and Gemini API keys if configured.
+   * 
+   * @async
+   * @private
+   */
   async testApiKey() {
     try {
       const transcriptionProvider = this.settings.transcriptionProvider || "openai";
@@ -306,6 +393,12 @@ class MedicalAudioRecorder {
   // TIMING METHODS
   // ============================================================================
 
+  /**
+   * Starts the transcription timing process.
+   * Initiates real-time timer updates for transcription duration tracking.
+   * 
+   * @private
+   */
   startTranscriptionTimer() {
     this.transcriptionStartTime = Date.now();
     this.updateTranscriptionTime();
@@ -316,6 +409,12 @@ class MedicalAudioRecorder {
     }, 1000);
   }
 
+  /**
+   * Ends the transcription timing process.
+   * Stops timer updates and records final transcription duration.
+   * 
+   * @private
+   */
   endTranscriptionTimer() {
     this.transcriptionEndTime = Date.now();
     this.updateTranscriptionTime();
@@ -327,6 +426,12 @@ class MedicalAudioRecorder {
     }
   }
 
+  /**
+   * Updates the transcription time display.
+   * Calculates and displays elapsed time during transcription process.
+   * 
+   * @private
+   */
   updateTranscriptionTime() {
     if (this.transcriptionStartTime) {
       const endTime = this.transcriptionEndTime || Date.now();
@@ -368,6 +473,13 @@ class MedicalAudioRecorder {
     }
   }
 
+  /**
+   * Formats duration from milliseconds to readable string.
+   * 
+   * @private
+   * @param {number} milliseconds - Duration in milliseconds
+   * @returns {string} Formatted duration string (e.g., "2m 30s" or "45s")
+   */
   formatDuration(milliseconds) {
     const seconds = Math.floor(milliseconds / 1000);
     const minutes = Math.floor(seconds / 60);
@@ -439,6 +551,13 @@ class MedicalAudioRecorder {
   // AUDIO RECORDING METHODS
   // ============================================================================
 
+  /**
+   * Starts audio recording process.
+   * Requests microphone access, configures MediaRecorder, and initiates recording.
+   * 
+   * @async
+   * @throws {Error} When microphone access is denied or unavailable
+   */
   async startRecording() {
     try {
       const constraints = this.getAudioConstraints();
@@ -458,6 +577,12 @@ class MedicalAudioRecorder {
     }
   }
 
+  /**
+   * Configures the MediaRecorder for audio capture.
+   * Sets up event handlers and begins data collection.
+   * 
+   * @private
+   */
   setupMediaRecorder() {
     this.audioChunks = [];
     this.recordingStartTime = Date.now();
@@ -497,6 +622,12 @@ class MedicalAudioRecorder {
     this.elements.openWelcomePage.style.display = "block";
   }
 
+  /**
+   * Stops the current audio recording.
+   * Terminates MediaRecorder and releases microphone resources.
+   * 
+   * @public
+   */
   stopRecording() {
     if (this.mediaRecorder && this.mediaRecorder.state !== "inactive") {
       this.mediaRecorder.stop();
@@ -504,6 +635,12 @@ class MedicalAudioRecorder {
     }
   }
 
+  /**
+   * Handles recording completion.
+   * Updates UI state, creates audio blob, and sets up playback.
+   * 
+   * @private
+   */
   onRecordingStop() {
     this.elements.startRecording.disabled = false;
     this.elements.stopRecording.disabled = true;
@@ -541,6 +678,12 @@ class MedicalAudioRecorder {
     }
   }
 
+  /**
+   * Clears the current recording and resets UI.
+   * Removes audio data, resets controls, and clears results.
+   * 
+   * @public
+   */
   clearRecording() {
     this.audioChunks = [];
     this.audioBlob = null;
@@ -568,6 +711,13 @@ class MedicalAudioRecorder {
   // TRANSCRIPTION METHODS
   // ============================================================================
 
+  /**
+   * Initiates audio transcription process.
+   * Validates audio availability and API configuration before transcription.
+   * 
+   * @async
+   * @throws {Error} When no audio is available or API configuration is invalid
+   */
   async transcribeAudio() {
     if (!this.audioBlob) {
       this.showMessage("No audio to transcribe", "error");
@@ -580,6 +730,14 @@ class MedicalAudioRecorder {
     await this.transcribeWithRetry();
   }
 
+  /**
+   * Performs transcription with retry capability.
+   * Handles transcription process with automatic retry on failure.
+   * 
+   * @async
+   * @private
+   * @throws {Error} When transcription fails after all retry attempts
+   */
   async transcribeWithRetry() {
     try {
       this.updateStatus("Transcribing audio...", "processing");
@@ -608,6 +766,15 @@ class MedicalAudioRecorder {
     }
   }
 
+  /**
+   * Performs the actual transcription using the configured provider.
+   * Routes to OpenAI or Gemini transcription based on settings.
+   * 
+   * @async
+   * @private
+   * @returns {Promise<string>} Transcribed text
+   * @throws {Error} When transcription provider is unsupported or API call fails
+   */
   async transcribeAudioOnly() {
     const transcriptionProvider = this.settings.transcriptionProvider || "openai";
     
@@ -705,6 +872,15 @@ class MedicalAudioRecorder {
   // TRANSCRIPTION API METHODS
   // ============================================================================
 
+  /**
+   * Transcribes audio using OpenAI Whisper API.
+   * Sends audio file to OpenAI and processes the response.
+   * 
+   * @async
+   * @private
+   * @returns {Promise<string>} Transcribed text from OpenAI
+   * @throws {Error} When API key is missing or API call fails
+   */
   async transcribeWithOpenAI() {
     // Check if API key is configured
     if (!this.settings.openaiApiKey) {
@@ -771,6 +947,15 @@ class MedicalAudioRecorder {
   // SUMMARIZATION METHODS
   // ============================================================================
 
+  /**
+   * Generates medical summary from transcription.
+   * Routes to appropriate AI provider for summarization.
+   * 
+   * @async
+   * @param {string} transcription - The transcribed text to summarize
+   * @returns {Promise<string>} Medical summary in JSON format
+   * @throws {Error} When summarization fails or provider is unsupported
+   */
   async generateSummary(transcription) {
     try {
       const summarizationProvider = this.settings.summarizationProvider || "openai";
@@ -801,6 +986,16 @@ class MedicalAudioRecorder {
     }
   }
 
+  /**
+   * Generates medical summary using OpenAI GPT API.
+   * Processes transcription through medical summary prompt.
+   * 
+   * @async
+   * @private
+   * @param {string} transcription - The transcribed text to process
+   * @returns {Promise<string>} Medical summary in structured JSON format
+   * @throws {Error} When API key is missing or API call fails
+   */
   async generateSummaryWithOpenAI(transcription) {
     // Check if API key is configured
     if (!this.settings.openaiApiKey) {
@@ -910,6 +1105,13 @@ class MedicalAudioRecorder {
     this.elements.audioFileInput.click();
   }
 
+  /**
+   * Handles audio file upload from user.
+   * Validates file type and size, then sets up for processing.
+   * 
+   * @param {Event} event - File input change event
+   * @private
+   */
   handleFileUpload(event) {
     const file = event.target.files[0];
     if (!file) return;
@@ -925,6 +1127,14 @@ class MedicalAudioRecorder {
     event.target.value = "";
   }
 
+  /**
+   * Validates uploaded audio file.
+   * Checks file type and size constraints.
+   * 
+   * @private
+   * @param {File} file - The uploaded file to validate
+   * @returns {boolean} True if file is valid, false otherwise
+   */
   validateUploadedFile(file) {
     if (!file.type.startsWith("audio/")) {
       this.showMessage("Please select a valid audio file", "error");
@@ -1133,6 +1343,14 @@ class MedicalAudioRecorder {
     this.elements.result.style.display = "block";
   }
 
+  /**
+   * Displays a temporary message to the user.
+   * Shows success, error, or info messages with auto-removal.
+   * 
+   * @param {string} message - The message text to display
+   * @param {string} type - Message type ('success', 'error', 'info')
+   * @private
+   */
   showMessage(message, type) {
     const messageDiv = document.createElement("div");
     messageDiv.className =
@@ -1197,6 +1415,14 @@ class MedicalAudioRecorder {
   // CHROME EXTENSION METHODS
   // ============================================================================
 
+  /**
+   * Inserts medical summary into the active webpage.
+   * Communicates with content script to inject summary into healthcare forms.
+   * 
+   * @async
+   * @param {string} summary - The medical summary to insert
+   * @returns {Promise<void>} Resolves when insertion is complete
+   */
   async insertSummary(summary) {
     return new Promise((resolve) => {
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {

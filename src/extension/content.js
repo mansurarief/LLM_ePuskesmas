@@ -1,8 +1,29 @@
 /**
- * Content Integrator - Chrome Extension
- * Handles integration with healthcare systems and summary insertion
+ * @fileoverview Content Script for Medical Audio Recorder Chrome Extension
+ * This content script runs on healthcare system webpages and handles the integration
+ * of AI-generated medical summaries into forms and clinical documentation systems.
+ * Supports ePuskesmas, SIMRS, and other healthcare management platforms.
+ * 
+ * @author LLM ePuskesmas Team
+ * @license MIT
+ * @version 1.0.0
+ */
+
+/**
+ * Handles integration between the extension and healthcare system webpages.
+ * Manages healthcare system detection, message handling, and summary insertion
+ * into various medical documentation forms.
+ * 
+ * @class ContentIntegrator
  */
 class ContentIntegrator {
+  /**
+   * Initializes the ContentIntegrator instance.
+   * Sets up properties, message listeners, detects healthcare systems,
+   * and prepares for summary integration.
+   * 
+   * @constructor
+   */
   constructor() {
     this.initializeProperties();
     this.setupMessageListener();
@@ -14,6 +35,12 @@ class ContentIntegrator {
   // INITIALIZATION METHODS
   // ============================================================================
 
+  /**
+   * Initializes instance properties and target selectors.
+   * Sets up form field selectors for various healthcare systems.
+   * 
+   * @private
+   */
   initializeProperties() {
     this.targetSelectors = [
       '#diagnose-comments',
@@ -31,6 +58,12 @@ class ContentIntegrator {
     this.isInitialized = false;
   }
 
+  /**
+   * Sets up Chrome extension message listener.
+   * Handles communication between popup and content script for summary insertion.
+   * 
+   * @private
+   */
   setupMessageListener() {
     try {
       chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -60,6 +93,12 @@ class ContentIntegrator {
   // HEALTHCARE SYSTEM DETECTION
   // ============================================================================
 
+  /**
+   * Detects the type of healthcare system on the current page.
+   * Analyzes URL and page title to identify system type (ePuskesmas, SIMRS, etc.).
+   * 
+   * @private
+   */
   detectHealthcareSystems() {
     const url = window.location.href;
     const title = document.title.toLowerCase();
@@ -84,6 +123,13 @@ class ContentIntegrator {
   // SUMMARY INSERTION METHODS
   // ============================================================================
 
+  /**
+   * Main method for inserting medical summary into the page.
+   * Attempts JSON parsing first, then falls back to text insertion.
+   * 
+   * @param {string} summary - Medical summary to insert (JSON or text format)
+   * @public
+   */
   insertSummary(summary) {
     console.log("Received summary:", summary);
     
@@ -119,6 +165,14 @@ class ContentIntegrator {
     console.log(`Summary inserted: ${inserted}`);
   }
 
+  /**
+   * Parses medical summary from JSON format.
+   * Attempts to extract structured medical data from various JSON formats.
+   * 
+   * @private
+   * @param {string} summary - Raw summary text that may contain JSON
+   * @returns {Object|null} Parsed medical data object or null if parsing fails
+   */
   parseSummaryJSON(summary) {
     try {
       console.log("Attempting to parse summary:", summary);
@@ -180,6 +234,13 @@ class ContentIntegrator {
     return null;
   }
 
+  /**
+   * Populates specific healthcare form fields with parsed medical data.
+   * Maps structured medical data to appropriate form fields in healthcare systems.
+   * 
+   * @private
+   * @param {Object} parsedData - Structured medical data object
+   */
   populateSpecificFields(parsedData) {
     let fieldsPopulated = 0;
     console.log("Starting to populate fields with data:", parsedData);
@@ -312,6 +373,13 @@ class ContentIntegrator {
     }
   }
 
+  /**
+   * Shows a success notification after successful field population.
+   * Creates a floating notification displaying the inserted medical data.
+   * 
+   * @private
+   * @param {Object} parsedData - Medical data that was successfully inserted
+   */
   showSuccessNotification(parsedData) {
     // Remove existing notification
     const existing = document.getElementById('medical-ai-notification');
@@ -387,6 +455,14 @@ class ContentIntegrator {
     }, 5000);
   }
 
+  /**
+   * Attempts to insert summary using alternative form selectors.
+   * Tries various CSS selectors to find suitable form fields.
+   * 
+   * @private
+   * @param {string} summary - Summary text to insert
+   * @returns {boolean} True if insertion was successful, false otherwise
+   */
   tryAlternativeSelectors(summary) {
     for (const selector of this.targetSelectors) {
       const elements = document.querySelectorAll(selector);
@@ -401,6 +477,14 @@ class ContentIntegrator {
     return false;
   }
 
+  /**
+   * Inserts summary text into a specific DOM element.
+   * Handles both input/textarea elements and content elements.
+   * 
+   * @private
+   * @param {HTMLElement} element - Target element for insertion
+   * @param {string} summary - Summary text to insert
+   */
   insertIntoElement(element, summary) {
     const timestamp = new Date().toLocaleString('id-ID');
     const formattedSummary = `\n--- AI Medical Summary (${timestamp}) ---\n${summary}\n--- End Summary ---\n`;
@@ -421,6 +505,13 @@ class ContentIntegrator {
     element.dispatchEvent(new Event('input', { bubbles: true }));
   }
 
+  /**
+   * Highlights an element to show it has been updated.
+   * Applies temporary visual highlighting to indicate successful insertion.
+   * 
+   * @private
+   * @param {HTMLElement} element - Element to highlight
+   */
   highlightElement(element) {
     const originalStyle = element.style.cssText;
     element.style.transition = 'all 0.3s ease';
@@ -432,6 +523,14 @@ class ContentIntegrator {
     }, 3000);
   }
 
+  /**
+   * Checks if an element is visible on the page.
+   * Determines element visibility for insertion targeting.
+   * 
+   * @private
+   * @param {HTMLElement} element - Element to check
+   * @returns {boolean} True if element is visible, false otherwise
+   */
   isVisible(element) {
     const style = window.getComputedStyle(element);
     return style.display !== 'none' && 
@@ -443,6 +542,13 @@ class ContentIntegrator {
   // FLOATING NOTIFICATION METHODS
   // ============================================================================
 
+  /**
+   * Creates a floating notification when form insertion fails.
+   * Shows summary in a popup when no suitable form fields are found.
+   * 
+   * @private
+   * @param {string} summary - Summary to display in notification
+   */
   createFloatingNotification(summary) {
     this.removeExistingNotification();
     
@@ -464,6 +570,14 @@ class ContentIntegrator {
     return notification;
   }
 
+  /**
+   * Generates HTML for the floating notification.
+   * Creates styled notification content with copy functionality.
+   * 
+   * @private
+   * @param {string} summary - Summary content for the notification
+   * @returns {string} HTML string for the notification
+   */
   getNotificationHTML(summary) {
     return `
       <div style="
@@ -550,6 +664,12 @@ class ContentIntegrator {
 }
 
 // Initialize content integrator with multiple initialization strategies
+/**
+ * Initializes the content script with multiple strategies.
+ * Handles various page loading states and ensures proper initialization.
+ * 
+ * @function initializeContentScript
+ */
 function initializeContentScript() {
   try {
     console.log("🏥 Initializing Medical Audio Recorder Content Script...");
