@@ -1,4 +1,4 @@
-import { localizeHtmlPage } from "../utils/translations.js";
+import { localizeHtmlPage, getMessage, initTranslations } from "../utils/translations.js";
 
 /**
  * @fileoverview Welcome Page Manager for Medical Audio Recorder Chrome Extension
@@ -26,6 +26,16 @@ class WelcomeManager {
    * @constructor
    */
   constructor() {
+    this.init();
+  }
+
+  /**
+   * Asynchronous initialization of the welcome page components.
+   * 
+   * @async
+   */
+  async init() {
+    await initTranslations();
     localizeHtmlPage();
     this.initializeElements();
     this.setupEventListeners();
@@ -78,12 +88,12 @@ class WelcomeManager {
       const { microphoneAccess } = await chrome.storage.local.get('microphoneAccess');
       
       if (microphoneAccess) {
-        this.showStatus('Microphone access already granted!', 'success');
+        this.showStatus(getMessage("microphone_already_granted"), 'success');
         this.showNextSteps();
       }
     } catch (error) {
       console.error('Error checking permissions:', error);
-      this.showStatus('Error checking permissions: ' + error.message, 'error');
+      this.showStatus(getMessage("error_permissions") + ': ' + error.message, 'error');
     }
   }
 
@@ -96,9 +106,13 @@ class WelcomeManager {
    */
   async requestMicrophoneAccess() {
     const button = this.elements.requestAccess;
-    const originalText = button.textContent;
+    const originalContent = Array.from(button.childNodes).map(n => n.cloneNode(true));
     
-    this.updateButtonState(button, 'Requesting Access...', true);
+    const loadingIcon = document.createElement("span");
+    loadingIcon.className = "material-symbols-rounded";
+    loadingIcon.textContent = "progress_activity";
+    loadingIcon.style.animation = "spin 1s linear infinite";
+    this.updateButtonState(button, [loadingIcon, document.createTextNode(" Requesting Access...")], true);
     
     try {
       const stream = await this.getMicrophoneStream();
@@ -107,7 +121,7 @@ class WelcomeManager {
       
       this.handleSuccessfulPermission(button);
     } catch (error) {
-      this.handlePermissionError(error, button, originalText);
+      this.handlePermissionError(error, button, originalContent);
     }
   }
 
@@ -139,7 +153,7 @@ class WelcomeManager {
    * @param {MediaStream} stream - Microphone media stream to test
    */
   async testMicrophone(stream) {
-    this.showStatus(chrome.i18n.getMessage("testing_microphone"), 'info');
+    this.showStatus(getMessage("testing_microphone"), 'info');
     
     // Stop all tracks after testing
     stream.getTracks().forEach(track => track.stop());
@@ -167,12 +181,14 @@ class WelcomeManager {
    * @private
    */
   handleSuccessfulPermission(button) {
-    this.showStatus(chrome.i18n.getMessage("microphone_access_granted"), 'success');
+    this.showStatus(getMessage("microphone_access_granted"), 'success');
     this.showNextSteps();
     
-    // Update button
-    button.textContent = chrome.i18n.getMessage("access_granted");
-    button.className = 'btn-success';
+    const successIcon = document.createElement("span");
+    successIcon.className = "material-symbols-rounded";
+    successIcon.textContent = "check_circle";
+    this.updateButtonState(button, [successIcon, document.createTextNode(" " + getMessage("access_granted"))], true);
+    button.className = "md-button md-button--filled md-button--success";
   }
 
   /**
@@ -184,15 +200,14 @@ class WelcomeManager {
    * @param {string} originalText - Original button text to restore
    * @private
    */
-  handlePermissionError(error, button, originalText) {
+  handlePermissionError(error, button, originalContent) {
     console.error('Error accessing microphone:', error);
     
     const errorMessage = this.getErrorMessage(error);
     this.showStatus(errorMessage, 'error');
     
     // Reset button
-    button.textContent = originalText;
-    button.disabled = false;
+    this.updateButtonState(button, originalContent, false);
   }
 
   /**
@@ -204,17 +219,17 @@ class WelcomeManager {
    * @private
    */
   getErrorMessage(error) {
-    let errorMessage = 'Error: Could not access microphone. ';
+    let errorMessage = getMessage("error_recording") + ". ";
     
     switch (error.name) {
       case 'NotAllowedError':
-        errorMessage += 'Permission was denied. Please allow microphone access in your browser settings.';
+        errorMessage += getMessage("permission_denied");
         break;
       case 'NotFoundError':
-        errorMessage += 'No microphone found. Please connect a microphone and try again.';
+        errorMessage += getMessage("no_microphone");
         break;
       case 'NotReadableError':
-        errorMessage += 'Microphone is being used by another application.';
+        errorMessage += getMessage("microphone_in_use");
         break;
       default:
         errorMessage += error.message;
@@ -232,8 +247,15 @@ class WelcomeManager {
    * @param {boolean} disabled - Whether button should be disabled
    * @private
    */
-  updateButtonState(button, text, disabled) {
-    button.textContent = text;
+  updateButtonState(button, content, disabled) {
+    button.textContent = "";
+    if (Array.isArray(content)) {
+        content.forEach(node => button.appendChild(node));
+    } else if (typeof content === "string") {
+        button.textContent = content;
+    } else {
+        button.appendChild(content);
+    }
     button.disabled = disabled;
   }
 
@@ -264,9 +286,21 @@ class WelcomeManager {
    * @private
    */
   showStatus(message, type) {
-    this.elements.status.textContent = message;
-    this.elements.status.className = `status-${type}`;
-    this.elements.status.style.display = 'block';
+    const iconEl = document.createElement("span");
+    iconEl.className = 'material-symbols-rounded';
+    iconEl.textContent = 'info';
+    if (type === 'success') iconEl.textContent = 'check_circle';
+    if (type === 'error') iconEl.textContent = 'error';
+    
+    this.elements.status.textContent = "";
+    this.elements.status.appendChild(iconEl);
+    
+    const textSpan = document.createElement("span");
+    textSpan.textContent = message;
+    this.elements.status.appendChild(textSpan);
+    
+    this.elements.status.className = `md-status-message md-status-message--${type}`;
+    this.elements.status.classList.remove('hidden');
   }
 
   /**
@@ -276,7 +310,7 @@ class WelcomeManager {
    * @private
    */
   showNextSteps() {
-    this.elements.nextSteps.style.display = 'block';
+    this.elements.nextSteps.classList.remove('hidden');
     this.checkApiKeyConfiguration();
   }
 
@@ -308,7 +342,10 @@ class WelcomeManager {
   updateFirstStep() {
     const firstStep = this.elements.nextSteps.querySelector('ol li:first-child');
     if (firstStep) {
-      firstStep.innerHTML = `<strong>${chrome.i18n.getMessage("step_api_configured")}</strong>`;
+      const strong = document.createElement("strong");
+      strong.textContent = getMessage("step_api_configured");
+      firstStep.textContent = "";
+      firstStep.appendChild(strong);
     }
   }
 }

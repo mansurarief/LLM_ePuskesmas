@@ -1,4 +1,4 @@
-import { localizeHtmlPage } from "../utils/translations.js";
+import { localizeHtmlPage, getMessage, initTranslations } from "../utils/translations.js";
 
 /**
  * @fileoverview Options Page Manager for Medical Audio Recorder Chrome Extension
@@ -25,10 +25,20 @@ class OptionsManager {
    * @constructor
    */
   constructor() {
+    this.init();
+  }
+
+  /**
+   * Asynchronous initialization of the options page components.
+   * 
+   * @async
+   */
+  async init() {
+    await initTranslations();
     localizeHtmlPage();
     this.initializeElements();
     this.setupEventListeners();
-    this.loadSettings();
+    await this.loadSettings();
   }
 
   // ============================================================================
@@ -52,7 +62,6 @@ class OptionsManager {
       summarizationModel: document.getElementById("summarizationModel"),
       language: document.getElementById("language"),
       enableRetry: document.getElementById("enableRetry"),
-      saveRecordings: document.getElementById("saveRecordings"),
 
       // Buttons
       saveSettings: document.getElementById("saveSettings"),
@@ -86,6 +95,25 @@ class OptionsManager {
     this.elements.summarizationProvider.addEventListener("change", () =>
       this.updateSummarizationModels()
     );
+
+    // Visibility toggle event listeners for API key fields
+    document.querySelectorAll('.md-toggle-visibility').forEach(button => {
+      button.addEventListener('click', () => {
+        const targetId = button.getAttribute('data-target');
+        const input = document.getElementById(targetId);
+        const icon = button.querySelector('.material-symbols-rounded');
+        
+        if (input && icon) {
+          if (input.type === 'password') {
+            input.type = 'text';
+            icon.textContent = 'visibility_off';
+          } else {
+            input.type = 'password';
+            icon.textContent = 'visibility';
+          }
+        }
+      });
+    });
   }
 
   // ============================================================================
@@ -111,7 +139,6 @@ class OptionsManager {
         "summarizationModel",
         "language",
         "enableRetry",
-        "saveRecordings",
       ]);
 
       this.populateFormFields(settings);
@@ -119,7 +146,7 @@ class OptionsManager {
       this.updateSummarizationModels();
     } catch (error) {
       console.error("Error loading settings:", error);
-      this.showMessage("Error loading settings: " + error.message, "error");
+      this.showMessage(getMessage("error_loading") + ": " + error.message, "error");
     }
   }
 
@@ -140,7 +167,6 @@ class OptionsManager {
       summarizationModel: settings.summarizationModel || "gpt-3.5-turbo",
       language: settings.language || "id",
       enableRetry: settings.enableRetry !== false,
-      saveRecordings: settings.saveRecordings || false,
     };
 
     Object.entries(fieldMappings).forEach(([fieldName, value]) => {
@@ -178,12 +204,21 @@ class OptionsManager {
    */
   async saveSettings() {
     try {
+      const currentSettings = await chrome.storage.local.get("language");
       const settings = this.collectFormData();
       await chrome.storage.local.set(settings);
-      this.showMessage(chrome.i18n.getMessage("settings_saved"), "success");
+      
+      this.showMessage(getMessage("settings_saved"), "success");
+      
+      // If language changed, reload to apply new translations
+      if (currentSettings.language !== settings.language) {
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      }
     } catch (error) {
       console.error("Error saving settings:", error);
-      this.showMessage("Error saving settings: " + error.message, "error");
+      this.showMessage(getMessage("error_saving") + ": " + error.message, "error");
     }
   }
 
@@ -204,7 +239,6 @@ class OptionsManager {
       summarizationModel: this.elements.summarizationModel.value,
       language: this.elements.language.value,
       enableRetry: this.elements.enableRetry.checked,
-      saveRecordings: this.elements.saveRecordings.checked,
     };
 
     return baseSettings;
@@ -225,9 +259,9 @@ class OptionsManager {
     
     if (provider === "openai") {
       const openaiModels = [
-        { value: "whisper-1", label: chrome.i18n.getMessage("whisper_1") },
-        { value: "gpt-4o-transcribe", label: chrome.i18n.getMessage("gpt4o_transcribe") },
-        { value: "gpt-4o-mini-transcribe", label: chrome.i18n.getMessage("gpt4o_mini_transcribe") }
+        { value: "whisper-1", label: getMessage("whisper_1") },
+        { value: "gpt-4o-transcribe", label: getMessage("gpt4o_transcribe") },
+        { value: "gpt-4o-mini-transcribe", label: getMessage("gpt4o_mini_transcribe") }
       ];
 
       openaiModels.forEach(model => {
@@ -238,7 +272,7 @@ class OptionsManager {
       });
     } else if (provider === "gemini") {
       const geminiModels = [
-        { value: "google-speech-id", label: chrome.i18n.getMessage("google_speech_id") }
+        { value: "google-speech-id", label: getMessage("google_speech_id") }
       ];
 
       geminiModels.forEach(model => {
@@ -268,10 +302,10 @@ class OptionsManager {
     
     if (provider === "openai") {
       const openaiModels = [
-        { value: "gpt-3.5-turbo", label: chrome.i18n.getMessage("gpt35_turbo") },
-        { value: "gpt-5-nano", label: chrome.i18n.getMessage("gpt5_nano") },
-        { value: "gpt-5-mini", label: chrome.i18n.getMessage("gpt5_mini") },
-        { value: "gpt-4o-mini", label: chrome.i18n.getMessage("gpt4o_mini") }
+        { value: "gpt-3.5-turbo", label: getMessage("gpt35_turbo") },
+        { value: "gpt-5-nano", label: getMessage("gpt5_nano") },
+        { value: "gpt-5-mini", label: getMessage("gpt5_mini") },
+        { value: "gpt-4o-mini", label: getMessage("gpt4o_mini") }
       ];
 
       openaiModels.forEach(model => {
@@ -282,9 +316,9 @@ class OptionsManager {
       });
     } else if (provider === "gemini") {
       const geminiModels = [
-        { value: "2.5flash-lite", label: chrome.i18n.getMessage("gemini_2_5_flash_lite") },
-        { value: "2.0flash", label: chrome.i18n.getMessage("gemini_2_0_flash") },
-        { value: "2.0flash-lite", label: chrome.i18n.getMessage("gemini_2_0_flash_lite") }
+        { value: "2.5flash-lite", label: getMessage("gemini_2_5_flash_lite") },
+        { value: "2.0flash", label: getMessage("gemini_2_0_flash") },
+        { value: "2.0flash-lite", label: getMessage("gemini_2_0_flash_lite") }
       ];
 
       geminiModels.forEach(model => {
@@ -313,34 +347,93 @@ class OptionsManager {
     try {
       const openaiKey = this.elements.openaiApiKey.value;
       const geminiKey = this.elements.geminiApiKey.value;
-      let testResults = [];
-
+      
+      // Create results container
+      const resultsContainer = document.createElement("div");
+      resultsContainer.className = "md-api-test-results";
+      
+      // Test OpenAI
+      const openaiItem = document.createElement("div");
+      let openaiSuccess = false;
+      let openaiMessage = "";
+      
       if (openaiKey) {
         const openaiResult = await this.testOpenAIConnection(openaiKey);
-        testResults.push(`OpenAI: ${openaiResult}`);
+        openaiSuccess = openaiResult.success;
+        openaiMessage = openaiResult.message;
       } else {
-        testResults.push("OpenAI: No API key provided");
+        openaiMessage = getMessage("api_key_not_provided");
       }
+      
+      openaiItem.className = `md-api-test-item ${openaiSuccess ? "md-api-test-item--success" : "md-api-test-item--error"}`;
+      const openaiIcon = document.createElement("span");
+      openaiIcon.className = "material-symbols-rounded";
+      openaiIcon.textContent = openaiSuccess ? "check_circle" : "error";
+      const openaiText = document.createElement("span");
+      openaiText.textContent = `OpenAI: ${openaiMessage}`;
+      openaiItem.appendChild(openaiIcon);
+      openaiItem.appendChild(openaiText);
+      resultsContainer.appendChild(openaiItem);
 
+      // Test Gemini
+      const geminiItem = document.createElement("div");
+      let geminiSuccess = false;
+      let geminiMessage = "";
+      
       if (geminiKey) {
         const geminiResult = await this.testGeminiConnection(geminiKey);
-        testResults.push(`Gemini: ${geminiResult}`);
+        geminiSuccess = geminiResult.success;
+        geminiMessage = geminiResult.message;
       } else {
-        testResults.push("Gemini: No API key provided");
+        geminiMessage = getMessage("api_key_not_provided");
       }
-
-      const allSuccessful = testResults.every(result => result.includes("successful"));
-      const message = testResults.join(" | ");
       
-      if (allSuccessful) {
-        this.showMessage(message, "success");
-      } else {
-        this.showMessage(message, "error");
-      }
+      geminiItem.className = `md-api-test-item ${geminiSuccess ? "md-api-test-item--success" : "md-api-test-item--error"}`;
+      const geminiIcon = document.createElement("span");
+      geminiIcon.className = "material-symbols-rounded";
+      geminiIcon.textContent = geminiSuccess ? "check_circle" : "error";
+      const geminiText = document.createElement("span");
+      geminiText.textContent = `Gemini: ${geminiMessage}`;
+      geminiItem.appendChild(geminiIcon);
+      geminiItem.appendChild(geminiText);
+      resultsContainer.appendChild(geminiItem);
+      
+      // Show results in a dedicated area
+      this.showTestResults(resultsContainer);
     } catch (error) {
       console.error("Connection test failed:", error);
-      this.showMessage("Connection test failed: " + error.message, "error");
+      this.showMessage(getMessage("error_connection") + ": " + error.message, "error");
     }
+  }
+
+  /**
+   * Shows the API test results in a dedicated container.
+   * 
+   * @param {HTMLElement} resultsContainer - Container with test result items
+   * @private
+   */
+  showTestResults(resultsContainer) {
+    // Remove existing test results
+    const existingResults = document.querySelector('.md-api-test-results');
+    if (existingResults) {
+      existingResults.remove();
+    }
+    
+    // Insert after the md-options-actions container (below the buttons)
+    const actionsContainer = document.querySelector('.md-options-actions');
+    if (actionsContainer && actionsContainer.parentNode) {
+      actionsContainer.parentNode.insertBefore(
+        resultsContainer,
+        actionsContainer.nextSibling
+      );
+    }
+    
+    // Auto-remove after 10 seconds
+    setTimeout(() => {
+      if (resultsContainer.parentNode) {
+        resultsContainer.remove();
+      }
+    }, 10000);
   }
 
   /**
@@ -359,12 +452,12 @@ class OptionsManager {
       });
 
       if (response.ok) {
-        return "Connection successful!";
+        return { success: true, message: getMessage("connection_successful") };
       } else {
-        return "Connection failed. Please check your API key.";
+        return { success: false, message: getMessage("connection_failed_check_key") };
       }
     } catch (error) {
-      return "Connection failed: " + error.message;
+      return { success: false, message: getMessage("connection_failed") + ": " + error.message };
     }
   }
 
@@ -382,12 +475,12 @@ class OptionsManager {
       // Test Gemini API connection - you'll implement the actual API call later
       // For now, we'll just validate the API key format
       if (apiKey.startsWith("AIza")) {
-        return "API key format valid (connection test pending implementation)";
+        return { success: true, message: getMessage("gemini_key_valid_format") };
       } else {
-        return "Invalid API key format. Gemini API keys should start with 'AIza'";
+        return { success: false, message: getMessage("invalid_gemini_key_format") };
       }
     } catch (error) {
-      return "Connection failed: " + error.message;
+      return { success: false, message: getMessage("connection_failed") + ": " + error.message };
     }
   }
 
@@ -404,20 +497,32 @@ class OptionsManager {
    * @private
    */
   showMessage(message, type) {
-    this.elements.successMessage.style.display = "none";
-    this.elements.errorMessage.style.display = "none";
+    this.elements.successMessage.classList.add("hidden");
+    this.elements.errorMessage.classList.add("hidden");
 
     const targetElement =
       type === "success"
         ? this.elements.successMessage
         : this.elements.errorMessage;
-    targetElement.innerHTML = message.replace(/\n/g, "<br>");
-    targetElement.style.display = "block";
+    
+    // Get the icon element inside the message container
+    const iconEl = targetElement.querySelector('.material-symbols-rounded');
+    if (iconEl) {
+      iconEl.textContent = type === "success" ? "check_circle" : "error";
+    }
+    
+    // Get the text element inside the message container
+    const textEl = targetElement.querySelector('.md-message__text');
+    if (textEl) {
+      textEl.textContent = message;
+    }
+
+    targetElement.classList.remove("hidden");
 
     setTimeout(() => {
-      this.elements.successMessage.style.display = "none";
-      this.elements.errorMessage.style.display = "none";
-    }, 8000);
+      this.elements.successMessage.classList.add("hidden");
+      this.elements.errorMessage.classList.add("hidden");
+    }, 5000);
   }
 }
 

@@ -1,19 +1,18 @@
 {
   "app_name": {
-    "message": "Medical Audio Recorder"
+    "message": "Medical Notetaking for ePuskesmas"
   },
   "app_description": {
-    "message": "AI-powered transcription and summarization for healthcare professionals"
+    "message": "Advanced medical audio recording, transcription, and AI-powered summarization for healthcare professionals"
   },
   "epuskesmas_integration": {
     "message": "ePuskesmas Integration"
   },
-
   "options_title": {
     "message": "Medical Notetaking Settings"
   },
   "api_configuration": {
-    "message": "🔑 API Configuration"
+    "message": "API Configuration"
   },
   "openai_api_key": {
     "message": "OpenAI API Key:"
@@ -34,7 +33,7 @@
     "message": "Google AI Studio"
   },
   "transcription_settings": {
-    "message": "🎯 Transcription Settings"
+    "message": "Transcription Settings"
   },
   "transcription_provider": {
     "message": "Transcription Provider:"
@@ -55,7 +54,7 @@
     "message": "Google Speech-to-Text (Indonesian)"
   },
   "summarization_settings": {
-    "message": "🤖 Summarization Settings"
+    "message": "Summarization Settings"
   },
   "summarization_provider": {
     "message": "Summarization Provider:"
@@ -85,7 +84,7 @@
     "message": "Gemini 2.0 Flash Lite"
   },
   "language_settings": {
-    "message": "🌐 Language Settings"
+    "message": "Language Settings"
   },
   "primary_language": {
     "message": "Primary Language:"
@@ -94,7 +93,7 @@
     "message": "Bahasa Indonesia"
   },
   "advanced_settings": {
-    "message": "🔧 Advanced Settings"
+    "message": "Advanced Settings"
   },
   "enable_retry": {
     "message": "Enable automatic retry on API failures"
@@ -108,7 +107,6 @@
   "test_connection": {
     "message": "Test API Connection"
   },
-
   "ready_to_record": {
     "message": "Ready to start recording"
   },
@@ -142,7 +140,81 @@
   "error_summarization": {
     "message": "Summarization failed"
   },
-
+  "inserting_summary": {
+    "message": "Inserting summary..."
+  },
+  "complete": {
+    "message": "Complete!"
+  },
+  "retrying_transcription": {
+    "message": "Retrying transcription..."
+  },
+  "error_loading": {
+    "message": "Error loading settings"
+  },
+  "error_saving": {
+    "message": "Error saving settings"
+  },
+  "error_connection": {
+    "message": "Connection test failed"
+  },
+  "error_no_tab": {
+    "message": "No active tab found"
+  },
+  "error_permissions": {
+    "message": "Error checking permissions"
+  },
+  "error_failed_insert": {
+    "message": "Failed to insert summary"
+  },
+  "api_key_not_provided": {
+    "message": "No API key provided"
+  },
+  "connection_successful": {
+    "message": "Connection successful!"
+  },
+  "connection_failed": {
+    "message": "Connection failed"
+  },
+  "connection_failed_check_key": {
+    "message": "Connection failed. Please check your API key."
+  },
+  "invalid_gemini_key_format": {
+    "message": "Invalid API key format. Gemini API keys should start with 'AIza'"
+  },
+  "gemini_key_valid_format": {
+    "message": "API key format valid (connection test pending implementation)"
+  },
+  "openai_key_configured": {
+    "message": "OpenAI API key configured"
+  },
+  "openai_key_missing": {
+    "message": "OpenAI API key missing"
+  },
+  "gemini_key_configured": {
+    "message": "Gemini API key configured"
+  },
+  "gemini_key_missing": {
+    "message": "Gemini API key missing"
+  },
+  "error_testing_api_key": {
+    "message": "Error testing API key"
+  },
+  "openai_key_not_configured": {
+    "message": "OpenAI API key is not configured. Please go to Settings and add your API key."
+  },
+  "gemini_key_not_configured": {
+    "message": "Gemini API key is not configured. Please go to Settings and add your API key."
+  },
+  "gemini_not_implemented": {
+    "message": "Gemini transcription not yet implemented. Please use OpenAI for now."
+  },
+  "openai_api_error": {
+    "message": "OpenAI API error"
+  },
+  "gemini_summarization_not_implemented": {
+    "message": "Gemini summarization not yet implemented. Please use OpenAI for now."
+  },
   "step_record": {
     "message": "1. Record"
   },
@@ -155,77 +227,72 @@
   "step_summarize": {
     "message": "4. Summarize"
   },
-
   "start_recording": {
-    "message": "🎙️ Start Recording"
+    "message": "Start Recording"
   },
   "stop_recording": {
-    "message": "⏹️ Stop"
+    "message": "Stop"
   },
   "play_recording": {
-    "message": "▶️ Play"
+    "message": "Play"
+  },
+  "pause_recording": {
+    "message": "Pause"
   },
   "transcribe_audio": {
-    "message": "🎯 Transcribe"
+    "message": "Transcribe"
   },
   "clear_recording": {
-    "message": "🗑️ Clear"
+    "message": "Clear"
   },
   "upload_audio": {
-    "message": "📁 Upload Audio"
+    "message": "Upload Audio"
   },
   "grant_mic_access": {
-    "message": "🎤 Grant Mic Access"
+    "message": "Grant Mic Access"
   },
-
   "volume_label": {
     "message": "Volume:"
   },
-
   "edit_transcript": {
-    "message": "📝 Edit Transcript"
+    "message": "Edit Transcript"
   },
   "edit_transcript_desc": {
     "message": "Edit the transcript before summarizing"
   },
   "copy_transcript": {
-    "message": "📋 Copy"
+    "message": "Copy"
   },
   "clear_transcript": {
-    "message": "🗑️ Clear"
+    "message": "Clear"
   },
   "summarize_transcript": {
-    "message": "🤖 Summarize"
+    "message": "Summarize"
   },
-
   "transcription_time": {
-    "message": "⏱️ Transcription:"
+    "message": "Transcription:"
   },
   "summarization_time": {
-    "message": "⏱️ Summarization:"
+    "message": "Summarization:"
   },
-
   "settings_config": {
-    "message": "⚙️ Settings & API Configuration"
+    "message": "Settings & API Configuration"
   },
   "refresh_settings": {
-    "message": "🔄 Refresh Settings"
+    "message": "Refresh Settings"
   },
   "test_api_key": {
-    "message": "🔍 Test API Key"
+    "message": "Test API Key"
   },
-
   "transcript_placeholder": {
     "message": "Transcript will appear here after transcription..."
   },
-
   "welcome_title": {
-    "message": "Welcome to Medical Audio Recorder"
+    "message": "Welcome to Medical Notetaking"
   },
   "welcome_subtitle": {
     "message": "AI-powered transcription and summarization for healthcare professionals"
   },
-
   "feature_recording": {
     "message": "High-Quality Recording"
   },
@@ -250,9 +317,8 @@
   "feature_integration_desc": {
     "message": "Seamless integration with healthcare management systems"
   },
-
   "permission_required": {
-    "message": "🔒 Microphone Permission Required"
+    "message": "Microphone Permission Required"
   },
   "permission_description": {
     "message": "To record audio consultations, we need access to your microphone. Your audio is processed securely and never stored permanently without your consent."
@@ -267,29 +333,28 @@
     "message": "Requesting Access..."
   },
   "access_granted": {
-    "message": "✓ Access Granted"
+    "message": "Access Granted"
   },
   "testing_microphone": {
     "message": "Testing microphone..."
   },
   "microphone_access_granted": {
-    "message": "✅ Microphone access granted successfully!"
+    "message": "Microphone access granted successfully!"
   },
   "microphone_already_granted": {
     "message": "Microphone access already granted!"
   },
-
   "setup_complete": {
-    "message": "🎉 Setup Complete!"
+    "message": "Setup Complete!"
   },
   "setup_complete_desc": {
-    "message": "Your Medical Audio Recorder is ready to use. Here's what to do next:"
+    "message": "Your Medical Notetaking tool is ready to use. Here's what to do next:"
   },
   "step_configure_api": {
     "message": "Configure your OpenAI API key in the settings page"
   },
   "step_choose_language": {
-    "message": "Choose your preferred language and medical templates"
+    "message": "Choose your preferred language"
   },
   "step_start_recording": {
     "message": "Start recording medical consultations from any ePuskesmas page"
@@ -298,13 +363,11 @@
     "message": "Review and edit AI-generated summaries before saving"
   },
   "step_api_configured": {
-    "message": "✓ OpenAI API key configured"
+    "message": "OpenAI API key configured"
   },
-
   "privacy_notice": {
     "message": "Privacy: All recordings are processed securely. Configure data retention in settings."
   },
-
   "success_message": {
     "message": "Success!"
   },
@@ -314,7 +377,6 @@
   "info_message": {
     "message": "Info"
   },
-
   "settings_saved": {
     "message": "Settings saved successfully!"
   },
@@ -339,7 +401,6 @@
   "content_script_unavailable": {
     "message": "Content script not available. Please refresh the page and try again."
   },
-
   "permission_denied": {
     "message": "Permission was denied. Please allow microphone access in your browser settings."
   },
@@ -349,7 +410,6 @@
   "microphone_in_use": {
     "message": "Microphone is being used by another application."
   },
-
   "api_key_missing": {
     "message": "API key is not configured. Please go to Settings and add your API key."
   },
@@ -368,11 +428,19 @@
   "file_too_large": {
     "message": "File size too large. Please select a file smaller than 25MB"
   },
-
   "download_mp3": {
     "message": "Download MP3"
   },
   "no_audio_download": {
     "message": "No audio available to download"
+  },
+  "copy": {
+    "message": "Copy"
+  },
+  "transcription_label": {
+    "message": "Transcription"
+  },
+  "summary_label": {
+    "message": "Summary"
   }
 }

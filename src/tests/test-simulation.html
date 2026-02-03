@@ -1,97 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Test ePuskesmas Form Simulation</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f5f5;
-        }
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        h1 {
-            color: #2c3e50;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .test-section {
-            margin-bottom: 30px;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-        .btn {
-            background: #007bff;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin: 5px;
-            text-decoration: none;
-            display: inline-block;
-        }
-        .btn:hover {
-            background: #0056b3;
-        }
-        .btn-success {
-            background: #28a745;
-        }
-        .btn-success:hover {
-            background: #1e7e34;
-        }
-        .info-box {
-            background: #e3f2fd;
-            border: 1px solid #2196f3;
-            border-radius: 5px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-        .field-mapping {
-            background: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 5px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-        .field-mapping h3 {
-            margin-top: 0;
-            color: #495057;
-        }
-        .field-mapping ul {
-            list-style: none;
-            padding: 0;
-        }
-        .field-mapping li {
-            padding: 5px 0;
-            border-bottom: 1px solid #eee;
-        }
-        .field-mapping li:last-child {
-            border-bottom: none;
-        }
-        .json-key {
-            font-weight: bold;
-            color: #007bff;
-        }
-        .form-field {
-            font-family: monospace;
-            color: #28a745;
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="modern-theme.css">
 </head>
+
 <body>
     <div class="container">
-        <h1>🧪 ePuskesmas Form Simulation Test</h1>
-        
+        <h1><i class="fa-solid fa-flask"></i> ePuskesmas Form Simulation Test</h1>
+
         <div class="info-box">
             <strong>Testing Overview:</strong><br>
             This page helps you test the Medical Audio Recorder extension with the ePuskesmas form simulation.
@@ -99,45 +20,56 @@
         </div>
 
         <div class="field-mapping">
-            <h3>📋 Field Mapping</h3>
+            <h3><i class="fa-solid fa-list"></i> Field Mapping</h3>
             <p>The extension maps these JSON fields to form elements:</p>
             <ul>
-                <li><span class="json-key">chief_complaint</span> → <span class="form-field">Anamnesa[keluhan_utama]</span></li>
-                <li><span class="json-key">additional_complaint</span> → <span class="form-field">Anamnesa[keluhan_tambahan]</span></li>
-                <li><span class="json-key">history_of_present_illness</span> → <span class="form-field">MRiwayatPasien[Riwayat Penyakit Sekarang][value]</span></li>
-                <li><span class="json-key">past_medical_history</span> → <span class="form-field">MRiwayatPasien[Riwayat Penyakit Dulu][value]</span></li>
-                <li><span class="json-key">family_history</span> → <span class="form-field">MRiwayatPasien[Riwayat Penyakit Keluarga][value]</span></li>
-                <li><span class="json-key">recommended_medication_therapy</span> → <span class="form-field">Anamnesa[terapi]</span></li>
-                <li><span class="json-key">recommended_non_medication_therapy</span> → <span class="form-field">Anamnesa[terapi_non_obat]</span></li>
+                <li><span class="json-key">chief_complaint</span> → <span
+                        class="form-field">Anamnesa[keluhan_utama]</span></li>
+                <li><span class="json-key">additional_complaint</span> → <span
+                        class="form-field">Anamnesa[keluhan_tambahan]</span></li>
+                <li><span class="json-key">history_of_present_illness</span> → <span
+                        class="form-field">MRiwayatPasien[Riwayat Penyakit Sekarang][value]</span></li>
+                <li><span class="json-key">past_medical_history</span> → <span class="form-field">MRiwayatPasien[Riwayat
+                        Penyakit Dulu][value]</span></li>
+                <li><span class="json-key">family_history</span> → <span class="form-field">MRiwayatPasien[Riwayat
+                        Penyakit Keluarga][value]</span></li>
+                <li><span class="json-key">recommended_medication_therapy</span> → <span
+                        class="form-field">Anamnesa[terapi]</span></li>
+                <li><span class="json-key">recommended_non_medication_therapy</span> → <span
+                        class="form-field">Anamnesa[terapi_non_obat]</span></li>
                 <li><span class="json-key">education</span> → <span class="form-field">Anamnesa[edukasi]</span></li>
             </ul>
         </div>
 
         <div class="test-section">
-            <h3>🚀 Test Steps</h3>
+            <h3><i class="fa-solid fa-rocket"></i> Test Steps</h3>
             <ol>
-                <li><strong>Open the ePuskesmas Form Simulation:</strong> Click the button below to open the form simulation in a new tab.</li>
-                <li><strong>Open the Medical Audio Recorder Extension:</strong> Click the extension icon in your browser toolbar.</li>
-                <li><strong>Record or Upload Audio:</strong> Either record new audio or upload an existing audio file.</li>
+                <li><strong>Open the ePuskesmas Form Simulation:</strong> Click the button below to open the form
+                    simulation in a new tab.</li>
+                <li><strong>Open the Medical Audio Recorder Extension:</strong> Click the extension icon in your browser
+                    toolbar.</li>
+                <li><strong>Record or Upload Audio:</strong> Either record new audio or upload an existing audio file.
+                </li>
                 <li><strong>Transcribe:</strong> Click "Transcribe" to convert audio to text.</li>
                 <li><strong>Edit Transcript (Optional):</strong> Review and edit the transcript if needed.</li>
                 <li><strong>Summarize:</strong> Click "Summarize" to generate the medical summary.</li>
-                <li><strong>Verify Form Population:</strong> Check that the form fields are automatically populated with the summary data.</li>
+                <li><strong>Verify Form Population:</strong> Check that the form fields are automatically populated with
+                    the summary data.</li>
             </ol>
         </div>
 
         <div class="test-section">
-            <h3>🔗 Quick Links</h3>
+            <h3><i class="fa-solid fa-link"></i> Quick Links</h3>
             <a href="epuskesmas-simulation.html" target="_blank" class="btn btn-success">
-                🏥 Open ePuskesmas Form Simulation
+                <i class="fa-solid fa-hospital"></i> Open ePuskesmas Form Simulation
             </a>
             <a href="example-form.html" target="_blank" class="btn">
-                📝 Open Simple Example Form
+                <i class="fa-solid fa-file-pen"></i> Open Simple Example Form
             </a>
         </div>
 
         <div class="test-section">
-            <h3>📊 Expected JSON Structure</h3>
+            <h3><i class="fa-solid fa-chart-bar"></i> Expected JSON Structure</h3>
             <p>The extension should generate JSON in this format:</p>
             <pre style="background: #f8f9fa; padding: 15px; border-radius: 5px; overflow-x: auto;">
 {
@@ -153,42 +85,50 @@
         </div>
 
         <div class="test-section">
-            <h3>🔧 Troubleshooting</h3>
+            <h3><i class="fa-solid fa-wrench"></i> Troubleshooting</h3>
             <ul>
-                <li><strong>Extension not working?</strong> Make sure the extension is enabled and you have granted microphone permissions.</li>
+                <li><strong>Extension not working?</strong> Make sure the extension is enabled and you have granted
+                    microphone permissions.</li>
                 <li><strong>Form not populating?</strong> Check the browser console for any error messages.</li>
-                <li><strong>Wrong field mapping?</strong> Verify that the form structure matches the expected ePuskesmas format.</li>
-                <li><strong>API errors?</strong> Ensure your OpenAI API key is configured correctly in the extension settings.</li>
+                <li><strong>Wrong field mapping?</strong> Verify that the form structure matches the expected ePuskesmas
+                    format.</li>
+                <li><strong>API errors?</strong> Ensure your OpenAI API key is configured correctly in the extension
+                    settings.</li>
             </ul>
         </div>
 
         <div class="test-section">
-            <h3>📝 Test Data</h3>
+            <h3><i class="fa-solid fa-file-pen"></i> Test Data</h3>
             <p>You can use this sample transcript for testing:</p>
             <blockquote style="background: #f8f9fa; padding: 15px; border-left: 4px solid #007bff; margin: 0;">
                 "Dokter: Selamat pagi, ada keluhan apa?<br>
-                Pasien: Dokter, saya sakit kepala sudah 3 hari ini. Sakitnya berdenyut-denyut di bagian pelipis kanan. Kadang disertai mual dan muntah ringan. Kalau berdiri tiba-tiba pusing.<br>
+                Pasien: Dokter, saya sakit kepala sudah 3 hari ini. Sakitnya berdenyut-denyut di bagian pelipis kanan.
+                Kadang disertai mual dan muntah ringan. Kalau berdiri tiba-tiba pusing.<br>
                 Dokter: Apakah ada riwayat sakit kepala sebelumnya?<br>
-                Pasien: Ya dokter, 2 tahun lalu pernah migrain. Dan saya juga punya tekanan darah tinggi sejak setahun yang lalu.<br>
+                Pasien: Ya dokter, 2 tahun lalu pernah migrain. Dan saya juga punya tekanan darah tinggi sejak setahun
+                yang lalu.<br>
                 Dokter: Bagaimana dengan keluarga, ada yang punya riwayat sakit kepala atau hipertensi?<br>
                 Pasien: Ayah saya punya hipertensi, ibu saya diabetes.<br>
-                Dokter: Baik, untuk sementara saya akan memberikan Paracetamol 500mg 3x1 tablet dan Omeprazole 20mg 1x1 tablet. Istirahat yang cukup, hindari stres, dan diet rendah garam. Minum obat teratur dan kontrol tekanan darah setiap minggu."
+                Dokter: Baik, untuk sementara saya akan memberikan Paracetamol 500mg 3x1 tablet dan Omeprazole 20mg 1x1
+                tablet. Istirahat yang cukup, hindari stres, dan diet rendah garam. Minum obat teratur dan kontrol
+                tekanan darah setiap minggu."
             </blockquote>
         </div>
     </div>
 
     <script>
         // Add some interactive features
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             console.log("🧪 Test page loaded");
-            
+
             // Add click tracking for analytics
             document.querySelectorAll('a').forEach(link => {
-                link.addEventListener('click', function() {
+                link.addEventListener('click', function () {
                     console.log(`🔗 Link clicked: ${this.href}`);
                 });
             });
         });
     </script>
 </body>
+
 </html>
