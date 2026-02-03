@@ -15,11 +15,7 @@ body {
   min-height: 480px;
   padding: 0;
   margin: 0;
-  background: linear-gradient(
-    180deg,
-    var(--md-sys-color-primary-container) 0%,
-    var(--md-sys-color-surface) 160px
-  );
+  background: var(--md-sys-color-surface);
 }
 
 /* Side panel specific styles */

@@ -17,12 +17,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(
-    135deg,
-    var(--md-sys-color-primary-container) 0%,
-    var(--md-sys-color-surface) 50%,
-    var(--md-sys-color-tertiary-container) 100%
-  );
+  background: var(--md-sys-color-surface);
 }
 
 .md-welcome-container {
