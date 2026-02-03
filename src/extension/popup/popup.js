@@ -343,6 +343,7 @@ class MedicalAudioRecorder {
       this.elements.startRecording.disabled = false;
       this.elements.openWelcomePage.classList.add("hidden");
     } else {
+      this.elements.startRecording.disabled = true;
       this.updateStatus(
         getMessage("permission_denied"),
         "warning"
