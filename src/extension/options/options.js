@@ -62,6 +62,7 @@ class OptionsManager {
       summarizationModel: document.getElementById("summarizationModel"),
       language: document.getElementById("language"),
       enableRetry: document.getElementById("enableRetry"),
+      enableRealtimeTranscription: document.getElementById("enableRealtimeTranscription"),
 
       // Buttons
       saveSettings: document.getElementById("saveSettings"),
@@ -139,6 +140,7 @@ class OptionsManager {
         "summarizationModel",
         "language",
         "enableRetry",
+        "enableRealtimeTranscription",
       ]);
 
       this.populateFormFields(settings);
@@ -167,6 +169,7 @@ class OptionsManager {
       summarizationModel: settings.summarizationModel || "gpt-3.5-turbo",
       language: settings.language || "id",
       enableRetry: settings.enableRetry !== false,
+      enableRealtimeTranscription: settings.enableRealtimeTranscription === true,
     };
 
     Object.entries(fieldMappings).forEach(([fieldName, value]) => {
@@ -239,6 +242,7 @@ class OptionsManager {
       summarizationModel: this.elements.summarizationModel.value,
       language: this.elements.language.value,
       enableRetry: this.elements.enableRetry.checked,
+      enableRealtimeTranscription: this.elements.enableRealtimeTranscription.checked,
     };
 
     return baseSettings;

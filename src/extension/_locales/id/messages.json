@@ -442,5 +442,68 @@
   },
   "summary_label": {
     "message": "Ringkasan"
+  },
+  "enable_realtime_transcription": {
+    "message": "Aktifkan Mode Transkripsi Realtime"
+  },
+  "realtime_transcription_desc": {
+    "message": "Gunakan API Realtime OpenAI untuk transkripsi bicara-ke-teks secara langsung"
+  },
+  "enable_vad": {
+    "message": "Aktifkan Deteksi Aktivitas Suara (VAD)"
+  },
+  "vad_desc": {
+    "message": "Secara otomatis mendeteksi saat Anda berhenti berbicara untuk menyegmentasi transkripsi"
+  },
+  "start_realtime": {
+    "message": "Mulai Transkripsi Realtime"
+  },
+  "stop_realtime": {
+    "message": "Hentikan Transkripsi"
+  },
+  "realtime_step_transcribe": {
+    "message": "1. Transkripsi Langsung"
+  },
+  "realtime_step_edit": {
+    "message": "2. Edit"
+  },
+  "realtime_step_summarize": {
+    "message": "3. Ringkas"
+  },
+  "realtime_connecting": {
+    "message": "Menghubungkan ke layanan realtime..."
+  },
+  "realtime_connected": {
+    "message": "Terhubung - Mendengarkan..."
+  },
+  "realtime_disconnected": {
+    "message": "Terputus dari layanan realtime"
+  },
+  "realtime_session_limit": {
+    "message": "Batas sesi: maksimum 30 menit"
+  },
+  "realtime_error_connection": {
+    "message": "Gagal terhubung ke layanan transkripsi realtime"
+  },
+  "realtime_error_websocket": {
+    "message": "Kesalahan koneksi WebSocket"
+  },
+  "realtime_session_ended": {
+    "message": "Sesi realtime berakhir"
+  },
+  "realtime_transcription_empty": {
+    "message": "Tidak ada transkripsi yang ditangkap. Silakan coba berbicara lagi."
+  },
+  "realtime_mode_active": {
+    "message": "Mode Realtime Aktif"
+  },
+  "realtime_ready": {
+    "message": "Siap untuk transkripsi realtime"
+  },
+  "edit_realtime_transcript": {
+    "message": "Edit Transkrip Langsung"
+  },
+  "edit_realtime_transcript_desc": {
+    "message": "Tinjau dan edit transkripsi langsung sebelum merangkum"
   }
 }

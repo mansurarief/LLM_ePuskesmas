@@ -102,6 +102,16 @@ class MedicalAudioRecorder {
     this.transcriptionEndTime = null;
     this.summarizationStartTime = null;
     this.summarizationEndTime = null;
+
+    // Realtime transcription properties
+    this.realtimeWebSocket = null;
+    this.realtimeAudioContext = null;
+    this.realtimeMediaStream = null;
+    this.realtimeProcessor = null;
+    this.realtimeTranscript = '';
+    this.isRealtimeActive = false;
+    this.realtimeSessionTimer = null;
+    this.realtimeSessionStartTime = null;
   }
 
   /**
@@ -158,11 +168,39 @@ class MedicalAudioRecorder {
       clearTranscript: document.getElementById("clearTranscript"),
       summarizeTranscript: document.getElementById("summarizeTranscript"),
 
-      // Step indicators
+      // Step indicators (normal mode)
       step1: document.getElementById("step1"),
       step2: document.getElementById("step2"),
       step3: document.getElementById("step3"),
       step4: document.getElementById("step4"),
+      normalStepper: document.getElementById("normalStepper"),
+
+      // Step indicators (realtime mode)
+      realtimeStepper: document.getElementById("realtimeStepper"),
+      realtimeStep1: document.getElementById("realtimeStep1"),
+      realtimeStep2: document.getElementById("realtimeStep2"),
+      realtimeStep3: document.getElementById("realtimeStep3"),
+      realtimeInfoBanner: document.getElementById("realtimeInfoBanner"),
+
+      // Realtime controls
+      realtimeControls: document.getElementById("realtimeControls"),
+      startRealtime: document.getElementById("startRealtime"),
+      stopRealtime: document.getElementById("stopRealtime"),
+      clearRealtime: document.getElementById("clearRealtime"),
+      openWelcomePageRealtime: document.getElementById("openWelcomePageRealtime"),
+
+      // Live transcript container
+      liveTranscriptContainer: document.getElementById("liveTranscriptContainer"),
+      liveTranscriptChat: document.getElementById("liveTranscriptChat"),
+      liveTranscriptPlaceholder: document.getElementById("liveTranscriptPlaceholder"),
+      liveTranscriptActions: document.getElementById("liveTranscriptActions"),
+      realtimeTranscriptTextarea: document.getElementById("realtimeTranscriptTextarea"),
+      editRealtimeTranscript: document.getElementById("editRealtimeTranscript"),
+      copyRealtimeTranscript: document.getElementById("copyRealtimeTranscript"),
+      summarizeRealtimeTranscript: document.getElementById("summarizeRealtimeTranscript"),
+
+      // Normal mode controls container
+      normalControls: document.querySelector(".md-controls:not(#realtimeControls)"),
 
       // Timing displays
       transcriptionTime: document.getElementById("transcriptionTime"),
@@ -251,6 +289,43 @@ class MedicalAudioRecorder {
       this.summarizeTranscript()
     );
 
+    // Realtime transcription event listeners
+    if (this.elements.startRealtime) {
+      this.elements.startRealtime.addEventListener("click", () =>
+        this.startRealtimeTranscription()
+      );
+    }
+    if (this.elements.stopRealtime) {
+      this.elements.stopRealtime.addEventListener("click", () =>
+        this.stopRealtimeTranscription()
+      );
+    }
+    if (this.elements.clearRealtime) {
+      this.elements.clearRealtime.addEventListener("click", () =>
+        this.clearRealtimeTranscription()
+      );
+    }
+    if (this.elements.openWelcomePageRealtime) {
+      this.elements.openWelcomePageRealtime.addEventListener("click", () =>
+        this.openWelcomePage()
+      );
+    }
+    if (this.elements.copyRealtimeTranscript) {
+      this.elements.copyRealtimeTranscript.addEventListener("click", () =>
+        this.copyRealtimeTranscript()
+      );
+    }
+    if (this.elements.editRealtimeTranscript) {
+      this.elements.editRealtimeTranscript.addEventListener("click", () =>
+        this.toggleRealtimeEditMode()
+      );
+    }
+    if (this.elements.summarizeRealtimeTranscript) {
+      this.elements.summarizeRealtimeTranscript.addEventListener("click", () =>
+        this.summarizeRealtimeTranscript()
+      );
+    }
+
     // Initialize slider fills
     this.updateSliderFill(this.elements.volumeSlider);
   }
@@ -294,9 +369,11 @@ class MedicalAudioRecorder {
       "maxRecordingTime",
       "enableRetry",
       "saveRecordings",
+      "enableRealtimeTranscription",
     ]);
 
     this.setDefaultSettings();
+    this.updateUIForRealtimeMode();
   }
 
   /**
@@ -318,6 +395,7 @@ class MedicalAudioRecorder {
       maxRecordingTime: 20,
       enableRetry: true,
       saveRecordings: false,
+      enableRealtimeTranscription: false,
     };
 
     Object.keys(defaults).forEach((key) => {
@@ -339,9 +417,17 @@ class MedicalAudioRecorder {
       "microphoneAccess"
     );
 
+    const isRealtimeMode = this.settings.enableRealtimeTranscription;
+
     if (microphoneAccess) {
       this.elements.startRecording.disabled = false;
       this.elements.openWelcomePage.classList.add("hidden");
+      
+      // Handle realtime mode
+      if (isRealtimeMode && this.elements.startRealtime) {
+        this.elements.startRealtime.disabled = false;
+        this.elements.openWelcomePageRealtime.classList.add("hidden");
+      }
     } else {
       this.elements.startRecording.disabled = true;
       this.updateStatus(
@@ -349,6 +435,12 @@ class MedicalAudioRecorder {
         "warning"
       );
       this.elements.openWelcomePage.classList.remove("hidden");
+      
+      // Handle realtime mode
+      if (isRealtimeMode && this.elements.startRealtime) {
+        this.elements.startRealtime.disabled = true;
+        this.elements.openWelcomePageRealtime.classList.remove("hidden");
+      }
     }
 
     this.validateApiConfiguration();
@@ -1772,6 +1864,9 @@ class MedicalAudioRecorder {
       } else if (type === "processing") {
         this.elements.statusBar.classList.add("md-status-card--processing");
         iconName = 'hourglass_empty';
+      } else if (type === "realtime") {
+        this.elements.statusBar.classList.add("md-status-card--realtime");
+        iconName = 'graphic_eq';
       } else if (message.toLowerCase().includes("error") || message.toLowerCase().includes("failed")) {
         iconName = 'error';
       } else if (message.toLowerCase().includes("complete") || message.toLowerCase().includes("successful")) {
@@ -1965,6 +2060,629 @@ class MedicalAudioRecorder {
         });
       });
     });
+  }
+
+  // ============================================================================
+  // REALTIME TRANSCRIPTION METHODS
+  // ============================================================================
+
+  /**
+   * Updates the UI based on whether realtime mode is enabled or disabled.
+   * Shows/hides appropriate controls and steppers.
+   * 
+   * @private
+   */
+  updateUIForRealtimeMode() {
+    const isRealtimeMode = this.settings.enableRealtimeTranscription;
+
+    if (isRealtimeMode) {
+      // Show realtime UI elements
+      if (this.elements.realtimeStepper) this.elements.realtimeStepper.classList.remove("hidden");
+      if (this.elements.realtimeInfoBanner) this.elements.realtimeInfoBanner.classList.remove("hidden");
+      if (this.elements.realtimeControls) this.elements.realtimeControls.classList.remove("hidden");
+      if (this.elements.liveTranscriptContainer) this.elements.liveTranscriptContainer.classList.remove("hidden");
+
+      // Hide normal UI elements
+      if (this.elements.normalStepper) this.elements.normalStepper.classList.add("hidden");
+      
+      // Hide normal controls (recording, play, transcribe buttons)
+      const normalControlsContainer = document.getElementById("startRecording")?.closest(".md-controls");
+      if (normalControlsContainer && normalControlsContainer.id !== "realtimeControls") {
+        normalControlsContainer.classList.add("hidden");
+      }
+      
+      // Hide audio player and transcript editor in realtime mode
+      if (this.elements.audioControls) this.elements.audioControls.classList.add("hidden");
+      if (this.elements.transcriptEditor) this.elements.transcriptEditor.classList.add("hidden");
+
+      // Update status for realtime mode
+      this.updateStatus(getMessage("realtime_ready"), "normal");
+    } else {
+      // Show normal UI elements
+      if (this.elements.normalStepper) this.elements.normalStepper.classList.remove("hidden");
+      
+      const normalControlsContainer = document.getElementById("startRecording")?.closest(".md-controls");
+      if (normalControlsContainer && normalControlsContainer.id !== "realtimeControls") {
+        normalControlsContainer.classList.remove("hidden");
+      }
+
+      // Hide realtime UI elements
+      if (this.elements.realtimeStepper) this.elements.realtimeStepper.classList.add("hidden");
+      if (this.elements.realtimeInfoBanner) this.elements.realtimeInfoBanner.classList.add("hidden");
+      if (this.elements.realtimeControls) this.elements.realtimeControls.classList.add("hidden");
+      if (this.elements.liveTranscriptContainer) this.elements.liveTranscriptContainer.classList.add("hidden");
+    }
+  }
+
+  /**
+   * Starts the realtime transcription session.
+   * Establishes WebSocket connection and begins audio capture.
+   * 
+   * @async
+   */
+  async startRealtimeTranscription() {
+    try {
+      // Validate API key
+      if (!this.settings.openaiApiKey) {
+        this.showMessage(getMessage("openai_key_not_configured"), "error");
+        return;
+      }
+
+      this.updateStatus(getMessage("realtime_connecting"), "processing");
+      this.updateRealtimeStepIndicator(1);
+
+      // Request microphone access
+      this.realtimeMediaStream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          sampleRate: 24000,
+          channelCount: 1,
+          echoCancellation: true,
+          noiseSuppression: true,
+        }
+      });
+
+      // Initialize audio context with 24kHz sample rate
+      this.realtimeAudioContext = new (window.AudioContext || window.webkitAudioContext)({
+        sampleRate: 24000
+      });
+
+      // Connect to OpenAI Realtime API
+      await this.connectRealtimeWebSocket();
+
+      // Start audio processing
+      await this.startRealtimeAudioProcessing();
+
+      // Update UI
+      this.isRealtimeActive = true;
+      this.realtimeSessionStartTime = Date.now();
+      this.startRealtimeSessionTimer();
+      this.updateRealtimeUIForRecording(true);
+      this.updateStatus(getMessage("realtime_connected"), "realtime");
+
+      // Clear placeholder and show chat
+      if (this.elements.liveTranscriptPlaceholder) {
+        this.elements.liveTranscriptPlaceholder.classList.add("hidden");
+      }
+
+    } catch (error) {
+      console.error("Realtime transcription error:", error);
+      this.handleRealtimeError(error);
+    }
+  }
+
+  /**
+   * Connects to the OpenAI Realtime WebSocket API.
+   * 
+   * @async
+   * @private
+   */
+  async connectRealtimeWebSocket() {
+    return new Promise((resolve, reject) => {
+      const wsUrl = "wss://api.openai.com/v1/realtime?intent=transcription";
+      
+      this.realtimeWebSocket = new WebSocket(wsUrl, [
+        "realtime",
+        `openai-insecure-api-key.${this.settings.openaiApiKey}`,
+        "openai-beta.realtime-v1"
+      ]);
+
+      this.realtimeWebSocket.onopen = () => {
+        console.log("Realtime WebSocket connected");
+        
+        // Send session configuration
+        this.sendRealtimeSessionConfig();
+        resolve();
+      };
+
+      this.realtimeWebSocket.onmessage = (event) => {
+        this.handleRealtimeMessage(event);
+      };
+
+      this.realtimeWebSocket.onerror = (error) => {
+        console.error("WebSocket error:", error);
+        reject(new Error(getMessage("realtime_error_websocket")));
+      };
+
+      this.realtimeWebSocket.onclose = (event) => {
+        console.log("WebSocket closed:", event.code, event.reason);
+        if (this.isRealtimeActive) {
+          this.stopRealtimeTranscription();
+        }
+      };
+
+      // Timeout for connection
+      setTimeout(() => {
+        if (this.realtimeWebSocket.readyState !== WebSocket.OPEN) {
+          reject(new Error(getMessage("realtime_error_connection")));
+        }
+      }, 10000);
+    });
+  }
+
+  /**
+   * Sends session configuration to the OpenAI Realtime API.
+   * 
+   * @private
+   */
+  sendRealtimeSessionConfig() {
+    const config = {
+      type: "transcription_session.update",
+      session: {
+        input_audio_format: "pcm16",
+        input_audio_transcription: {
+          model: "gpt-4o-transcribe",
+          language: this.settings.language === "id" ? "id" : "en",
+          prompt: "Medical consultation transcription"
+        },
+        turn_detection: {
+          type: "server_vad",
+          threshold: 0.5,
+          prefix_padding_ms: 300,
+          silence_duration_ms: 500
+        }
+      }
+    };
+
+    this.realtimeWebSocket.send(JSON.stringify(config));
+  }
+
+  /**
+   * Starts audio processing and sends audio data to WebSocket.
+   * 
+   * @async
+   * @private
+   */
+  async startRealtimeAudioProcessing() {
+    const source = this.realtimeAudioContext.createMediaStreamSource(this.realtimeMediaStream);
+    
+    // Create script processor for audio data extraction
+    // Using 4096 buffer size for good balance between latency and performance
+    this.realtimeProcessor = this.realtimeAudioContext.createScriptProcessor(4096, 1, 1);
+    
+    this.realtimeProcessor.onaudioprocess = (event) => {
+      if (!this.isRealtimeActive || !this.realtimeWebSocket || this.realtimeWebSocket.readyState !== WebSocket.OPEN) {
+        return;
+      }
+
+      const inputData = event.inputBuffer.getChannelData(0);
+      
+      // Convert Float32 to Int16 PCM
+      const pcm16Data = this.float32ToPCM16(inputData);
+      
+      // Encode to base64
+      const base64Audio = this.arrayBufferToBase64(pcm16Data.buffer);
+      
+      // Send audio data
+      const audioMessage = {
+        type: "input_audio_buffer.append",
+        audio: base64Audio
+      };
+      
+      this.realtimeWebSocket.send(JSON.stringify(audioMessage));
+    };
+
+    source.connect(this.realtimeProcessor);
+    this.realtimeProcessor.connect(this.realtimeAudioContext.destination);
+  }
+
+  /**
+   * Converts Float32 audio samples to Int16 PCM format.
+   * 
+   * @private
+   * @param {Float32Array} float32Array - The input audio samples
+   * @returns {Int16Array} The converted PCM16 samples
+   */
+  float32ToPCM16(float32Array) {
+    const int16Array = new Int16Array(float32Array.length);
+    for (let i = 0; i < float32Array.length; i++) {
+      const sample = Math.max(-1, Math.min(1, float32Array[i]));
+      int16Array[i] = sample < 0 ? sample * 0x8000 : sample * 0x7FFF;
+    }
+    return int16Array;
+  }
+
+  /**
+   * Converts ArrayBuffer to Base64 string.
+   * 
+   * @private
+   * @param {ArrayBuffer} buffer - The buffer to convert
+   * @returns {string} Base64 encoded string
+   */
+  arrayBufferToBase64(buffer) {
+    const bytes = new Uint8Array(buffer);
+    let binary = '';
+    for (let i = 0; i < bytes.byteLength; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    return btoa(binary);
+  }
+
+  /**
+   * Handles incoming WebSocket messages from the Realtime API.
+   * 
+   * @private
+   * @param {MessageEvent} event - The WebSocket message event
+   */
+  handleRealtimeMessage(event) {
+    try {
+      const message = JSON.parse(event.data);
+      
+      switch (message.type) {
+        case "transcription_session.created":
+          console.log("Realtime session created:", message.session?.id);
+          break;
+
+        case "transcription_session.updated":
+          console.log("Realtime session updated");
+          break;
+
+        case "conversation.item.input_audio_transcription.delta":
+          // Incremental transcription - update the current partial message
+          this.updatePartialTranscript(message.delta);
+          break;
+
+        case "conversation.item.input_audio_transcription.completed":
+          // Final transcription for a segment
+          this.addFinalTranscript(message.transcript);
+          break;
+
+        case "input_audio_buffer.speech_started":
+          console.log("Speech detected");
+          break;
+
+        case "input_audio_buffer.speech_stopped":
+          console.log("Speech ended");
+          break;
+
+        case "error":
+          console.error("Realtime API error:", message.error);
+          this.handleRealtimeError(new Error(message.error?.message || "API error"));
+          break;
+
+        default:
+          console.log("Realtime message:", message.type);
+      }
+    } catch (error) {
+      console.error("Error parsing realtime message:", error);
+    }
+  }
+
+  /**
+   * Updates the partial (in-progress) transcript in the chat.
+   * 
+   * @private
+   * @param {string} delta - The incremental text to append
+   */
+  updatePartialTranscript(delta) {
+    if (!delta) return;
+
+    let partialMessage = this.elements.liveTranscriptChat.querySelector(".md-live-transcript__message--partial");
+    
+    if (!partialMessage) {
+      partialMessage = document.createElement("div");
+      partialMessage.className = "md-live-transcript__message md-live-transcript__message--partial";
+      this.elements.liveTranscriptChat.appendChild(partialMessage);
+    }
+    
+    partialMessage.textContent += delta;
+    
+    // Auto-scroll to bottom
+    this.elements.liveTranscriptChat.scrollTop = this.elements.liveTranscriptChat.scrollHeight;
+  }
+
+  /**
+   * Adds a final (completed) transcript to the chat.
+   * 
+   * @private
+   * @param {string} transcript - The complete transcript text
+   */
+  addFinalTranscript(transcript) {
+    if (!transcript || !transcript.trim()) return;
+
+    // Remove partial message if exists
+    const partialMessage = this.elements.liveTranscriptChat.querySelector(".md-live-transcript__message--partial");
+    if (partialMessage) {
+      partialMessage.remove();
+    }
+
+    // Add final message
+    const finalMessage = document.createElement("div");
+    finalMessage.className = "md-live-transcript__message md-live-transcript__message--final";
+    finalMessage.textContent = transcript.trim();
+    this.elements.liveTranscriptChat.appendChild(finalMessage);
+
+    // Update the full transcript
+    this.realtimeTranscript += (this.realtimeTranscript ? " " : "") + transcript.trim();
+
+    // Auto-scroll to bottom
+    this.elements.liveTranscriptChat.scrollTop = this.elements.liveTranscriptChat.scrollHeight;
+  }
+
+  /**
+   * Stops the realtime transcription session.
+   * Closes WebSocket connection and releases resources.
+   */
+  stopRealtimeTranscription() {
+    this.isRealtimeActive = false;
+
+    // Stop session timer
+    if (this.realtimeSessionTimer) {
+      clearInterval(this.realtimeSessionTimer);
+      this.realtimeSessionTimer = null;
+    }
+
+    // Disconnect audio processing
+    if (this.realtimeProcessor) {
+      this.realtimeProcessor.disconnect();
+      this.realtimeProcessor = null;
+    }
+
+    // Close audio context
+    if (this.realtimeAudioContext && this.realtimeAudioContext.state !== "closed") {
+      this.realtimeAudioContext.close();
+      this.realtimeAudioContext = null;
+    }
+
+    // Stop media stream
+    if (this.realtimeMediaStream) {
+      this.realtimeMediaStream.getTracks().forEach(track => track.stop());
+      this.realtimeMediaStream = null;
+    }
+
+    // Close WebSocket
+    if (this.realtimeWebSocket) {
+      if (this.realtimeWebSocket.readyState === WebSocket.OPEN) {
+        this.realtimeWebSocket.close();
+      }
+      this.realtimeWebSocket = null;
+    }
+
+    // Update UI
+    this.updateRealtimeUIForRecording(false);
+    this.updateStatus(getMessage("realtime_session_ended"), "normal");
+
+    // Show actions if we have transcript
+    if (this.realtimeTranscript.trim()) {
+      this.showRealtimeTranscriptActions();
+      this.updateRealtimeStepIndicator(2);
+    }
+  }
+
+  /**
+   * Clears the realtime transcription session (full reset).
+   */
+  clearRealtimeTranscription() {
+    this.stopRealtimeTranscription();
+    this.clearRealtimeLiveTranscript();
+    this.updateRealtimeStepIndicator(1);
+    this.updateStatus(getMessage("realtime_ready"), "normal");
+  }
+
+  /**
+   * Clears only the live transcript content.
+   * @param {boolean} resetData - Whether to clear the underlying transcript data
+   */
+  clearRealtimeLiveTranscript(resetData = true) {
+    if (resetData) {
+      this.realtimeTranscript = "";
+    }
+    
+    // Clear chat messages
+    const messages = this.elements.liveTranscriptChat.querySelectorAll(".md-live-transcript__message");
+    messages.forEach(msg => msg.remove());
+    
+    // Clear textarea
+    if (this.elements.realtimeTranscriptTextarea) {
+      this.elements.realtimeTranscriptTextarea.value = "";
+      if (resetData) {
+        this.elements.realtimeTranscriptTextarea.classList.add("hidden");
+        this.elements.liveTranscriptChat.classList.remove("hidden");
+      }
+    }
+    
+    // Show placeholder if we're doing a full reset
+    if (resetData && this.elements.liveTranscriptPlaceholder) {
+      this.elements.liveTranscriptPlaceholder.classList.remove("hidden");
+    }
+    
+    // Hide actions if doing full reset
+    if (resetData && this.elements.liveTranscriptActions) {
+      this.elements.liveTranscriptActions.classList.add("hidden");
+    }
+  }
+
+  /**
+   * Copies the realtime transcript to clipboard.
+   */
+  copyRealtimeTranscript() {
+    if (this.realtimeTranscript.trim()) {
+      navigator.clipboard.writeText(this.realtimeTranscript).then(() => {
+        this.showMessage(getMessage("transcript_copied"), "success");
+      }).catch(() => {
+        this.showMessage(getMessage("failed_copy"), "error");
+      });
+    }
+  }
+
+  /**
+   * Toggles between chat view and editable textarea for realtime transcript.
+   */
+  toggleRealtimeEditMode() {
+    const isEditing = !this.elements.realtimeTranscriptTextarea.classList.contains("hidden");
+    
+    if (isEditing) {
+      // Switch back to chat view
+      this.elements.realtimeTranscriptTextarea.classList.add("hidden");
+      this.elements.liveTranscriptChat.classList.remove("hidden");
+      
+      // Update realtime transcript with edited text
+      const editedText = this.elements.realtimeTranscriptTextarea.value;
+      
+      // Re-render chat messages from edited text
+      this.clearRealtimeLiveTranscript(false); // Clear bubbles only
+      
+      // Reset transcript property because addFinalTranscript will append to it
+      this.realtimeTranscript = ""; 
+      
+      this.addFinalTranscript(editedText);
+
+    } else {
+      // Switch to edit mode
+      this.elements.realtimeTranscriptTextarea.value = this.realtimeTranscript;
+      this.elements.realtimeTranscriptTextarea.classList.remove("hidden");
+      this.elements.liveTranscriptChat.classList.add("hidden");
+    }
+  }
+
+  /**
+   * Summarizes the realtime transcript using the existing summarization logic.
+   */
+  async summarizeRealtimeTranscript() {
+    // If we are in edit mode, update the transcript source
+    if (!this.elements.realtimeTranscriptTextarea.classList.contains("hidden")) {
+      this.realtimeTranscript = this.elements.realtimeTranscriptTextarea.value;
+    }
+
+    if (!this.realtimeTranscript.trim()) {
+      this.showMessage(getMessage("realtime_transcription_empty"), "error");
+      return;
+    }
+
+    // Use the existing summarization flow
+    this.elements.transcriptTextarea.value = this.realtimeTranscript;
+    this.updateRealtimeStepIndicator(3);
+    await this.summarizeTranscript();
+  }
+
+  /**
+   * Shows the action buttons after transcription stops.
+   * 
+   * @private
+   */
+  showRealtimeTranscriptActions() {
+    if (this.elements.liveTranscriptActions) {
+      this.elements.liveTranscriptActions.classList.remove("hidden");
+    }
+  }
+
+  /**
+   * Updates UI elements based on recording state.
+   * 
+   * @private
+   * @param {boolean} isRecording - Whether recording is active
+   */
+  updateRealtimeUIForRecording(isRecording) {
+    if (isRecording) {
+      // Recording started
+      this.elements.startRealtime.classList.add("hidden");
+      this.elements.stopRealtime.classList.remove("hidden");
+      this.elements.stopRealtime.disabled = false;
+      this.elements.clearRealtime.classList.add("hidden");
+      
+      // Add realtime class to status bar
+      this.elements.statusBar.classList.add("md-status-card--realtime");
+    } else {
+      // Recording stopped
+      this.elements.startRealtime.classList.remove("hidden");
+      this.elements.stopRealtime.classList.add("hidden");
+      this.elements.stopRealtime.disabled = true;
+      
+      if (this.realtimeTranscript.trim()) {
+        this.elements.clearRealtime.classList.remove("hidden");
+        this.elements.clearRealtime.disabled = false;
+      }
+      
+      // Remove realtime class from status bar
+      this.elements.statusBar.classList.remove("md-status-card--realtime");
+    }
+  }
+
+  /**
+   * Updates the realtime mode step indicator.
+   * 
+   * @private
+   * @param {number} step - The current step (1, 2, or 3)
+   */
+  updateRealtimeStepIndicator(step) {
+    const steps = [
+      this.elements.realtimeStep1,
+      this.elements.realtimeStep2,
+      this.elements.realtimeStep3
+    ];
+
+    steps.forEach((stepEl, index) => {
+      if (!stepEl) return;
+      
+      stepEl.className = "md-stepper__step";
+      
+      if (index + 1 < step) {
+        stepEl.classList.add("md-stepper__step--completed");
+      } else if (index + 1 === step) {
+        stepEl.classList.add("md-stepper__step--active");
+      }
+    });
+  }
+
+  /**
+   * Starts the session timer for realtime transcription.
+   * 
+   * @private
+   */
+  startRealtimeSessionTimer() {
+    this.elements.timer.classList.remove("hidden");
+    
+    this.realtimeSessionTimer = setInterval(() => {
+      if (!this.realtimeSessionStartTime) return;
+      
+      const elapsed = Date.now() - this.realtimeSessionStartTime;
+      const minutes = Math.floor(elapsed / 60000);
+      const seconds = Math.floor((elapsed % 60000) / 1000);
+      
+      this.elements.timer.textContent = `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+      
+      // Check for 30-minute limit
+      if (minutes >= 30) {
+        this.showMessage(getMessage("realtime_session_limit"), "warning");
+        this.stopRealtimeTranscription();
+      }
+    }, 1000);
+  }
+
+  /**
+   * Handles errors during realtime transcription.
+   * 
+   * @private
+   * @param {Error} error - The error that occurred
+   */
+  handleRealtimeError(error) {
+    console.error("Realtime error:", error);
+    
+    // Clean up resources
+    this.stopRealtimeTranscription();
+    
+    // Show error message
+    this.updateStatus(getMessage("realtime_error_connection"), "normal");
+    this.showMessage(error.message || getMessage("realtime_error_connection"), "error");
   }
 }
 

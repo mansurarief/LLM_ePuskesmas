@@ -794,3 +794,222 @@ body.popup-context {
     gap: 8px;
   }
 }
+
+/* ========================================
+ * REALTIME TRANSCRIPTION STYLES
+ * ======================================== */
+
+/* Realtime Info Banner */
+.md-realtime-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: var(--md-sys-color-tertiary-container);
+  border-radius: var(--md-sys-shape-corner-small);
+  margin-bottom: 16px;
+}
+
+.md-realtime-info .material-symbols-rounded {
+  font-size: 18px;
+  color: var(--md-sys-color-on-tertiary-container);
+}
+
+.md-realtime-info .md-body-small {
+  color: var(--md-sys-color-on-tertiary-container);
+}
+
+/* Realtime Button Styling */
+.md-button--realtime {
+  background: linear-gradient(135deg, var(--md-sys-color-primary), var(--md-sys-color-tertiary));
+}
+
+.md-button--realtime:hover {
+  background: linear-gradient(135deg, var(--md-sys-color-primary), var(--md-sys-color-secondary));
+  box-shadow: var(--md-sys-elevation-level3);
+}
+
+/* Live Transcript Container */
+.md-live-transcript {
+  margin-bottom: 16px;
+  border-radius: var(--md-sys-shape-corner-medium);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  overflow: hidden;
+}
+
+.md-live-transcript__header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 16px;
+  background: var(--md-sys-color-surface-container-high);
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+}
+
+.md-live-transcript__header h4 {
+  margin: 0;
+  color: var(--md-sys-color-on-surface);
+}
+
+/* Live Indicator Animation */
+.md-live-indicator {
+  animation: live-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes live-pulse {
+  0%, 100% { 
+    opacity: 1; 
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 0.6; 
+    transform: scale(1.1);
+  }
+}
+
+/* Chat Container */
+.md-live-transcript__chat {
+  min-height: 120px;
+  max-height: 250px;
+  overflow-y: auto;
+  padding: 16px;
+  background: var(--md-sys-color-surface);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Placeholder */
+.md-live-transcript__placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 32px 16px;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.md-live-transcript__placeholder .material-symbols-rounded {
+  font-size: 48px;
+  opacity: 0.5;
+}
+
+/* Chat Message Bubbles */
+.md-live-transcript__message {
+  padding: 10px 14px;
+  background: var(--md-sys-color-surface-container);
+  border-radius: var(--md-sys-shape-corner-medium);
+  border-left: 3px solid var(--md-sys-color-primary);
+  font-size: var(--md-sys-typescale-body-medium-font-size);
+  line-height: 1.5;
+  color: var(--md-sys-color-on-surface);
+  animation: message-appear 0.3s ease-out;
+  word-break: break-word;
+}
+
+.md-live-transcript__message--partial {
+  border-left-color: var(--md-sys-color-tertiary);
+  opacity: 0.8;
+  font-style: italic;
+}
+
+.md-live-transcript__message--final {
+  border-left-color: var(--md-sys-color-primary);
+  opacity: 1;
+  font-style: normal;
+}
+
+@keyframes message-appear {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Live Transcript Actions */
+.md-live-transcript__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px 16px;
+  background: var(--md-sys-color-surface-container);
+  border-top: 1px solid var(--md-sys-color-outline-variant);
+}
+
+.md-live-transcript__actions .md-button {
+  flex: 1;
+  min-width: 100px;
+}
+
+/* Editable transcript area */
+.md-live-transcript__editable {
+  width: 100%;
+  min-height: 100px;
+  padding: 12px 16px;
+  border: none;
+  background: var(--md-sys-color-surface);
+  font-family: var(--md-sys-typescale-font-family);
+  font-size: var(--md-sys-typescale-body-medium-font-size);
+  line-height: 1.6;
+  color: var(--md-sys-color-on-surface);
+  resize: vertical;
+}
+
+.md-live-transcript__editable:focus {
+  outline: none;
+  background: var(--md-sys-color-surface-container-low);
+}
+
+/* Status card realtime mode */
+.md-status-card--realtime {
+  background: var(--md-sys-color-tertiary-container);
+  border-color: var(--md-sys-color-tertiary);
+}
+
+.md-status-card--realtime .md-status-card__icon {
+  color: var(--md-sys-color-tertiary);
+  animation: live-pulse 1.5s ease-in-out infinite;
+}
+
+.md-status-card--realtime #statusText {
+  color: var(--md-sys-color-on-tertiary-container);
+}
+
+/* Utility classes */
+.md-divider {
+  height: 1px;
+  background: var(--md-sys-color-outline-variant);
+}
+
+.md-mt-1 {
+  margin-top: 4px;
+}
+
+.md-mt-3 {
+  margin-top: 12px;
+}
+
+.md-mt-4 {
+  margin-top: 16px;
+}
+
+.md-mb-4 {
+  margin-bottom: 16px;
+}
+
+.md-flex {
+  display: flex;
+}
+
+.md-items-center {
+  align-items: center;
+}
+
+.md-gap-2 {
+  gap: 8px;
+}

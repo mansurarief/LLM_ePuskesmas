@@ -442,5 +442,68 @@
   },
   "summary_label": {
     "message": "Summary"
+  },
+  "enable_realtime_transcription": {
+    "message": "Enable Realtime Transcription Mode"
+  },
+  "realtime_transcription_desc": {
+    "message": "Use OpenAI's Realtime API for live speech-to-text transcription"
+  },
+  "enable_vad": {
+    "message": "Enable Voice Activity Detection (VAD)"
+  },
+  "vad_desc": {
+    "message": "Automatically detect when you stop speaking to segment transcription"
+  },
+  "start_realtime": {
+    "message": "Start Realtime Transcribe"
+  },
+  "stop_realtime": {
+    "message": "Stop Transcription"
+  },
+  "realtime_step_transcribe": {
+    "message": "1. Live Transcribe"
+  },
+  "realtime_step_edit": {
+    "message": "2. Edit"
+  },
+  "realtime_step_summarize": {
+    "message": "3. Summarize"
+  },
+  "realtime_connecting": {
+    "message": "Connecting to realtime service..."
+  },
+  "realtime_connected": {
+    "message": "Connected - Listening..."
+  },
+  "realtime_disconnected": {
+    "message": "Disconnected from realtime service"
+  },
+  "realtime_session_limit": {
+    "message": "Session limit: 30 minutes maximum"
+  },
+  "realtime_error_connection": {
+    "message": "Failed to connect to realtime transcription service"
+  },
+  "realtime_error_websocket": {
+    "message": "WebSocket connection error"
+  },
+  "realtime_session_ended": {
+    "message": "Realtime session ended"
+  },
+  "realtime_transcription_empty": {
+    "message": "No transcription captured. Please try speaking again."
+  },
+  "realtime_mode_active": {
+    "message": "Realtime Mode Active"
+  },
+  "realtime_ready": {
+    "message": "Ready for realtime transcription"
+  },
+  "edit_realtime_transcript": {
+    "message": "Edit Live Transcript"
+  },
+  "edit_realtime_transcript_desc": {
+    "message": "Review and edit the live transcription before summarizing"
   }
 }

@@ -24,8 +24,8 @@
   </div>
 
   <div class="md-popup-content">
-    <!-- Step Indicator (Stepper) -->
-    <div class="md-stepper">
+    <!-- Normal Mode Step Indicator (Stepper) - 4 steps -->
+    <div class="md-stepper" id="normalStepper">
       <div class="md-stepper__step md-stepper__step--active" id="step1">
         <div class="md-stepper__indicator">
           <span class="material-symbols-rounded">mic</span>
@@ -53,6 +53,36 @@
         </div>
         <span class="md-stepper__label">__MSG_step_summarize__</span>
       </div>
+    </div>
+
+    <!-- Realtime Mode Step Indicator (Stepper) - 3 steps -->
+    <div class="md-stepper hidden" id="realtimeStepper">
+      <div class="md-stepper__step md-stepper__step--active" id="realtimeStep1">
+        <div class="md-stepper__indicator">
+          <span class="material-symbols-rounded">graphic_eq</span>
+        </div>
+        <span class="md-stepper__label">__MSG_realtime_step_transcribe__</span>
+      </div>
+      <div class="md-stepper__connector"></div>
+      <div class="md-stepper__step" id="realtimeStep2">
+        <div class="md-stepper__indicator">
+          <span class="material-symbols-rounded">edit_note</span>
+        </div>
+        <span class="md-stepper__label">__MSG_realtime_step_edit__</span>
+      </div>
+      <div class="md-stepper__connector"></div>
+      <div class="md-stepper__step" id="realtimeStep3">
+        <div class="md-stepper__indicator">
+          <span class="material-symbols-rounded">auto_awesome</span>
+        </div>
+        <span class="md-stepper__label">__MSG_realtime_step_summarize__</span>
+      </div>
+    </div>
+
+    <!-- Realtime Session Info Banner -->
+    <div class="md-realtime-info hidden" id="realtimeInfoBanner">
+      <span class="material-symbols-rounded">info</span>
+      <span class="md-body-small">__MSG_realtime_session_limit__</span>
     </div>
 
     <!-- Status Bar -->
@@ -177,6 +207,72 @@
         <button type="button" id="openWelcomePage" class="md-button md-button--outlined hidden">
           <span class="material-symbols-rounded">lock_open</span>
           __MSG_grant_mic_access__
+        </button>
+      </div>
+    </div>
+
+    <!-- Realtime Controls (hidden by default, shown when realtime mode is enabled) -->
+    <div class="md-controls hidden" id="realtimeControls">
+      <div class="md-controls__row">
+        <button type="button" id="startRealtime" class="md-button md-button--filled md-button--realtime" disabled>
+          <span class="material-symbols-rounded">graphic_eq</span>
+          __MSG_start_realtime__
+        </button>
+        <button type="button" id="stopRealtime" class="md-button md-button--filled md-button--error hidden" disabled>
+          <span class="material-symbols-rounded">stop</span>
+          __MSG_stop_realtime__
+        </button>
+      </div>
+      <div class="md-controls__row">
+        <button type="button" id="clearRealtime" class="md-button md-button--outlined md-button--error-outline hidden" disabled>
+          <span class="material-symbols-rounded">delete</span>
+          __MSG_clear_recording__
+        </button>
+      </div>
+      <div class="md-controls__row">
+        <button type="button" id="openWelcomePageRealtime" class="md-button md-button--outlined hidden">
+          <span class="material-symbols-rounded">lock_open</span>
+          __MSG_grant_mic_access__
+        </button>
+      </div>
+    </div>
+
+    <!-- Live Transcript Container (chat-like interface) -->
+    <div class="md-live-transcript hidden" id="liveTranscriptContainer">
+      <div class="md-live-transcript__header">
+        <div class="md-flex md-items-center md-gap-2">
+          <span class="material-symbols-rounded md-text-primary md-live-indicator">graphic_eq</span>
+          <h4 class="md-title-small">__MSG_edit_realtime_transcript__</h4>
+        </div>
+        <span class="md-body-small md-text-secondary">__MSG_edit_realtime_transcript_desc__</span>
+      </div>
+      <!-- Chat view for live transcription -->
+      <div class="md-live-transcript__chat" id="liveTranscriptChat">
+        <!-- Live transcription messages will be appended here -->
+        <div class="md-live-transcript__placeholder" id="liveTranscriptPlaceholder">
+          <span class="material-symbols-rounded">mic_none</span>
+          <span class="md-body-medium md-text-secondary">__MSG_realtime_ready__</span>
+        </div>
+      </div>
+      <!-- Editable textarea (shown after stopping) -->
+      <textarea 
+        class="md-live-transcript__editable hidden" 
+        id="realtimeTranscriptTextarea" 
+        placeholder="__MSG_transcript_placeholder__"
+        rows="6"
+      ></textarea>
+      <div class="md-live-transcript__actions hidden" id="liveTranscriptActions">
+        <button type="button" id="editRealtimeTranscript" class="md-button md-button--outlined">
+          <span class="material-symbols-rounded">edit</span>
+          __MSG_edit_transcript__
+        </button>
+        <button type="button" id="copyRealtimeTranscript" class="md-button md-button--outlined">
+          <span class="material-symbols-rounded">content_copy</span>
+          __MSG_copy_transcript__
+        </button>
+        <button type="button" id="summarizeRealtimeTranscript" class="md-button md-button--filled md-button--success">
+          <span class="material-symbols-rounded">auto_awesome</span>
+          __MSG_summarize_transcript__
         </button>
       </div>
     </div>
