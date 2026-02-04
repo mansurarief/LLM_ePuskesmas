@@ -15,9 +15,10 @@ export async function initTranslations() {
     const preferredLang = result.language || "id";
     const browserLang = chrome.i18n.getUILanguage().split("-")[0];
 
-    // Only fetch manually if the preferred language differs from the browser's UI language
     if (preferredLang !== browserLang) {
-      const url = chrome.runtime.getURL(`_locales/${preferredLang}/messages.json`);
+      const url = chrome.runtime.getURL(
+        `_locales/${preferredLang}/messages.json`,
+      );
       const response = await fetch(url);
       if (response.ok) {
         forcedMessages = await response.json();
@@ -31,7 +32,7 @@ export async function initTranslations() {
 
 /**
  * Retrieves a localized message, checking forced messages first, then falling back to chrome.i18n.
- * 
+ *
  * @param {string} key - The message key
  * @returns {string} The localized message
  */
@@ -48,31 +49,33 @@ export function getMessage(key) {
  */
 export function localizeHtmlPage() {
   const processNode = (node) => {
-    // Localize text nodes
     if (node.nodeType === Node.TEXT_NODE) {
       const originalText = node.nodeValue;
-      const localizedText = originalText.replace(/__MSG_(\w+)__/g, (match, v1) => {
-        return getMessage(v1) || match;
-      });
+      const localizedText = originalText.replace(
+        /__MSG_(\w+)__/g,
+        (match, v1) => {
+          return getMessage(v1) || match;
+        },
+      );
       if (localizedText !== originalText) {
         node.nodeValue = localizedText;
       }
-    } 
-    // Localize attributes of element nodes
-    else if (node.nodeType === Node.ELEMENT_NODE) {
+    } else if (node.nodeType === Node.ELEMENT_NODE) {
       const attributes = ["title", "placeholder", "alt", "aria-label"];
       for (const attr of attributes) {
         if (node.hasAttribute(attr)) {
           const originalAttr = node.getAttribute(attr);
-          const localizedAttr = originalAttr.replace(/__MSG_(\w+)__/g, (match, v1) => {
-            return getMessage(v1) || match;
-          });
+          const localizedAttr = originalAttr.replace(
+            /__MSG_(\w+)__/g,
+            (match, v1) => {
+              return getMessage(v1) || match;
+            },
+          );
           if (localizedAttr !== originalAttr) {
             node.setAttribute(attr, localizedAttr);
           }
         }
       }
-      // Recursively process children
       for (const child of node.childNodes) {
         processNode(child);
       }

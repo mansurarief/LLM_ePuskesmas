@@ -1,315 +1,468 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>__MSG_app_name__</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/icon?family=Material+Symbols+Rounded"
+    />
+    <link rel="stylesheet" href="../styles/material-tokens.css" />
+    <link rel="stylesheet" href="../styles/material-components.css" />
+    <link rel="stylesheet" href="popup.css" />
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>__MSG_app_name__</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Symbols+Rounded">
-  <link rel="stylesheet" href="../styles/material-tokens.css">
-  <link rel="stylesheet" href="../styles/material-components.css">
-  <link rel="stylesheet" href="popup.css" />
-</head>
-
-<body>
-  <div class="md-popup-header">
-    <div class="md-popup-header__icon">
-      <span class="material-symbols-rounded">local_hospital</span>
-    </div>
-    <div class="md-popup-header__text">
-      <h1 class="md-title-large">__MSG_app_name__</h1>
-      <p class="md-body-small md-text-secondary">__MSG_epuskesmas_integration__</p>
-    </div>
-  </div>
-
-  <div class="md-popup-content">
-    <!-- Normal Mode Step Indicator (Stepper) - 4 steps -->
-    <div class="md-stepper" id="normalStepper">
-      <div class="md-stepper__step md-stepper__step--active" id="step1">
-        <div class="md-stepper__indicator">
-          <span class="material-symbols-rounded">mic</span>
-        </div>
-        <span class="md-stepper__label">__MSG_step_record__</span>
+  <body>
+    <div class="md-popup-header">
+      <div class="md-popup-header__icon">
+        <span class="material-symbols-rounded">local_hospital</span>
       </div>
-      <div class="md-stepper__connector"></div>
-      <div class="md-stepper__step" id="step2">
-        <div class="md-stepper__indicator">
-          <span class="material-symbols-rounded">transcribe</span>
-        </div>
-        <span class="md-stepper__label">__MSG_step_transcribe__</span>
-      </div>
-      <div class="md-stepper__connector"></div>
-      <div class="md-stepper__step" id="step3">
-        <div class="md-stepper__indicator">
-          <span class="material-symbols-rounded">edit_note</span>
-        </div>
-        <span class="md-stepper__label">__MSG_step_edit__</span>
-      </div>
-      <div class="md-stepper__connector"></div>
-      <div class="md-stepper__step" id="step4">
-        <div class="md-stepper__indicator">
-          <span class="material-symbols-rounded">auto_awesome</span>
-        </div>
-        <span class="md-stepper__label">__MSG_step_summarize__</span>
+      <div class="md-popup-header__text">
+        <h1 class="md-title-large">__MSG_app_name__</h1>
+        <p class="md-body-small md-text-secondary">
+          __MSG_epuskesmas_integration__
+        </p>
       </div>
     </div>
 
-    <!-- Realtime Mode Step Indicator (Stepper) - 3 steps -->
-    <div class="md-stepper hidden" id="realtimeStepper">
-      <div class="md-stepper__step md-stepper__step--active" id="realtimeStep1">
-        <div class="md-stepper__indicator">
-          <span class="material-symbols-rounded">graphic_eq</span>
+    <div class="md-popup-content">
+      <!-- Normal Mode Step Indicator (Stepper) - 4 steps -->
+      <div class="md-stepper" id="normalStepper">
+        <div class="md-stepper__step md-stepper__step--active" id="step1">
+          <div class="md-stepper__indicator">
+            <span class="material-symbols-rounded">mic</span>
+          </div>
+          <span class="md-stepper__label">__MSG_step_record__</span>
         </div>
-        <span class="md-stepper__label">__MSG_realtime_step_transcribe__</span>
-      </div>
-      <div class="md-stepper__connector"></div>
-      <div class="md-stepper__step" id="realtimeStep2">
-        <div class="md-stepper__indicator">
-          <span class="material-symbols-rounded">edit_note</span>
+        <div class="md-stepper__connector"></div>
+        <div class="md-stepper__step" id="step2">
+          <div class="md-stepper__indicator">
+            <span class="material-symbols-rounded">transcribe</span>
+          </div>
+          <span class="md-stepper__label">__MSG_step_transcribe__</span>
         </div>
-        <span class="md-stepper__label">__MSG_realtime_step_edit__</span>
-      </div>
-      <div class="md-stepper__connector"></div>
-      <div class="md-stepper__step" id="realtimeStep3">
-        <div class="md-stepper__indicator">
-          <span class="material-symbols-rounded">auto_awesome</span>
+        <div class="md-stepper__connector"></div>
+        <div class="md-stepper__step" id="step3">
+          <div class="md-stepper__indicator">
+            <span class="material-symbols-rounded">edit_note</span>
+          </div>
+          <span class="md-stepper__label">__MSG_step_edit__</span>
         </div>
-        <span class="md-stepper__label">__MSG_realtime_step_summarize__</span>
+        <div class="md-stepper__connector"></div>
+        <div class="md-stepper__step" id="step4">
+          <div class="md-stepper__indicator">
+            <span class="material-symbols-rounded">auto_awesome</span>
+          </div>
+          <span class="md-stepper__label">__MSG_step_summarize__</span>
+        </div>
       </div>
-    </div>
 
-    <!-- Realtime Session Info Banner -->
-    <div class="md-realtime-info hidden" id="realtimeInfoBanner">
-      <span class="material-symbols-rounded">info</span>
-      <span class="md-body-small">__MSG_realtime_session_limit__</span>
-    </div>
-
-    <!-- Status Bar -->
-    <div class="md-status-card" id="statusBar">
-      <span class="material-symbols-rounded md-status-card__icon">info</span>
-      <div class="md-status-card__content">
-        <span id="statusText" class="md-body-medium">__MSG_ready_to_record__</span>
-        <div class="md-timer hidden" id="timer">00:00</div>
+      <!-- Realtime Mode Step Indicator (Stepper) - 3 steps -->
+      <div class="md-stepper hidden" id="realtimeStepper">
+        <div
+          class="md-stepper__step md-stepper__step--active"
+          id="realtimeStep1"
+        >
+          <div class="md-stepper__indicator">
+            <span class="material-symbols-rounded">graphic_eq</span>
+          </div>
+          <span class="md-stepper__label"
+            >__MSG_realtime_step_transcribe__</span
+          >
+        </div>
+        <div class="md-stepper__connector"></div>
+        <div class="md-stepper__step" id="realtimeStep2">
+          <div class="md-stepper__indicator">
+            <span class="material-symbols-rounded">edit_note</span>
+          </div>
+          <span class="md-stepper__label">__MSG_realtime_step_edit__</span>
+        </div>
+        <div class="md-stepper__connector"></div>
+        <div class="md-stepper__step" id="realtimeStep3">
+          <div class="md-stepper__indicator">
+            <span class="material-symbols-rounded">auto_awesome</span>
+          </div>
+          <span class="md-stepper__label">__MSG_realtime_step_summarize__</span>
+        </div>
       </div>
-    </div>
 
-    <!-- Audio Controls -->
-    <div class="md-audio-player hidden" id="audioControls">
-      <div class="md-card md-card--outlined">
-        <div class="md-audio-player__controls">
-          <button type="button" id="skipBackward" class="md-icon-button" title="Skip back 5s">
-            <span class="material-symbols-rounded">replay_5</span>
+      <!-- Realtime Session Info Banner -->
+      <div class="md-realtime-info hidden" id="realtimeInfoBanner">
+        <span class="material-symbols-rounded">info</span>
+        <span class="md-body-small">__MSG_realtime_session_limit__</span>
+      </div>
+
+      <!-- Status Bar -->
+      <div class="md-status-card" id="statusBar">
+        <span class="material-symbols-rounded md-status-card__icon">info</span>
+        <div class="md-status-card__content">
+          <span id="statusText" class="md-body-medium"
+            >__MSG_ready_to_record__</span
+          >
+          <div class="md-timer hidden" id="timer">00:00</div>
+        </div>
+      </div>
+
+      <!-- Audio Controls -->
+      <div class="md-audio-player hidden" id="audioControls">
+        <div class="md-card md-card--outlined">
+          <div class="md-audio-player__controls">
+            <button
+              type="button"
+              id="skipBackward"
+              class="md-icon-button"
+              title="Skip back 5s"
+            >
+              <span class="material-symbols-rounded">replay_5</span>
+            </button>
+            <button
+              type="button"
+              id="playPauseAudio"
+              class="md-icon-button md-icon-button--filled"
+              title="Play/Pause"
+            >
+              <span class="material-symbols-rounded">play_arrow</span>
+            </button>
+            <button
+              type="button"
+              id="skipForward"
+              class="md-icon-button"
+              title="Skip forward 5s"
+            >
+              <span class="material-symbols-rounded">forward_5</span>
+            </button>
+          </div>
+          <div class="md-audio-player__progress">
+            <span id="currentTime" class="md-label-small md-text-secondary"
+              >0:00</span
+            >
+            <div class="md-slider">
+              <input
+                type="range"
+                id="audioProgress"
+                min="0"
+                max="100"
+                value="0"
+              />
+            </div>
+            <span id="duration" class="md-label-small md-text-secondary"
+              >0:00</span
+            >
+          </div>
+          <div class="md-audio-player__volume">
+            <span class="material-symbols-rounded md-text-secondary"
+              >volume_up</span
+            >
+            <div class="md-slider">
+              <input
+                type="range"
+                id="volumeSlider"
+                min="0"
+                max="100"
+                value="80"
+              />
+            </div>
+            <span id="volumeValue" class="md-label-small">80%</span>
+          </div>
+        </div>
+        <audio id="audioPlayback" class="hidden"></audio>
+      </div>
+
+      <!-- Transcript Editor -->
+      <div class="md-transcript-editor hidden" id="transcriptEditor">
+        <div class="md-transcript-editor__header">
+          <div class="md-flex md-items-center md-gap-2">
+            <span class="material-symbols-rounded md-text-primary"
+              >description</span
+            >
+            <h4 class="md-title-small">__MSG_edit_transcript__</h4>
+          </div>
+          <span class="md-body-small md-text-secondary"
+            >__MSG_edit_transcript_desc__</span
+          >
+        </div>
+        <div class="md-text-field md-text-field--outlined">
+          <textarea
+            id="transcriptTextarea"
+            class="md-text-field__textarea"
+            placeholder="__MSG_transcript_placeholder__"
+          ></textarea>
+        </div>
+        <div class="md-transcript-editor__actions">
+          <button
+            type="button"
+            id="copyTranscript"
+            class="md-button md-button--outlined"
+          >
+            <span class="material-symbols-rounded">content_copy</span>
+            __MSG_copy_transcript__
           </button>
-          <button type="button" id="playPauseAudio" class="md-icon-button md-icon-button--filled" title="Play/Pause">
+          <button
+            type="button"
+            id="clearTranscript"
+            class="md-button md-button--outlined md-button--error-outline"
+          >
+            <span class="material-symbols-rounded">delete</span>
+            __MSG_clear_transcript__
+          </button>
+          <button
+            type="button"
+            id="summarizeTranscript"
+            class="md-button md-button--filled md-button--success"
+          >
+            <span class="material-symbols-rounded">auto_awesome</span>
+            __MSG_summarize_transcript__
+          </button>
+        </div>
+      </div>
+
+      <!-- Timing Info -->
+      <div class="md-timing-info">
+        <div class="md-timing-info__item" id="transcriptionTime">
+          <span class="material-symbols-rounded">timer</span>
+          <span class="md-body-small">__MSG_transcription_time__</span>
+          <span class="md-label-medium md-text-primary time-value">--</span>
+        </div>
+        <div class="md-timing-info__item" id="summarizationTime">
+          <span class="material-symbols-rounded">schedule</span>
+          <span class="md-body-small">__MSG_summarization_time__</span>
+          <span class="md-label-medium md-text-primary time-value">--</span>
+        </div>
+      </div>
+
+      <!-- Main Controls -->
+      <div class="md-controls">
+        <div class="md-controls__row">
+          <button
+            type="button"
+            id="startRecording"
+            class="md-button md-button--filled"
+            disabled
+          >
+            <span class="material-symbols-rounded">mic</span>
+            __MSG_start_recording__
+          </button>
+          <button
+            type="button"
+            id="stopRecording"
+            class="md-button md-button--filled md-button--error"
+            disabled
+          >
+            <span class="material-symbols-rounded">stop</span>
+            __MSG_stop_recording__
+          </button>
+        </div>
+
+        <div class="md-controls__row">
+          <button
+            type="button"
+            id="playRecording"
+            class="md-button md-button--outlined"
+            disabled
+          >
             <span class="material-symbols-rounded">play_arrow</span>
+            __MSG_play_recording__
           </button>
-          <button type="button" id="skipForward" class="md-icon-button" title="Skip forward 5s">
-            <span class="material-symbols-rounded">forward_5</span>
+          <button
+            type="button"
+            id="transcribeAudio"
+            class="md-button md-button--filled"
+            disabled
+          >
+            <span class="material-symbols-rounded">text_snippet</span>
+            __MSG_transcribe_audio__
           </button>
         </div>
-        <div class="md-audio-player__progress">
-          <span id="currentTime" class="md-label-small md-text-secondary">0:00</span>
-          <div class="md-slider">
-            <input type="range" id="audioProgress" min="0" max="100" value="0">
+
+        <div class="md-controls__row">
+          <button
+            type="button"
+            id="clearRecording"
+            class="md-button md-button--outlined md-button--error-outline"
+            disabled
+          >
+            <span class="material-symbols-rounded">delete</span>
+            __MSG_clear_recording__
+          </button>
+          <button
+            type="button"
+            id="uploadAudio"
+            class="md-button md-button--filled-tonal"
+          >
+            <span class="material-symbols-rounded">cloud_upload</span>
+            __MSG_upload_audio__
+          </button>
+        </div>
+
+        <div class="md-controls__row">
+          <button
+            type="button"
+            id="openWelcomePage"
+            class="md-button md-button--outlined hidden"
+          >
+            <span class="material-symbols-rounded">lock_open</span>
+            __MSG_grant_mic_access__
+          </button>
+        </div>
+      </div>
+
+      <!-- Realtime Controls (hidden by default, shown when realtime mode is enabled) -->
+      <div class="md-controls hidden" id="realtimeControls">
+        <div class="md-controls__row">
+          <button
+            type="button"
+            id="startRealtime"
+            class="md-button md-button--filled md-button--realtime"
+            disabled
+          >
+            <span class="material-symbols-rounded">graphic_eq</span>
+            __MSG_start_realtime__
+          </button>
+          <button
+            type="button"
+            id="stopRealtime"
+            class="md-button md-button--filled md-button--error hidden"
+            disabled
+          >
+            <span class="material-symbols-rounded">stop</span>
+            __MSG_stop_realtime__
+          </button>
+        </div>
+        <div class="md-controls__row">
+          <button
+            type="button"
+            id="clearRealtime"
+            class="md-button md-button--outlined md-button--error-outline hidden"
+            disabled
+          >
+            <span class="material-symbols-rounded">delete</span>
+            __MSG_clear_recording__
+          </button>
+        </div>
+        <div class="md-controls__row">
+          <button
+            type="button"
+            id="openWelcomePageRealtime"
+            class="md-button md-button--outlined hidden"
+          >
+            <span class="material-symbols-rounded">lock_open</span>
+            __MSG_grant_mic_access__
+          </button>
+        </div>
+      </div>
+
+      <!-- Live Transcript Container (chat-like interface) -->
+      <div class="md-live-transcript hidden" id="liveTranscriptContainer">
+        <div class="md-live-transcript__header">
+          <div class="md-flex md-items-center md-gap-2">
+            <span
+              class="material-symbols-rounded md-text-primary md-live-indicator"
+              >graphic_eq</span
+            >
+            <h4 class="md-title-small">__MSG_edit_realtime_transcript__</h4>
           </div>
-          <span id="duration" class="md-label-small md-text-secondary">0:00</span>
+          <span class="md-body-small md-text-secondary"
+            >__MSG_edit_realtime_transcript_desc__</span
+          >
         </div>
-        <div class="md-audio-player__volume">
-          <span class="material-symbols-rounded md-text-secondary">volume_up</span>
-          <div class="md-slider">
-            <input type="range" id="volumeSlider" min="0" max="100" value="80">
+        <!-- Chat view for live transcription -->
+        <div class="md-live-transcript__chat" id="liveTranscriptChat">
+          <!-- Live transcription messages will be appended here -->
+          <div
+            class="md-live-transcript__placeholder"
+            id="liveTranscriptPlaceholder"
+          >
+            <span class="material-symbols-rounded">mic_none</span>
+            <span class="md-body-medium md-text-secondary"
+              >__MSG_realtime_ready__</span
+            >
           </div>
-          <span id="volumeValue" class="md-label-small">80%</span>
+        </div>
+        <!-- Editable textarea (shown after stopping) -->
+        <textarea
+          class="md-live-transcript__editable hidden"
+          id="realtimeTranscriptTextarea"
+          placeholder="__MSG_transcript_placeholder__"
+          rows="6"
+        ></textarea>
+        <div
+          class="md-live-transcript__actions hidden"
+          id="liveTranscriptActions"
+        >
+          <button
+            type="button"
+            id="editRealtimeTranscript"
+            class="md-button md-button--outlined"
+          >
+            <span class="material-symbols-rounded">edit</span>
+            __MSG_edit_transcript__
+          </button>
+          <button
+            type="button"
+            id="copyRealtimeTranscript"
+            class="md-button md-button--outlined"
+          >
+            <span class="material-symbols-rounded">content_copy</span>
+            __MSG_copy_transcript__
+          </button>
+          <button
+            type="button"
+            id="summarizeRealtimeTranscript"
+            class="md-button md-button--filled md-button--success"
+          >
+            <span class="material-symbols-rounded">auto_awesome</span>
+            __MSG_summarize_transcript__
+          </button>
         </div>
       </div>
-      <audio id="audioPlayback" class="hidden"></audio>
-    </div>
 
-    <!-- Transcript Editor -->
-    <div class="md-transcript-editor hidden" id="transcriptEditor">
-      <div class="md-transcript-editor__header">
-        <div class="md-flex md-items-center md-gap-2">
-          <span class="material-symbols-rounded md-text-primary">description</span>
-          <h4 class="md-title-small">__MSG_edit_transcript__</h4>
+      <input type="file" id="audioFileInput" accept="audio/*" class="hidden" />
+
+      <!-- Progress Bar -->
+      <div class="md-progress-container hidden" id="progressContainer">
+        <div class="md-progress-linear">
+          <div class="md-progress-linear__track" id="progressFill"></div>
         </div>
-        <span class="md-body-small md-text-secondary">__MSG_edit_transcript_desc__</span>
-      </div>
-      <div class="md-text-field md-text-field--outlined">
-        <textarea id="transcriptTextarea" class="md-text-field__textarea" placeholder="__MSG_transcript_placeholder__"></textarea>
-      </div>
-      <div class="md-transcript-editor__actions">
-        <button type="button" id="copyTranscript" class="md-button md-button--outlined">
-          <span class="material-symbols-rounded">content_copy</span>
-          __MSG_copy_transcript__
-        </button>
-        <button type="button" id="clearTranscript" class="md-button md-button--outlined md-button--error-outline">
-          <span class="material-symbols-rounded">delete</span>
-          __MSG_clear_transcript__
-        </button>
-        <button type="button" id="summarizeTranscript" class="md-button md-button--filled md-button--success">
-          <span class="material-symbols-rounded">auto_awesome</span>
-          __MSG_summarize_transcript__
-        </button>
-      </div>
-    </div>
-
-    <!-- Timing Info -->
-    <div class="md-timing-info">
-      <div class="md-timing-info__item" id="transcriptionTime">
-        <span class="material-symbols-rounded">timer</span>
-        <span class="md-body-small">__MSG_transcription_time__</span>
-        <span class="md-label-medium md-text-primary time-value">--</span>
-      </div>
-      <div class="md-timing-info__item" id="summarizationTime">
-        <span class="material-symbols-rounded">schedule</span>
-        <span class="md-body-small">__MSG_summarization_time__</span>
-        <span class="md-label-medium md-text-primary time-value">--</span>
-      </div>
-    </div>
-
-    <!-- Main Controls -->
-    <div class="md-controls">
-      <div class="md-controls__row">
-        <button type="button" id="startRecording" class="md-button md-button--filled" disabled>
-          <span class="material-symbols-rounded">mic</span>
-          __MSG_start_recording__
-        </button>
-        <button type="button" id="stopRecording" class="md-button md-button--filled md-button--error" disabled>
-          <span class="material-symbols-rounded">stop</span>
-          __MSG_stop_recording__
-        </button>
+        <span class="md-label-small md-text-secondary" id="progressText"
+          >0%</span
+        >
       </div>
 
-      <div class="md-controls__row">
-        <button type="button" id="playRecording" class="md-button md-button--outlined" disabled>
-          <span class="material-symbols-rounded">play_arrow</span>
-          __MSG_play_recording__
-        </button>
-        <button type="button" id="transcribeAudio" class="md-button md-button--filled" disabled>
-          <span class="material-symbols-rounded">text_snippet</span>
-          __MSG_transcribe_audio__
-        </button>
-      </div>
+      <!-- Result Area -->
+      <div id="result" class="md-result-area hidden"></div>
 
-      <div class="md-controls__row">
-        <button type="button" id="clearRecording" class="md-button md-button--outlined md-button--error-outline" disabled>
-          <span class="material-symbols-rounded">delete</span>
-          __MSG_clear_recording__
-        </button>
-        <button type="button" id="uploadAudio" class="md-button md-button--filled-tonal">
-          <span class="material-symbols-rounded">cloud_upload</span>
-          __MSG_upload_audio__
-        </button>
-      </div>
-
-      <div class="md-controls__row">
-        <button type="button" id="openWelcomePage" class="md-button md-button--outlined hidden">
-          <span class="material-symbols-rounded">lock_open</span>
-          __MSG_grant_mic_access__
-        </button>
-      </div>
-    </div>
-
-    <!-- Realtime Controls (hidden by default, shown when realtime mode is enabled) -->
-    <div class="md-controls hidden" id="realtimeControls">
-      <div class="md-controls__row">
-        <button type="button" id="startRealtime" class="md-button md-button--filled md-button--realtime" disabled>
-          <span class="material-symbols-rounded">graphic_eq</span>
-          __MSG_start_realtime__
-        </button>
-        <button type="button" id="stopRealtime" class="md-button md-button--filled md-button--error hidden" disabled>
-          <span class="material-symbols-rounded">stop</span>
-          __MSG_stop_realtime__
-        </button>
-      </div>
-      <div class="md-controls__row">
-        <button type="button" id="clearRealtime" class="md-button md-button--outlined md-button--error-outline hidden" disabled>
-          <span class="material-symbols-rounded">delete</span>
-          __MSG_clear_recording__
-        </button>
-      </div>
-      <div class="md-controls__row">
-        <button type="button" id="openWelcomePageRealtime" class="md-button md-button--outlined hidden">
-          <span class="material-symbols-rounded">lock_open</span>
-          __MSG_grant_mic_access__
-        </button>
-      </div>
-    </div>
-
-    <!-- Live Transcript Container (chat-like interface) -->
-    <div class="md-live-transcript hidden" id="liveTranscriptContainer">
-      <div class="md-live-transcript__header">
-        <div class="md-flex md-items-center md-gap-2">
-          <span class="material-symbols-rounded md-text-primary md-live-indicator">graphic_eq</span>
-          <h4 class="md-title-small">__MSG_edit_realtime_transcript__</h4>
-        </div>
-        <span class="md-body-small md-text-secondary">__MSG_edit_realtime_transcript_desc__</span>
-      </div>
-      <!-- Chat view for live transcription -->
-      <div class="md-live-transcript__chat" id="liveTranscriptChat">
-        <!-- Live transcription messages will be appended here -->
-        <div class="md-live-transcript__placeholder" id="liveTranscriptPlaceholder">
-          <span class="material-symbols-rounded">mic_none</span>
-          <span class="md-body-medium md-text-secondary">__MSG_realtime_ready__</span>
+      <!-- Settings Section -->
+      <div class="md-settings-section">
+        <a href="#" id="openSettings" class="md-settings-link">
+          <span class="material-symbols-rounded">settings</span>
+          <span>__MSG_settings_config__</span>
+        </a>
+        <div class="md-settings-buttons">
+          <button
+            type="button"
+            id="refreshSettings"
+            class="md-button md-button--outlined md-button--small"
+          >
+            <span class="material-symbols-rounded">sync</span>
+            __MSG_refresh_settings__
+          </button>
+          <button
+            type="button"
+            id="testApiKey"
+            class="md-button md-button--outlined md-button--small"
+          >
+            <span class="material-symbols-rounded">science</span>
+            __MSG_test_api_key__
+          </button>
         </div>
       </div>
-      <!-- Editable textarea (shown after stopping) -->
-      <textarea 
-        class="md-live-transcript__editable hidden" 
-        id="realtimeTranscriptTextarea" 
-        placeholder="__MSG_transcript_placeholder__"
-        rows="6"
-      ></textarea>
-      <div class="md-live-transcript__actions hidden" id="liveTranscriptActions">
-        <button type="button" id="editRealtimeTranscript" class="md-button md-button--outlined">
-          <span class="material-symbols-rounded">edit</span>
-          __MSG_edit_transcript__
-        </button>
-        <button type="button" id="copyRealtimeTranscript" class="md-button md-button--outlined">
-          <span class="material-symbols-rounded">content_copy</span>
-          __MSG_copy_transcript__
-        </button>
-        <button type="button" id="summarizeRealtimeTranscript" class="md-button md-button--filled md-button--success">
-          <span class="material-symbols-rounded">auto_awesome</span>
-          __MSG_summarize_transcript__
-        </button>
-      </div>
     </div>
 
-    <input type="file" id="audioFileInput" accept="audio/*" class="hidden">
-
-    <!-- Progress Bar -->
-    <div class="md-progress-container hidden" id="progressContainer">
-      <div class="md-progress-linear">
-        <div class="md-progress-linear__track" id="progressFill"></div>
-      </div>
-      <span class="md-label-small md-text-secondary" id="progressText">0%</span>
-    </div>
-
-    <!-- Result Area -->
-    <div id="result" class="md-result-area hidden"></div>
-
-    <!-- Settings Section -->
-    <div class="md-settings-section">
-      <a href="#" id="openSettings" class="md-settings-link">
-        <span class="material-symbols-rounded">settings</span>
-        <span>__MSG_settings_config__</span>
-      </a>
-      <div class="md-settings-buttons">
-        <button type="button" id="refreshSettings" class="md-button md-button--outlined md-button--small">
-          <span class="material-symbols-rounded">sync</span>
-          __MSG_refresh_settings__
-        </button>
-        <button type="button" id="testApiKey" class="md-button md-button--outlined md-button--small">
-          <span class="material-symbols-rounded">science</span>
-          __MSG_test_api_key__
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <script src="popup.js" type="module"></script>
-</body>
-
+    <script src="popup.js" type="module"></script>
+  </body>
 </html>

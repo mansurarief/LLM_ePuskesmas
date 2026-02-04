@@ -3,8 +3,8 @@
  * Extension-specific styles for options/settings interface
  */
 
-@import url('../styles/material-tokens.css');
-@import url('../styles/material-components.css');
+@import url("../styles/material-tokens.css");
+@import url("../styles/material-components.css");
 
 /* ========================================
  * OPTIONS LAYOUT
@@ -81,7 +81,8 @@ body {
 .md-section {
   padding: 0;
   overflow: hidden;
-  transition: box-shadow var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard);
+  transition: box-shadow var(--md-sys-motion-duration-medium1)
+    var(--md-sys-motion-easing-standard);
 }
 
 .md-section:hover {
@@ -142,7 +143,8 @@ body {
   border: 1px solid var(--md-sys-color-outline);
   border-radius: var(--md-sys-shape-corner-small);
   padding: 0 12px;
-  transition: all var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+  transition: all var(--md-sys-motion-duration-short4)
+    var(--md-sys-motion-easing-standard);
 }
 
 .md-text-field__container:hover {
@@ -167,7 +169,7 @@ body {
   height: 48px;
   border: none;
   background: transparent;
-  font-family: 'Roboto Mono', monospace;
+  font-family: "Roboto Mono", monospace;
   font-size: var(--md-sys-typescale-body-large-font-size);
   color: var(--md-sys-color-on-surface);
   letter-spacing: 1px;
@@ -194,7 +196,8 @@ body {
   color: var(--md-sys-color-primary);
   text-decoration: none;
   font-weight: 500;
-  transition: color var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+  transition: color var(--md-sys-motion-duration-short2)
+    var(--md-sys-motion-easing-standard);
 }
 
 .md-link:hover {
@@ -210,7 +213,8 @@ body {
   margin-left: 4px;
   color: var(--md-sys-color-on-surface-variant);
   border-radius: var(--md-sys-shape-corner-full);
-  transition: background-color var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+  transition: background-color var(--md-sys-motion-duration-short2)
+    var(--md-sys-motion-easing-standard);
 }
 
 .md-toggle-visibility:hover {
@@ -238,7 +242,8 @@ body {
   background: var(--md-sys-color-surface-container);
   border: 1px solid var(--md-sys-color-outline);
   border-radius: var(--md-sys-shape-corner-small);
-  transition: all var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+  transition: all var(--md-sys-motion-duration-short4)
+    var(--md-sys-motion-easing-standard);
 }
 
 .md-select__container:hover {
@@ -295,7 +300,8 @@ body {
   padding: 12px 16px;
   margin: -12px -16px;
   border-radius: var(--md-sys-shape-corner-medium);
-  transition: background-color var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+  transition: background-color var(--md-sys-motion-duration-short2)
+    var(--md-sys-motion-easing-standard);
 }
 
 .md-switch:hover {
@@ -310,7 +316,8 @@ body {
   border: 2px solid var(--md-sys-color-outline);
   border-radius: var(--md-sys-shape-corner-full);
   flex-shrink: 0;
-  transition: all var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+  transition: all var(--md-sys-motion-duration-short4)
+    var(--md-sys-motion-easing-standard);
 }
 
 .md-switch__thumb {
@@ -322,7 +329,8 @@ body {
   height: 16px;
   background-color: var(--md-sys-color-outline);
   border-radius: var(--md-sys-shape-corner-full);
-  transition: all var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+  transition: all var(--md-sys-motion-duration-short4)
+    var(--md-sys-motion-easing-standard);
 }
 
 .md-switch__input {
@@ -375,7 +383,8 @@ body {
   gap: 12px;
   padding: 16px 20px;
   border-radius: var(--md-sys-shape-corner-medium);
-  animation: slideIn var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-emphasized-decelerate);
+  animation: slideIn var(--md-sys-motion-duration-medium2)
+    var(--md-sys-motion-easing-emphasized-decelerate);
 }
 
 .md-message--success {
@@ -448,10 +457,10 @@ body {
 
 .material-symbols-rounded {
   font-variation-settings:
-    'FILL' 0,
-    'wght' 400,
-    'GRAD' 0,
-    'opsz' 24;
+    "FILL" 0,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
 }
 
 /* ========================================
@@ -463,7 +472,8 @@ body {
   flex-direction: column;
   gap: 8px;
   margin-top: 16px;
-  animation: slideIn var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-emphasized-decelerate);
+  animation: slideIn var(--md-sys-motion-duration-medium2)
+    var(--md-sys-motion-easing-emphasized-decelerate);
 }
 
 .md-api-test-item {
@@ -535,17 +545,17 @@ body {
   .md-options-layout {
     padding: 16px;
   }
-  
+
   .md-options-header {
     flex-direction: column;
     text-align: center;
     padding: 24px 16px;
   }
-  
+
   .md-options-actions {
     flex-direction: column;
   }
-  
+
   .md-section__content {
     padding: 16px;
   }

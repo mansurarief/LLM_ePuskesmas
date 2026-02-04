@@ -3,8 +3,8 @@
  * Extension-specific styles for welcome/onboarding interface
  */
 
-@import url('../styles/material-tokens.css');
-@import url('../styles/material-components.css');
+@import url("../styles/material-tokens.css");
+@import url("../styles/material-components.css");
 
 /* ========================================
  * WELCOME LAYOUT
@@ -32,7 +32,8 @@ body {
   border-radius: var(--md-sys-shape-corner-extra-large);
   padding: 40px 32px;
   box-shadow: var(--md-sys-elevation-level3);
-  animation: fadeInUp var(--md-sys-motion-duration-long2) var(--md-sys-motion-easing-emphasized-decelerate);
+  animation: fadeInUp var(--md-sys-motion-duration-long2)
+    var(--md-sys-motion-easing-emphasized-decelerate);
 }
 
 @keyframes fadeInUp {
@@ -73,7 +74,8 @@ body {
 }
 
 @keyframes iconPulse {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
     box-shadow: 0 8px 24px rgba(0, 106, 96, 0.25);
   }
@@ -86,7 +88,11 @@ body {
 .md-welcome-header__icon .material-symbols-rounded {
   font-size: 40px;
   color: var(--md-sys-color-on-primary);
-  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;
+  font-variation-settings:
+    "FILL" 1,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 48;
 }
 
 .md-welcome-header h1 {
@@ -118,7 +124,8 @@ body {
   gap: 12px;
   padding: 16px;
   border-radius: var(--md-sys-shape-corner-medium);
-  transition: all var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+  transition: all var(--md-sys-motion-duration-short4)
+    var(--md-sys-motion-easing-standard);
   cursor: default;
 }
 
@@ -187,7 +194,11 @@ body {
 .md-permission-card__icon .material-symbols-rounded {
   font-size: 28px;
   color: var(--md-sys-color-on-warning);
-  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  font-variation-settings:
+    "FILL" 1,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
 }
 
 .md-permission-card__content {
@@ -240,7 +251,8 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
-  animation: slideIn var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-emphasized-decelerate);
+  animation: slideIn var(--md-sys-motion-duration-medium2)
+    var(--md-sys-motion-easing-emphasized-decelerate);
 }
 
 .md-status-message--success {
@@ -278,7 +290,8 @@ body {
   border-radius: var(--md-sys-shape-corner-large);
   padding: 24px;
   margin-bottom: 24px;
-  animation: expandIn var(--md-sys-motion-duration-long1) var(--md-sys-motion-easing-emphasized-decelerate);
+  animation: expandIn var(--md-sys-motion-duration-long1)
+    var(--md-sys-motion-easing-emphasized-decelerate);
 }
 
 @keyframes expandIn {
@@ -302,7 +315,11 @@ body {
 .md-next-steps__header .material-symbols-rounded {
   font-size: 28px;
   color: var(--md-sys-color-on-tertiary-container);
-  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  font-variation-settings:
+    "FILL" 1,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
 }
 
 .md-next-steps__header h3 {
@@ -391,10 +408,10 @@ body {
 
 .material-symbols-rounded {
   font-variation-settings:
-    'FILL' 0,
-    'wght' 400,
-    'GRAD' 0,
-    'opsz' 24;
+    "FILL" 0,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
 }
 
 /* ========================================
@@ -405,24 +422,24 @@ body {
   .md-welcome-container {
     padding: 16px;
   }
-  
+
   .md-welcome-card {
     padding: 28px 20px;
   }
-  
+
   .md-features {
     grid-template-columns: 1fr;
   }
-  
+
   .md-welcome-actions {
     flex-direction: column;
   }
-  
+
   .md-welcome-header__icon {
     width: 64px;
     height: 64px;
   }
-  
+
   .md-welcome-header__icon .material-symbols-rounded {
     font-size: 32px;
   }
@@ -432,11 +449,11 @@ body {
   .md-welcome-card {
     padding: 24px 16px;
   }
-  
+
   .md-feature-card {
     padding: 12px;
   }
-  
+
   .md-permission-card {
     padding: 16px;
     flex-direction: column;

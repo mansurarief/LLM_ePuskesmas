@@ -1,11 +1,15 @@
-import { localizeHtmlPage, getMessage, initTranslations } from "../utils/translations.js";
+import {
+  localizeHtmlPage,
+  getMessage,
+  initTranslations,
+} from "../utils/translations.js";
 
 /**
  * @fileoverview Medical Audio Recorder Chrome Extension - Main popup functionality
  * This file contains the core MedicalAudioRecorder class that handles audio recording,
  * transcription using AI APIs (OpenAI/Gemini), and medical summary generation for
  * healthcare documentation purposes.
- * 
+ *
  * @author LLM ePuskesmas Team
  * @license MIT
  * @version 1.0.0
@@ -15,7 +19,7 @@ import { localizeHtmlPage, getMessage, initTranslations } from "../utils/transla
  * Main class for the Medical Audio Recorder Chrome Extension.
  * Manages audio recording, transcription, and medical summary generation
  * with integration to healthcare systems.
- * 
+ *
  * @class MedicalAudioRecorder
  */
 class MedicalAudioRecorder {
@@ -23,7 +27,7 @@ class MedicalAudioRecorder {
    * Initializes the MedicalAudioRecorder instance.
    * Sets up properties, DOM elements, event listeners, loads settings,
    * checks microphone access, and validates API configuration.
-   * 
+   *
    * @constructor
    */
   constructor() {
@@ -33,7 +37,7 @@ class MedicalAudioRecorder {
   /**
    * Asynchronous initialization of the extension components.
    * Handles translation loading and component setup.
-   * 
+   *
    * @async
    */
   async init() {
@@ -69,11 +73,11 @@ class MedicalAudioRecorder {
 
     if (isSidePanel) {
       // Apply side panel specific styles
-      document.body.classList.add('side-panel');
-      console.log('Running in side panel context');
+      document.body.classList.add("side-panel");
+      console.log("Running in side panel context");
     } else {
-      document.body.classList.add('popup-context');
-      console.log('Running in popup context');
+      document.body.classList.add("popup-context");
+      console.log("Running in popup context");
     }
 
     this.isSidePanel = isSidePanel;
@@ -82,7 +86,7 @@ class MedicalAudioRecorder {
   /**
    * Initializes all instance properties with default values.
    * Sets up recording state, timing properties, and configuration defaults.
-   * 
+   *
    * @private
    */
   initializeProperties() {
@@ -108,7 +112,7 @@ class MedicalAudioRecorder {
     this.realtimeAudioContext = null;
     this.realtimeMediaStream = null;
     this.realtimeProcessor = null;
-    this.realtimeTranscript = '';
+    this.realtimeTranscript = "";
     this.isRealtimeActive = false;
     this.realtimeSessionTimer = null;
     this.realtimeSessionStartTime = null;
@@ -119,7 +123,7 @@ class MedicalAudioRecorder {
   /**
    * Initializes and caches references to DOM elements.
    * Improves performance by storing element references for frequent access.
-   * 
+   *
    * @private
    */
   initializeElements() {
@@ -189,20 +193,32 @@ class MedicalAudioRecorder {
       startRealtime: document.getElementById("startRealtime"),
       stopRealtime: document.getElementById("stopRealtime"),
       clearRealtime: document.getElementById("clearRealtime"),
-      openWelcomePageRealtime: document.getElementById("openWelcomePageRealtime"),
+      openWelcomePageRealtime: document.getElementById(
+        "openWelcomePageRealtime",
+      ),
 
       // Live transcript container
-      liveTranscriptContainer: document.getElementById("liveTranscriptContainer"),
+      liveTranscriptContainer: document.getElementById(
+        "liveTranscriptContainer",
+      ),
       liveTranscriptChat: document.getElementById("liveTranscriptChat"),
-      liveTranscriptPlaceholder: document.getElementById("liveTranscriptPlaceholder"),
+      liveTranscriptPlaceholder: document.getElementById(
+        "liveTranscriptPlaceholder",
+      ),
       liveTranscriptActions: document.getElementById("liveTranscriptActions"),
-      realtimeTranscriptTextarea: document.getElementById("realtimeTranscriptTextarea"),
+      realtimeTranscriptTextarea: document.getElementById(
+        "realtimeTranscriptTextarea",
+      ),
       editRealtimeTranscript: document.getElementById("editRealtimeTranscript"),
       copyRealtimeTranscript: document.getElementById("copyRealtimeTranscript"),
-      summarizeRealtimeTranscript: document.getElementById("summarizeRealtimeTranscript"),
+      summarizeRealtimeTranscript: document.getElementById(
+        "summarizeRealtimeTranscript",
+      ),
 
       // Normal mode controls container
-      normalControls: document.querySelector(".md-controls:not(#realtimeControls)"),
+      normalControls: document.querySelector(
+        ".md-controls:not(#realtimeControls)",
+      ),
 
       // Timing displays
       transcriptionTime: document.getElementById("transcriptionTime"),
@@ -213,44 +229,44 @@ class MedicalAudioRecorder {
   /**
    * Sets up event listeners for all interactive elements.
    * Handles recording controls, file uploads, navigation, and audio playback.
-   * 
+   *
    * @private
    */
   initializeEventListeners() {
     // Recording event listeners
     this.elements.startRecording.addEventListener("click", () =>
-      this.startRecording()
+      this.startRecording(),
     );
     this.elements.stopRecording.addEventListener("click", () =>
-      this.stopRecording()
+      this.stopRecording(),
     );
     this.elements.playRecording.addEventListener("click", () =>
-      this.playRecording()
+      this.playRecording(),
     );
     this.elements.transcribeAudio.addEventListener("click", () =>
-      this.transcribeAudio()
+      this.transcribeAudio(),
     );
     this.elements.clearRecording.addEventListener("click", () =>
-      this.clearRecording()
+      this.clearRecording(),
     );
 
     // File upload event listeners
     this.elements.uploadAudio.addEventListener("click", () =>
-      this.openFileDialog()
+      this.openFileDialog(),
     );
     this.elements.audioFileInput.addEventListener("change", (event) =>
-      this.handleFileUpload(event)
+      this.handleFileUpload(event),
     );
 
     // Navigation event listeners
     this.elements.openWelcomePage.addEventListener("click", () =>
-      this.openWelcomePage()
+      this.openWelcomePage(),
     );
     this.elements.openSettings.addEventListener("click", () =>
-      this.openSettings()
+      this.openSettings(),
     );
     this.elements.refreshSettings.addEventListener("click", () =>
-      this.refreshSettings()
+      this.refreshSettings(),
     );
     this.elements.testApiKey.addEventListener("click", () => this.testApiKey());
 
@@ -261,18 +277,30 @@ class MedicalAudioRecorder {
     });
     this.elements.audioPlayback.addEventListener("loadedmetadata", () => {
       this.updateAudioControls();
-      this.elements.duration.textContent = this.formatTime(this.elements.audioPlayback.duration);
-      this.elements.audioProgress.max = Math.floor(this.elements.audioPlayback.duration);
+      this.elements.duration.textContent = this.formatTime(
+        this.elements.audioPlayback.duration,
+      );
+      this.elements.audioProgress.max = Math.floor(
+        this.elements.audioPlayback.duration,
+      );
     });
     this.elements.audioPlayback.addEventListener("timeupdate", () => {
       this.updateAudioProgress();
       this.updateSliderFill(this.elements.audioProgress);
     });
-    this.elements.audioPlayback.addEventListener("play", () => this.updatePlayPauseIcon(true));
-    this.elements.audioPlayback.addEventListener("pause", () => this.updatePlayPauseIcon(false));
-    this.elements.audioPlayback.addEventListener("ended", () => this.updatePlayPauseIcon(false));
+    this.elements.audioPlayback.addEventListener("play", () =>
+      this.updatePlayPauseIcon(true),
+    );
+    this.elements.audioPlayback.addEventListener("pause", () =>
+      this.updatePlayPauseIcon(false),
+    );
+    this.elements.audioPlayback.addEventListener("ended", () =>
+      this.updatePlayPauseIcon(false),
+    );
 
-    this.elements.playPauseAudio.addEventListener("click", () => this.togglePlayPause());
+    this.elements.playPauseAudio.addEventListener("click", () =>
+      this.togglePlayPause(),
+    );
     this.elements.skipForward.addEventListener("click", () => this.skip(5));
     this.elements.skipBackward.addEventListener("click", () => this.skip(-5));
     this.elements.audioProgress.addEventListener("input", () => {
@@ -282,59 +310,58 @@ class MedicalAudioRecorder {
 
     // Transcript editor event listeners
     this.elements.copyTranscript.addEventListener("click", () =>
-      this.copyTranscript()
+      this.copyTranscript(),
     );
     this.elements.clearTranscript.addEventListener("click", () =>
-      this.clearTranscript()
+      this.clearTranscript(),
     );
     this.elements.summarizeTranscript.addEventListener("click", () =>
-      this.summarizeTranscript()
+      this.summarizeTranscript(),
     );
 
     // Realtime transcription event listeners
     if (this.elements.startRealtime) {
       this.elements.startRealtime.addEventListener("click", () =>
-        this.startRealtimeTranscription()
+        this.startRealtimeTranscription(),
       );
     }
     if (this.elements.stopRealtime) {
       this.elements.stopRealtime.addEventListener("click", () =>
-        this.stopRealtimeTranscription()
+        this.stopRealtimeTranscription(),
       );
     }
     if (this.elements.clearRealtime) {
       this.elements.clearRealtime.addEventListener("click", () =>
-        this.clearRealtimeTranscription()
+        this.clearRealtimeTranscription(),
       );
     }
     if (this.elements.openWelcomePageRealtime) {
       this.elements.openWelcomePageRealtime.addEventListener("click", () =>
-        this.openWelcomePage()
+        this.openWelcomePage(),
       );
     }
     if (this.elements.copyRealtimeTranscript) {
       this.elements.copyRealtimeTranscript.addEventListener("click", () =>
-        this.copyRealtimeTranscript()
+        this.copyRealtimeTranscript(),
       );
     }
     if (this.elements.editRealtimeTranscript) {
       this.elements.editRealtimeTranscript.addEventListener("click", () =>
-        this.toggleRealtimeEditMode()
+        this.toggleRealtimeEditMode(),
       );
     }
     if (this.elements.summarizeRealtimeTranscript) {
       this.elements.summarizeRealtimeTranscript.addEventListener("click", () =>
-        this.summarizeRealtimeTranscript()
+        this.summarizeRealtimeTranscript(),
       );
     }
 
-    // Initialize slider fills
     this.updateSliderFill(this.elements.volumeSlider);
   }
 
   /**
    * Updates the visual fill of a slider input based on its current value.
-   * 
+   *
    * @param {HTMLInputElement} slider - The range input element
    * @private
    */
@@ -343,7 +370,7 @@ class MedicalAudioRecorder {
     const max = slider.max || 100;
     const value = slider.value;
     const percentage = ((value - min) / (max - min)) * 100;
-    slider.style.setProperty('--value', `${percentage}%`);
+    slider.style.setProperty("--value", `${percentage}%`);
   }
 
   // ============================================================================
@@ -353,7 +380,7 @@ class MedicalAudioRecorder {
   /**
    * Loads user settings from Chrome storage.
    * Retrieves API keys, provider preferences, and configuration options.
-   * 
+   *
    * @async
    * @private
    * @throws {Error} When storage access fails
@@ -381,7 +408,7 @@ class MedicalAudioRecorder {
   /**
    * Sets default values for undefined settings.
    * Ensures all required configuration options have fallback values.
-   * 
+   *
    * @private
    */
   setDefaultSettings() {
@@ -410,35 +437,29 @@ class MedicalAudioRecorder {
   /**
    * Checks if microphone access has been granted.
    * Updates UI state based on permission status and validates API configuration.
-   * 
+   *
    * @async
    * @private
    */
   async checkMicrophoneAccess() {
-    const { microphoneAccess } = await chrome.storage.local.get(
-      "microphoneAccess"
-    );
+    const { microphoneAccess } =
+      await chrome.storage.local.get("microphoneAccess");
 
     const isRealtimeMode = this.settings.enableRealtimeTranscription;
 
     if (microphoneAccess) {
       this.elements.startRecording.disabled = false;
       this.elements.openWelcomePage.classList.add("hidden");
-      
-      // Handle realtime mode
+
       if (isRealtimeMode && this.elements.startRealtime) {
         this.elements.startRealtime.disabled = false;
         this.elements.openWelcomePageRealtime.classList.add("hidden");
       }
     } else {
       this.elements.startRecording.disabled = true;
-      this.updateStatus(
-        getMessage("permission_denied"),
-        "warning"
-      );
+      this.updateStatus(getMessage("permission_denied"), "warning");
       this.elements.openWelcomePage.classList.remove("hidden");
-      
-      // Handle realtime mode
+
       if (isRealtimeMode && this.elements.startRealtime) {
         this.elements.startRealtime.disabled = true;
         this.elements.openWelcomePageRealtime.classList.remove("hidden");
@@ -451,43 +472,47 @@ class MedicalAudioRecorder {
   /**
    * Validates API key configuration for selected providers.
    * Checks if required API keys are present for transcription and summarization.
-   * 
+   *
    * @private
    */
   validateApiConfiguration() {
-    const transcriptionProvider = this.settings.transcriptionProvider || "openai";
-    const summarizationProvider = this.settings.summarizationProvider || "openai";
+    const transcriptionProvider =
+      this.settings.transcriptionProvider || "openai";
+    const summarizationProvider =
+      this.settings.summarizationProvider || "openai";
     let missingKeys = [];
 
-    // Check transcription provider requirements
     if (transcriptionProvider === "openai" && !this.settings.openaiApiKey) {
       missingKeys.push("OpenAI API key (for transcription)");
-    } else if (transcriptionProvider === "gemini" && !this.settings.geminiApiKey) {
-      // Gemini provider now uses Gemini API for transcription (multimodal)
+    } else if (
+      transcriptionProvider === "gemini" &&
+      !this.settings.geminiApiKey
+    ) {
       missingKeys.push("Gemini API key (for transcription)");
     }
 
-    // Check summarization provider requirements
     if (summarizationProvider === "openai" && !this.settings.openaiApiKey) {
       missingKeys.push("OpenAI API key (for summarization)");
-    } else if (summarizationProvider === "gemini" && !this.settings.geminiApiKey) {
+    } else if (
+      summarizationProvider === "gemini" &&
+      !this.settings.geminiApiKey
+    ) {
       missingKeys.push("Gemini API key (for summarization)");
     }
 
-    // Remove duplicates
     missingKeys = [...new Set(missingKeys)];
 
     if (missingKeys.length > 0) {
       this.showMessage(
         `<span class="material-symbols-rounded" style="color: var(--md-sys-color-warning);">warning</span> ${missingKeys.join(", ")} not configured. ${getMessage("step_configure_api")}`,
-        "error"
+        "error",
       );
     }
   }
 
   /**
    * Refreshes settings from storage and revalidates configuration.
-   * 
+   *
    * @async
    * @private
    */
@@ -500,7 +525,7 @@ class MedicalAudioRecorder {
   /**
    * Checks if API keys are properly configured in storage.
    * Displays warning messages if required keys are missing.
-   * 
+   *
    * @async
    * @private
    * @returns {Promise<Object|null>} Storage result or null on error
@@ -508,21 +533,26 @@ class MedicalAudioRecorder {
   async checkApiKeyInStorage() {
     try {
       const result = await chrome.storage.local.get([
-        "openaiApiKey", 
+        "openaiApiKey",
         "geminiApiKey",
         "transcriptionProvider",
-        "summarizationProvider"
+        "summarizationProvider",
       ]);
 
-      // Check OpenAI key
-      if ((result.transcriptionProvider === "openai" || result.summarizationProvider === "openai") && result.openaiApiKey === "") {
+      if (
+        (result.transcriptionProvider === "openai" ||
+          result.summarizationProvider === "openai") &&
+        result.openaiApiKey === ""
+      ) {
         this.showMessage(getMessage("api_key_missing"), "error");
-      }
-      // Check Gemini key for transcription or summarization
-      else if ((result.transcriptionProvider === "gemini" || result.summarizationProvider === "gemini") && !result.geminiApiKey) {
+      } else if (
+        (result.transcriptionProvider === "gemini" ||
+          result.summarizationProvider === "gemini") &&
+        !result.geminiApiKey
+      ) {
         this.showMessage(getMessage("gemini_key_not_configured"), "error");
       }
-      
+
       return result;
     } catch (error) {
       console.error("Error checking API key in storage:", error);
@@ -533,61 +563,69 @@ class MedicalAudioRecorder {
   /**
    * Tests API key configuration and displays results.
    * Validates both OpenAI and Gemini API keys if configured.
-   * 
+   *
    * @async
    * @private
    */
   async testApiKey() {
     try {
-      const transcriptionProvider = this.settings.transcriptionProvider || "openai";
-      const summarizationProvider = this.settings.summarizationProvider || "openai";
-      
-      // Create result container
+      const transcriptionProvider =
+        this.settings.transcriptionProvider || "openai";
+      const summarizationProvider =
+        this.settings.summarizationProvider || "openai";
+
       this.elements.result.textContent = "";
       const resultsContainer = document.createElement("div");
       resultsContainer.className = "md-api-test-results";
-      
-      // Test OpenAI API key if needed
-      if (transcriptionProvider === "openai" || summarizationProvider === "openai") {
+
+      if (
+        transcriptionProvider === "openai" ||
+        summarizationProvider === "openai"
+      ) {
         const openaiItem = document.createElement("div");
         const isConfigured = !!this.settings.openaiApiKey;
         openaiItem.className = `md-api-test-item ${isConfigured ? "md-api-test-item--success" : "md-api-test-item--error"}`;
-        
+
         const icon = document.createElement("span");
         icon.className = "material-symbols-rounded";
         icon.textContent = isConfigured ? "check_circle" : "error";
-        
+
         const text = document.createElement("span");
         text.textContent = `OpenAI: ${isConfigured ? getMessage("openai_key_configured") : getMessage("openai_key_missing")}`;
-        
+
         openaiItem.appendChild(icon);
         openaiItem.appendChild(text);
         resultsContainer.appendChild(openaiItem);
       }
 
-      // Test Gemini API key for transcription or summarization
-      if (transcriptionProvider === "gemini" || summarizationProvider === "gemini") {
+      if (
+        transcriptionProvider === "gemini" ||
+        summarizationProvider === "gemini"
+      ) {
         const geminiItem = document.createElement("div");
         const isConfigured = !!this.settings.geminiApiKey;
         geminiItem.className = `md-api-test-item ${isConfigured ? "md-api-test-item--success" : "md-api-test-item--error"}`;
-        
+
         const icon = document.createElement("span");
         icon.className = "material-symbols-rounded";
         icon.textContent = isConfigured ? "check_circle" : "error";
-        
+
         const text = document.createElement("span");
         text.textContent = `Gemini: ${isConfigured ? getMessage("gemini_key_configured") : getMessage("gemini_key_missing")}`;
-        
+
         geminiItem.appendChild(icon);
         geminiItem.appendChild(text);
         resultsContainer.appendChild(geminiItem);
       }
-      
+
       this.elements.result.appendChild(resultsContainer);
       this.elements.result.classList.remove("hidden");
     } catch (error) {
       console.error("Error testing API key:", error);
-      this.showMessage(getMessage("error_testing_api_key") + ": " + error.message, "error");
+      this.showMessage(
+        getMessage("error_testing_api_key") + ": " + error.message,
+        "error",
+      );
     }
   }
 
@@ -598,14 +636,13 @@ class MedicalAudioRecorder {
   /**
    * Starts the transcription timing process.
    * Initiates real-time timer updates for transcription duration tracking.
-   * 
+   *
    * @private
    */
   startTranscriptionTimer() {
     this.transcriptionStartTime = Date.now();
     this.updateTranscriptionTime();
 
-    // Set up real-time updates
     this.transcriptionTimerInterval = setInterval(() => {
       this.updateTranscriptionTime();
     }, 1000);
@@ -614,14 +651,13 @@ class MedicalAudioRecorder {
   /**
    * Ends the transcription timing process.
    * Stops timer updates and records final transcription duration.
-   * 
+   *
    * @private
    */
   endTranscriptionTimer() {
     this.transcriptionEndTime = Date.now();
     this.updateTranscriptionTime();
 
-    // Clear the interval
     if (this.transcriptionTimerInterval) {
       clearInterval(this.transcriptionTimerInterval);
       this.transcriptionTimerInterval = null;
@@ -631,7 +667,7 @@ class MedicalAudioRecorder {
   /**
    * Updates the transcription time display.
    * Calculates and displays elapsed time during transcription process.
-   * 
+   *
    * @private
    */
   updateTranscriptionTime() {
@@ -648,7 +684,6 @@ class MedicalAudioRecorder {
     this.summarizationStartTime = Date.now();
     this.updateSummarizationTime();
 
-    // Set up real-time updates
     this.summarizationTimerInterval = setInterval(() => {
       this.updateSummarizationTime();
     }, 1000);
@@ -658,7 +693,6 @@ class MedicalAudioRecorder {
     this.summarizationEndTime = Date.now();
     this.updateSummarizationTime();
 
-    // Clear the interval
     if (this.summarizationTimerInterval) {
       clearInterval(this.summarizationTimerInterval);
       this.summarizationTimerInterval = null;
@@ -677,7 +711,7 @@ class MedicalAudioRecorder {
 
   /**
    * Formats duration from milliseconds to readable string.
-   * 
+   *
    * @private
    * @param {number} milliseconds - Duration in milliseconds
    * @returns {string} Formatted duration string (e.g., "2m 30s" or "45s")
@@ -700,7 +734,6 @@ class MedicalAudioRecorder {
     this.summarizationStartTime = null;
     this.summarizationEndTime = null;
 
-    // Clear intervals
     if (this.transcriptionTimerInterval) {
       clearInterval(this.transcriptionTimerInterval);
       this.transcriptionTimerInterval = null;
@@ -710,7 +743,6 @@ class MedicalAudioRecorder {
       this.summarizationTimerInterval = null;
     }
 
-    // Reset timing displays to show "--"
     this.elements.transcriptionTime.querySelector(".time-value").textContent =
       "--";
     this.elements.summarizationTime.querySelector(".time-value").textContent =
@@ -722,7 +754,6 @@ class MedicalAudioRecorder {
   // ============================================================================
 
   updateStepIndicator(step, customText = null) {
-    // Reset all steps - using Material Design 3 stepper classes
     [
       this.elements.step1,
       this.elements.step2,
@@ -732,16 +763,14 @@ class MedicalAudioRecorder {
       stepEl.className = "md-stepper__step";
     });
 
-    // Mark current and completed steps
     for (let i = 1; i <= 4; i++) {
       const stepEl = this.elements[`step${i}`];
       if (i < step) {
         stepEl.className = "md-stepper__step md-stepper__step--completed";
       } else if (i === step) {
         stepEl.className = "md-stepper__step md-stepper__step--active";
-        // Update step text if custom text is provided
         if (customText) {
-          const labelEl = stepEl.querySelector('.md-stepper__label');
+          const labelEl = stepEl.querySelector(".md-stepper__label");
           if (labelEl) labelEl.textContent = customText;
         }
       }
@@ -757,7 +786,7 @@ class MedicalAudioRecorder {
   /**
    * Starts audio recording process.
    * Requests microphone access, configures MediaRecorder, and initiates recording.
-   * 
+   *
    * @async
    * @throws {Error} When microphone access is denied or unavailable
    */
@@ -785,7 +814,7 @@ class MedicalAudioRecorder {
   /**
    * Configures the MediaRecorder for audio capture.
    * Sets up event handlers and begins data collection.
-   * 
+   *
    * @private
    */
   setupMediaRecorder() {
@@ -819,27 +848,27 @@ class MedicalAudioRecorder {
   }
 
   setupAutoStop() {
-    setTimeout(() => {
-      if (this.mediaRecorder && this.mediaRecorder.state === "recording") {
-        this.stopRecording();
-      }
-    }, this.settings.maxRecordingTime * 60 * 1000);
+    setTimeout(
+      () => {
+        if (this.mediaRecorder && this.mediaRecorder.state === "recording") {
+          this.stopRecording();
+        }
+      },
+      this.settings.maxRecordingTime * 60 * 1000,
+    );
   }
 
   handleRecordingError(error) {
     console.error("Error accessing microphone:", error);
     this.updateStatus(getMessage("error_recording"));
-    this.showMessage(
-      getMessage("permission_denied"),
-      "error"
-    );
+    this.showMessage(getMessage("permission_denied"), "error");
     this.elements.openWelcomePage.classList.remove("hidden");
   }
 
   /**
    * Stops the current audio recording.
    * Terminates MediaRecorder and releases microphone resources.
-   * 
+   *
    * @public
    */
   stopRecording() {
@@ -852,7 +881,7 @@ class MedicalAudioRecorder {
   /**
    * Handles recording completion.
    * Updates UI state, creates audio blob, and sets up playback.
-   * 
+   *
    * @private
    */
   onRecordingStop() {
@@ -876,7 +905,7 @@ class MedicalAudioRecorder {
 
   createAudioBlob() {
     if (this.audioChunks.length === 0) {
-      console.warn('No audio chunks to create blob from');
+      console.warn("No audio chunks to create blob from");
       return;
     }
 
@@ -884,22 +913,25 @@ class MedicalAudioRecorder {
       type: this.recordingMimeType || this.getSupportedMimeType(),
     });
 
-    // Convert to MP3 for better compatibility
-    this.convertToMP3(originalBlob).then(mp3Blob => {
-      this.audioBlob = mp3Blob;
-      this.setupAudioPlayback();
-    }).catch(error => {
-      console.warn('MP3 conversion failed, using original format:', error);
-      this.audioBlob = originalBlob;
-      this.setupAudioPlayback();
-    });
+    this.convertToMP3(originalBlob)
+      .then((mp3Blob) => {
+        this.audioBlob = mp3Blob;
+        this.setupAudioPlayback();
+      })
+      .catch((error) => {
+        console.warn("MP3 conversion failed, using original format:", error);
+        this.audioBlob = originalBlob;
+        this.setupAudioPlayback();
+      });
   }
 
   async convertToMP3(audioBlob) {
     return new Promise(async (resolve, reject) => {
       try {
         // Create audio context
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const audioContext = new (
+          window.AudioContext || window.webkitAudioContext
+        )();
 
         // Convert blob to array buffer
         const arrayBuffer = await audioBlob.arrayBuffer();
@@ -911,12 +943,12 @@ class MedicalAudioRecorder {
         const mp3Buffer = this.encodeMP3(audioBuffer);
 
         // Create MP3 blob
-        const mp3Blob = new Blob([mp3Buffer], { type: 'audio/mp3' });
+        const mp3Blob = new Blob([mp3Buffer], { type: "audio/mp3" });
 
         audioContext.close();
         resolve(mp3Blob);
       } catch (error) {
-        console.error('MP3 conversion error:', error);
+        console.error("MP3 conversion error:", error);
         reject(error);
       }
     });
@@ -940,10 +972,10 @@ class MedicalAudioRecorder {
       }
     };
 
-    writeString(0, 'RIFF');
+    writeString(0, "RIFF");
     wavView.setUint32(4, 36 + length * numChannels * 2, true);
-    writeString(8, 'WAVE');
-    writeString(12, 'fmt ');
+    writeString(8, "WAVE");
+    writeString(12, "fmt ");
     wavView.setUint32(16, 16, true);
     wavView.setUint16(20, 1, true);
     wavView.setUint16(22, numChannels, true);
@@ -951,15 +983,22 @@ class MedicalAudioRecorder {
     wavView.setUint32(28, sampleRate * numChannels * 2, true);
     wavView.setUint16(32, numChannels * 2, true);
     wavView.setUint16(34, 16, true);
-    writeString(36, 'data');
+    writeString(36, "data");
     wavView.setUint32(40, length * numChannels * 2, true);
 
     // Convert float samples to 16-bit PCM
     let offset = 44;
     for (let i = 0; i < length; i++) {
       for (let channel = 0; channel < numChannels; channel++) {
-        const sample = Math.max(-1, Math.min(1, audioBuffer.getChannelData(channel)[i]));
-        wavView.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7FFF, true);
+        const sample = Math.max(
+          -1,
+          Math.min(1, audioBuffer.getChannelData(channel)[i]),
+        );
+        wavView.setInt16(
+          offset,
+          sample < 0 ? sample * 0x8000 : sample * 0x7fff,
+          true,
+        );
         offset += 2;
       }
     }
@@ -969,7 +1008,7 @@ class MedicalAudioRecorder {
 
   setupAudioPlayback() {
     if (!this.audioBlob) {
-      console.error('No audio blob available for playback');
+      console.error("No audio blob available for playback");
       return;
     }
 
@@ -980,46 +1019,50 @@ class MedicalAudioRecorder {
     this.addDownloadButton();
 
     this.elements.audioPlayback.onerror = (error) => {
-      console.error('Audio playback error:', error);
+      console.error("Audio playback error:", error);
     };
 
     this.elements.audioPlayback.onloadeddata = () => {
-      console.log(`Audio loaded successfully: duration=${this.elements.audioPlayback.duration}s`);
+      console.log(
+        `Audio loaded successfully: duration=${this.elements.audioPlayback.duration}s`,
+      );
     };
   }
 
   addDownloadButton() {
-    // Remove existing download button if it exists
-    const existingButton = document.getElementById('downloadAudio');
+    const existingButton = document.getElementById("downloadAudio");
     if (existingButton) {
       existingButton.remove();
     }
-
-    // Create download button
-    const downloadButton = document.createElement('button');
-    downloadButton.id = 'downloadAudio';
-    downloadButton.innerHTML = '<span class="material-symbols-rounded">download</span> ' + getMessage("download_mp3");
-    downloadButton.className = 'md-button md-button--filled md-download-btn mb-2';
+    const downloadButton = document.createElement("button");
+    downloadButton.id = "downloadAudio";
+    downloadButton.innerHTML =
+      '<span class="material-symbols-rounded">download</span> ' +
+      getMessage("download_mp3");
+    downloadButton.className =
+      "md-button md-button--filled md-download-btn mb-2";
 
     downloadButton.onclick = () => {
       this.downloadAudioAsMP3();
     };
 
-    // Add button after audio controls
     const audioControls = this.elements.audioControls;
     if (audioControls && audioControls.parentNode) {
-      audioControls.parentNode.insertBefore(downloadButton, audioControls.nextSibling);
+      audioControls.parentNode.insertBefore(
+        downloadButton,
+        audioControls.nextSibling,
+      );
     }
   }
 
   downloadAudioAsMP3() {
     if (!this.audioBlob) {
-      this.showMessage('No audio available to download', 'error');
+      this.showMessage("No audio available to download", "error");
       return;
     }
 
     const url = URL.createObjectURL(this.audioBlob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
     a.download = `recording_${Date.now()}.mp3`;
     document.body.appendChild(a);
@@ -1027,7 +1070,7 @@ class MedicalAudioRecorder {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
 
-    this.showMessage(getMessage("audio_downloaded"), 'success');
+    this.showMessage(getMessage("audio_downloaded"), "success");
   }
 
   playRecording() {
@@ -1045,24 +1088,29 @@ class MedicalAudioRecorder {
   }
 
   updatePlayPauseIcon(isPlaying) {
-    // Update the audio player play/pause button
-    const icon = this.elements.playPauseAudio.querySelector('.material-symbols-rounded');
+    const icon = this.elements.playPauseAudio.querySelector(
+      ".material-symbols-rounded",
+    );
     if (icon) {
-      icon.textContent = isPlaying ? 'pause' : 'play_arrow';
+      icon.textContent = isPlaying ? "pause" : "play_arrow";
     }
-    
-    // Also update the main "Putar" button to sync with play/pause state
-    const playRecordingIcon = this.elements.playRecording.querySelector('.material-symbols-rounded');
+
+    const playRecordingIcon = this.elements.playRecording.querySelector(
+      ".material-symbols-rounded",
+    );
     if (playRecordingIcon) {
-      playRecordingIcon.textContent = isPlaying ? 'pause' : 'play_arrow';
+      playRecordingIcon.textContent = isPlaying ? "pause" : "play_arrow";
     }
-    
-    // Update the button text as well
-    // Find the text node (last child that's a text node)
+
     const buttonChildren = this.elements.playRecording.childNodes;
     for (let i = buttonChildren.length - 1; i >= 0; i--) {
-      if (buttonChildren[i].nodeType === Node.TEXT_NODE && buttonChildren[i].textContent.trim()) {
-        buttonChildren[i].textContent = isPlaying ? getMessage("pause_recording") : getMessage("play_recording");
+      if (
+        buttonChildren[i].nodeType === Node.TEXT_NODE &&
+        buttonChildren[i].textContent.trim()
+      ) {
+        buttonChildren[i].textContent = isPlaying
+          ? getMessage("pause_recording")
+          : getMessage("play_recording");
         break;
       }
     }
@@ -1086,13 +1134,13 @@ class MedicalAudioRecorder {
     if (isNaN(seconds)) return "0:00";
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = Math.floor(seconds % 60);
-    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
   }
 
   /**
    * Clears the current recording and resets UI.
    * Removes audio data, resets controls, and clears results.
-   * 
+   *
    * @public
    */
   clearRecording() {
@@ -1111,8 +1159,7 @@ class MedicalAudioRecorder {
       this.elements.audioPlayback.src = "";
     }
 
-    // Remove download button
-    const downloadButton = document.getElementById('downloadAudio');
+    const downloadButton = document.getElementById("downloadAudio");
     if (downloadButton) {
       downloadButton.remove();
     }
@@ -1131,7 +1178,7 @@ class MedicalAudioRecorder {
   /**
    * Initiates audio transcription process.
    * Validates audio availability and API configuration before transcription.
-   * 
+   *
    * @async
    * @throws {Error} When no audio is available or API configuration is invalid
    */
@@ -1150,7 +1197,7 @@ class MedicalAudioRecorder {
   /**
    * Performs transcription with retry capability.
    * Handles transcription process with automatic retry on failure.
-   * 
+   *
    * @async
    * @private
    * @throws {Error} When transcription fails after all retry attempts
@@ -1162,13 +1209,11 @@ class MedicalAudioRecorder {
       this.updateStepIndicator(2);
       this.startTranscriptionTimer();
 
-      // Start animated progress simulation
       this.updateProgress(10, getMessage("transcribing_audio"));
       const progressInterval = this.startProgressSimulation(10, 85, 50);
-      
+
       const transcription = await this.transcribeAudioOnly();
-      
-      // Stop the simulation
+
       clearInterval(progressInterval);
 
       if (!transcription) {
@@ -1191,7 +1236,7 @@ class MedicalAudioRecorder {
 
   /**
    * Starts a progress simulation that incrementally updates the progress bar.
-   * 
+   *
    * @param {number} startPercent - Starting percentage
    * @param {number} maxPercent - Maximum percentage to reach before completion
    * @param {number} intervalMs - Update interval in milliseconds
@@ -1201,35 +1246,38 @@ class MedicalAudioRecorder {
   startProgressSimulation(startPercent, maxPercent, intervalMs) {
     let currentPercent = startPercent;
     const increment = 0.5; // Small increment for smooth animation
-    
+
     const intervalId = setInterval(() => {
       if (currentPercent < maxPercent) {
         currentPercent += increment;
         this.updateProgress(Math.floor(currentPercent));
       }
     }, intervalMs);
-    
+
     return intervalId;
   }
 
   /**
    * Performs the actual transcription using the configured provider.
    * Routes to OpenAI or Gemini transcription based on settings.
-   * 
+   *
    * @async
    * @private
    * @returns {Promise<string>} Transcribed text
    * @throws {Error} When transcription provider is unsupported or API call fails
    */
   async transcribeAudioOnly() {
-    const transcriptionProvider = this.settings.transcriptionProvider || "openai";
-    
+    const transcriptionProvider =
+      this.settings.transcriptionProvider || "openai";
+
     if (transcriptionProvider === "openai") {
       return await this.transcribeWithOpenAI();
     } else if (transcriptionProvider === "gemini") {
       return await this.transcribeWithGemini();
     } else {
-      throw new Error(`Unsupported transcription provider: ${transcriptionProvider}`);
+      throw new Error(
+        `Unsupported transcription provider: ${transcriptionProvider}`,
+      );
     }
   }
 
@@ -1245,12 +1293,16 @@ class MedicalAudioRecorder {
     if (this.settings.enableRetry && this.retryCount < this.maxRetries) {
       this.retryCount++;
       this.updateStatus(
-        getMessage("retrying_transcription") + ` (${this.retryCount}/${this.maxRetries})`
+        getMessage("retrying_transcription") +
+          ` (${this.retryCount}/${this.maxRetries})`,
       );
       setTimeout(() => this.transcribeWithRetry(), 2000);
     } else {
       this.updateStatus(getMessage("error_transcription"));
-      this.showMessage(getMessage("error_transcription") + `: ${error.message}`, "error");
+      this.showMessage(
+        getMessage("error_transcription") + `: ${error.message}`,
+        "error",
+      );
       this.hideProgress();
     }
   }
@@ -1295,13 +1347,11 @@ class MedicalAudioRecorder {
       this.updateStepIndicator(4);
       this.startSummarizationTimer();
 
-      // Start animated progress simulation
       this.updateProgress(10, getMessage("generating_summary"));
       progressInterval = this.startProgressSimulation(10, 80, 60);
-      
+
       const summary = await this.generateSummary(transcript);
-      
-      // Stop the simulation
+
       clearInterval(progressInterval);
 
       this.endSummarizationTimer();
@@ -1317,7 +1367,10 @@ class MedicalAudioRecorder {
       this.endSummarizationTimer();
       console.error("Summarization error:", error);
       this.updateStatus(getMessage("error_summarization"));
-      this.showMessage(getMessage("error_summarization") + `: ${error.message}`, "error");
+      this.showMessage(
+        getMessage("error_summarization") + `: ${error.message}`,
+        "error",
+      );
       this.hideProgress();
     }
   }
@@ -1329,7 +1382,7 @@ class MedicalAudioRecorder {
   /**
    * Transcribes audio using OpenAI Whisper API.
    * Sends audio file to OpenAI and processes the response.
-   * 
+   *
    * @async
    * @private
    * @returns {Promise<string>} Transcribed text from OpenAI
@@ -1338,9 +1391,7 @@ class MedicalAudioRecorder {
   async transcribeWithOpenAI() {
     // Check if API key is configured
     if (!this.settings.openaiApiKey) {
-      throw new Error(
-        getMessage("openai_key_not_configured")
-      );
+      throw new Error(getMessage("openai_key_not_configured"));
     }
 
     const formData = this.createTranscriptionFormData();
@@ -1354,13 +1405,13 @@ class MedicalAudioRecorder {
           Authorization: `Bearer ${this.settings.openaiApiKey}`,
         },
         body: formData,
-      }
+      },
     );
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       throw new Error(
-        `OpenAI API: ${errorData.error?.message || "HTTP " + response.status}`
+        `OpenAI API: ${errorData.error?.message || "HTTP " + response.status}`,
       );
     }
 
@@ -1372,40 +1423,34 @@ class MedicalAudioRecorder {
    * Transcribes audio using Google Gemini's multimodal API.
    * Converts audio to base64 and sends to Gemini API for transcription.
    * Supports audio files of any duration.
-   * 
+   *
    * @async
    * @private
    * @returns {Promise<string>} Transcribed text from Gemini
    * @throws {Error} When API key is missing or API call fails
    */
   async transcribeWithGemini() {
-    // Check if Gemini API key is configured
     if (!this.settings.geminiApiKey) {
-      throw new Error(
-        getMessage("gemini_key_not_configured")
-      );
+      throw new Error(getMessage("gemini_key_not_configured"));
     }
 
-    // Convert audio blob to base64
     const audioBase64 = await this.audioToBase64(this.audioBlob);
-    
-    // Get the MIME type of the audio
+
     const mimeType = this.audioBlob.type || "audio/webm";
-    
-    // Prepare the transcription prompt
-    const transcriptionPrompt = this.settings.language === "id" 
-      ? `Transkripsikan audio ini dengan akurat ke dalam Bahasa Indonesia. 
+
+    const transcriptionPrompt =
+      this.settings.language === "id"
+        ? `Transkripsikan audio ini dengan akurat ke dalam Bahasa Indonesia. 
          Berikan transkripsi kata per kata yang tepat dari percakapan dalam audio.
          Jangan meringkas atau mengubah apa pun - transkripsikan persis seperti yang diucapkan.
          Jika ada beberapa pembicara, tunjukkan perubahan pembicara dengan baris baru.
          Hanya berikan teks transkripsi, tanpa komentar atau penjelasan tambahan.`
-      : `Transcribe this audio accurately. 
+        : `Transcribe this audio accurately. 
          Provide an exact word-for-word transcription of the conversation in the audio.
          Do not summarize or change anything - transcribe exactly as spoken.
          If there are multiple speakers, indicate speaker changes with new lines.
          Only provide the transcription text, no additional comments or explanations.`;
 
-    // Use the selected Gemini model for audio transcription (supports audio input)
     const modelName = this.settings.transcriptionModel || "gemini-2.0-flash";
 
     const response = await fetch(
@@ -1422,35 +1467,34 @@ class MedicalAudioRecorder {
                 {
                   inline_data: {
                     mime_type: mimeType,
-                    data: audioBase64
-                  }
+                    data: audioBase64,
+                  },
                 },
                 {
-                  text: transcriptionPrompt
-                }
-              ]
-            }
+                  text: transcriptionPrompt,
+                },
+              ],
+            },
           ],
           generationConfig: {
             temperature: 0.1,
-            maxOutputTokens: 8192
-          }
+            maxOutputTokens: 8192,
+          },
         }),
-      }
+      },
     );
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       throw new Error(
-        `Gemini API: ${errorData.error?.message || "HTTP " + response.status}`
+        `Gemini API: ${errorData.error?.message || "HTTP " + response.status}`,
       );
     }
 
     const data = await response.json();
-    
-    // Extract the transcription from Gemini response
+
     const transcription = data.candidates?.[0]?.content?.parts?.[0]?.text;
-    
+
     if (!transcription) {
       return getMessage("realtime_transcription_empty");
     }
@@ -1460,7 +1504,7 @@ class MedicalAudioRecorder {
 
   /**
    * Converts audio blob to base64 string.
-   * 
+   *
    * @private
    * @param {Blob} audioBlob - The audio blob to convert
    * @returns {Promise<string>} Base64 encoded audio data
@@ -1469,8 +1513,7 @@ class MedicalAudioRecorder {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onloadend = () => {
-        // Remove the data URL prefix (e.g., "data:audio/webm;base64,")
-        const base64String = reader.result.split(',')[1];
+        const base64String = reader.result.split(",")[1];
         resolve(base64String);
       };
       reader.onerror = reject;
@@ -1501,7 +1544,7 @@ class MedicalAudioRecorder {
   /**
    * Generates medical summary from transcription.
    * Routes to appropriate AI provider for summarization.
-   * 
+   *
    * @async
    * @param {string} transcription - The transcribed text to summarize
    * @returns {Promise<string>} Medical summary in JSON format
@@ -1509,14 +1552,17 @@ class MedicalAudioRecorder {
    */
   async generateSummary(transcription) {
     try {
-      const summarizationProvider = this.settings.summarizationProvider || "openai";
-      
+      const summarizationProvider =
+        this.settings.summarizationProvider || "openai";
+
       if (summarizationProvider === "openai") {
         return await this.generateSummaryWithOpenAI(transcription);
       } else if (summarizationProvider === "gemini") {
         return await this.generateSummaryWithGemini(transcription);
       } else {
-        throw new Error(`Unsupported summarization provider: ${summarizationProvider}`);
+        throw new Error(
+          `Unsupported summarization provider: ${summarizationProvider}`,
+        );
       }
     } catch (summaryError) {
       console.warn("Summary generation failed:", summaryError);
@@ -1540,7 +1586,7 @@ class MedicalAudioRecorder {
   /**
    * Generates medical summary using OpenAI GPT API.
    * Processes transcription through medical summary prompt.
-   * 
+   *
    * @async
    * @private
    * @param {string} transcription - The transcribed text to process
@@ -1548,11 +1594,8 @@ class MedicalAudioRecorder {
    * @throws {Error} When API key is missing or API call fails
    */
   async generateSummaryWithOpenAI(transcription) {
-    // Check if API key is configured
     if (!this.settings.openaiApiKey) {
-      throw new Error(
-        getMessage("openai_key_not_configured")
-      );
+      throw new Error(getMessage("openai_key_not_configured"));
     }
 
     // System
@@ -1618,7 +1661,7 @@ class MedicalAudioRecorder {
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       throw new Error(
-        `OpenAI API: ${errorData.error?.message || "HTTP " + response.status}`
+        `OpenAI API: ${errorData.error?.message || "HTTP " + response.status}`,
       );
     }
 
@@ -1629,7 +1672,7 @@ class MedicalAudioRecorder {
   /**
    * Generates medical summary using Google Gemini API.
    * Processes transcription through medical summary prompt.
-   * 
+   *
    * @async
    * @private
    * @param {string} transcription - The transcribed text to process
@@ -1637,14 +1680,11 @@ class MedicalAudioRecorder {
    * @throws {Error} When API key is missing or API call fails
    */
   async generateSummaryWithGemini(transcription) {
-    // Check if API key is configured
     if (!this.settings.geminiApiKey) {
-      throw new Error(
-        getMessage("gemini_key_not_configured")
-      );
+      throw new Error(getMessage("gemini_key_not_configured"));
     }
 
-    // System prompt - same as OpenAI for consistency
+    // System prompt
     const systemPrompt = `
     You are a highly skilled medical transcriber and summarizer. Your task is to accurately and concisely summarize a doctor-patient conversation transcript provided in Bahasa Indonesia. Focus on extracting key medical information relevant to the patient's visit, including:
 
@@ -1687,7 +1727,6 @@ class MedicalAudioRecorder {
     ${transcription}
     `;
 
-    // Get the model name from settings (e.g., "gemini-2.0-flash-lite", "gemini-2.0-flash")
     const modelName = this.getGeminiModelName(this.settings.summarizationModel);
 
     const response = await fetch(
@@ -1700,32 +1739,29 @@ class MedicalAudioRecorder {
         body: JSON.stringify({
           contents: [
             {
-              parts: [
-                { text: systemPrompt + "\n\n" + userPrompt }
-              ]
-            }
+              parts: [{ text: systemPrompt + "\n\n" + userPrompt }],
+            },
           ],
           generationConfig: {
             temperature: 0.2,
             maxOutputTokens: 1024,
-            responseMimeType: "application/json"
-          }
+            responseMimeType: "application/json",
+          },
         }),
-      }
+      },
     );
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       throw new Error(
-        `Gemini API: ${errorData.error?.message || "HTTP " + response.status}`
+        `Gemini API: ${errorData.error?.message || "HTTP " + response.status}`,
       );
     }
 
     const data = await response.json();
-    
-    // Extract the generated text from Gemini response
+
     const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-    
+
     if (!generatedText) {
       throw new Error(getMessage("gemini_summarization_not_implemented"));
     }
@@ -1735,7 +1771,7 @@ class MedicalAudioRecorder {
 
   /**
    * Maps the summarization model setting to Gemini API model name.
-   * 
+   *
    * @private
    * @param {string} modelSetting - The model setting value from options
    * @returns {string} Gemini API model name
@@ -1746,28 +1782,32 @@ class MedicalAudioRecorder {
       "gemini-2.0-flash": "gemini-2.0-flash",
       "gemini-2.0-flash-lite": "gemini-2.0-flash-lite",
     };
-    
+
     return modelMap[modelSetting] || "gemini-2.0-flash-lite";
   }
 
   showResults(originalTranscription, summary) {
-    this.elements.result.textContent = ""; // Clear existing
-    
+    this.elements.result.textContent = "";
+
     // Create Transcription Section
     const transcriptionSection = document.createElement("div");
     transcriptionSection.className = "md-result-section";
-    
+
     const transcriptionHeader = document.createElement("div");
     transcriptionHeader.className = "md-result-section__header";
-    
+
     const transcriptionTitle = document.createElement("div");
     transcriptionTitle.className = "md-result-section__title";
     const transcriptionIcon = document.createElement("span");
     transcriptionIcon.className = "material-symbols-rounded";
     transcriptionIcon.textContent = "description";
     transcriptionTitle.appendChild(transcriptionIcon);
-    transcriptionTitle.appendChild(document.createTextNode(getMessage("transcription_label") || "Transcription"));
-    
+    transcriptionTitle.appendChild(
+      document.createTextNode(
+        getMessage("transcription_label") || "Transcription",
+      ),
+    );
+
     const copyTranscriptionBtn = document.createElement("button");
     copyTranscriptionBtn.type = "button";
     copyTranscriptionBtn.className = "md-result-section__copy-btn";
@@ -1775,41 +1815,47 @@ class MedicalAudioRecorder {
     copyIcon1.className = "material-symbols-rounded";
     copyIcon1.textContent = "content_copy";
     copyTranscriptionBtn.appendChild(copyIcon1);
-    copyTranscriptionBtn.appendChild(document.createTextNode(getMessage("copy") || "Copy"));
-    
+    copyTranscriptionBtn.appendChild(
+      document.createTextNode(getMessage("copy") || "Copy"),
+    );
+
     transcriptionHeader.appendChild(transcriptionTitle);
     transcriptionHeader.appendChild(copyTranscriptionBtn);
-    
+
     const transcriptionTextarea = document.createElement("textarea");
     transcriptionTextarea.className = "md-result-section__textarea";
     transcriptionTextarea.value = originalTranscription;
     transcriptionTextarea.readOnly = true;
-    
+
     copyTranscriptionBtn.addEventListener("click", () => {
       navigator.clipboard.writeText(transcriptionTextarea.value).then(() => {
         copyIcon1.textContent = "check";
-        setTimeout(() => { copyIcon1.textContent = "content_copy"; }, 2000);
+        setTimeout(() => {
+          copyIcon1.textContent = "content_copy";
+        }, 2000);
       });
     });
-    
+
     transcriptionSection.appendChild(transcriptionHeader);
     transcriptionSection.appendChild(transcriptionTextarea);
-    
+
     // Create Summary Section
     const summarySection = document.createElement("div");
     summarySection.className = "md-result-section";
-    
+
     const summaryHeader = document.createElement("div");
     summaryHeader.className = "md-result-section__header";
-    
+
     const summaryTitle = document.createElement("div");
     summaryTitle.className = "md-result-section__title";
     const summaryIcon = document.createElement("span");
     summaryIcon.className = "material-symbols-rounded";
     summaryIcon.textContent = "clinical_notes";
     summaryTitle.appendChild(summaryIcon);
-    summaryTitle.appendChild(document.createTextNode(getMessage("summary_label") || "Summary"));
-    
+    summaryTitle.appendChild(
+      document.createTextNode(getMessage("summary_label") || "Summary"),
+    );
+
     const copySummaryBtn = document.createElement("button");
     copySummaryBtn.type = "button";
     copySummaryBtn.className = "md-result-section__copy-btn";
@@ -1817,30 +1863,34 @@ class MedicalAudioRecorder {
     copyIcon2.className = "material-symbols-rounded";
     copyIcon2.textContent = "content_copy";
     copySummaryBtn.appendChild(copyIcon2);
-    copySummaryBtn.appendChild(document.createTextNode(getMessage("copy") || "Copy"));
-    
+    copySummaryBtn.appendChild(
+      document.createTextNode(getMessage("copy") || "Copy"),
+    );
+
     summaryHeader.appendChild(summaryTitle);
     summaryHeader.appendChild(copySummaryBtn);
-    
+
     const summaryTextarea = document.createElement("textarea");
     summaryTextarea.className = "md-result-section__textarea";
     summaryTextarea.value = summary;
     summaryTextarea.readOnly = true;
-    
+
     copySummaryBtn.addEventListener("click", () => {
       navigator.clipboard.writeText(summaryTextarea.value).then(() => {
         copyIcon2.textContent = "check";
-        setTimeout(() => { copyIcon2.textContent = "content_copy"; }, 2000);
+        setTimeout(() => {
+          copyIcon2.textContent = "content_copy";
+        }, 2000);
       });
     });
-    
+
     summarySection.appendChild(summaryHeader);
     summarySection.appendChild(summaryTextarea);
-    
+
     // Append sections to result area
     this.elements.result.appendChild(transcriptionSection);
     this.elements.result.appendChild(summarySection);
-    
+
     this.elements.result.classList.remove("hidden");
   }
 
@@ -1855,7 +1905,7 @@ class MedicalAudioRecorder {
   /**
    * Handles audio file upload from user.
    * Validates file type and size, then sets up for processing.
-   * 
+   *
    * @param {Event} event - File input change event
    * @private
    */
@@ -1877,7 +1927,7 @@ class MedicalAudioRecorder {
   /**
    * Validates uploaded audio file.
    * Checks file type and size constraints.
-   * 
+   *
    * @private
    * @param {File} file - The uploaded file to validate
    * @returns {boolean} True if file is valid, false otherwise
@@ -1885,24 +1935,23 @@ class MedicalAudioRecorder {
   validateUploadedFile(file) {
     const formats = this.getSupportedAudioFormats();
 
-    // Check file extension as fallback for files without proper MIME type
     const fileName = file.name.toLowerCase();
-    const extension = fileName.split('.').pop();
+    const extension = fileName.split(".").pop();
 
     const isSupportedByType = formats.mimeTypes.includes(file.type);
     const isSupportedByExtension = formats.extensions.includes(extension);
 
     if (!isSupportedByType && !isSupportedByExtension) {
-      this.showMessage(getMessage("unsupported_format") + ` ${formats.extensions.join(', ')}`, "error");
+      this.showMessage(
+        getMessage("unsupported_format") + ` ${formats.extensions.join(", ")}`,
+        "error",
+      );
       return false;
     }
 
     const maxSize = 25 * 1024 * 1024; // 25MB
     if (file.size > maxSize) {
-      this.showMessage(
-        getMessage("file_too_large"),
-        "error"
-      );
+      this.showMessage(getMessage("file_too_large"), "error");
       return false;
     }
 
@@ -1936,7 +1985,6 @@ class MedicalAudioRecorder {
       duration: this.elements.timer.textContent,
     });
 
-    // Keep only last 10 recordings
     if (recordings.length > 10) {
       recordings.splice(0, recordings.length - 10);
     }
@@ -1977,9 +2025,8 @@ class MedicalAudioRecorder {
   }
 
   getSupportedMimeType() {
-    // OpenAI supported formats only, prioritize formats with better compatibility
     const types = [
-      "audio/webm;codecs=opus", // WebM Opus first (most compatible)
+      "audio/webm;codecs=opus",
       "audio/webm",
       "audio/mp4",
       "audio/wav",
@@ -2000,10 +2047,8 @@ class MedicalAudioRecorder {
     return formats.extensionMap[mimeType] || "webm";
   }
 
-  // Single source of truth for supported audio formats (OpenAI supported only)
   getSupportedAudioFormats() {
     return {
-      // OpenAI supported MIME types only
       mimeTypes: [
         "audio/m4a",
         "audio/mp3",
@@ -2016,9 +2061,7 @@ class MedicalAudioRecorder {
         "audio/x-wav",
         "audio/wave",
       ],
-      // Supported file extensions (OpenAI supported only)
       extensions: ["mp3", "mp4", "mpeg", "mpga", "m4a", "wav", "webm"],
-      // MIME type to extension mapping (OpenAI supported only)
       extensionMap: {
         "audio/webm;codecs=opus": "webm",
         "audio/webm": "webm",
@@ -2031,7 +2074,7 @@ class MedicalAudioRecorder {
         "audio/m4a": "m4a",
         "audio/x-m4a": "m4a",
         "audio/mpga": "mpga",
-      }
+      },
     };
   }
 
@@ -2047,7 +2090,6 @@ class MedicalAudioRecorder {
       return this.audioBlob;
     }
 
-    // Handle specific unsupported formats
     if (currentType === "audio/x-m4a" || currentType === "audio/mp4") {
       return new Blob([this.audioBlob], { type: "audio/mp4" });
     }
@@ -2066,46 +2108,53 @@ class MedicalAudioRecorder {
   updateStatus(message, type = "normal") {
     this.elements.statusBar.className = "md-status-card";
     this.elements.statusText.textContent = message;
-    
-    // Update the icon in md-status-card__icon
-    const iconContainer = this.elements.statusBar.querySelector('.md-status-card__icon');
+
+    const iconContainer = this.elements.statusBar.querySelector(
+      ".md-status-card__icon",
+    );
     if (iconContainer) {
-      let iconName = 'info';
-      
+      let iconName = "info";
+
       if (type === "recording") {
         this.elements.statusBar.classList.add("md-status-card--recording");
-        iconName = 'mic';
+        iconName = "mic";
       } else if (type === "processing") {
         this.elements.statusBar.classList.add("md-status-card--processing");
-        iconName = 'hourglass_empty';
+        iconName = "hourglass_empty";
       } else if (type === "realtime") {
         this.elements.statusBar.classList.add("md-status-card--realtime");
-        iconName = 'graphic_eq';
-      } else if (message.toLowerCase().includes("error") || message.toLowerCase().includes("failed")) {
-        iconName = 'error';
-      } else if (message.toLowerCase().includes("complete") || message.toLowerCase().includes("successful")) {
-        iconName = 'check_circle';
+        iconName = "graphic_eq";
+      } else if (
+        message.toLowerCase().includes("error") ||
+        message.toLowerCase().includes("failed")
+      ) {
+        iconName = "error";
+      } else if (
+        message.toLowerCase().includes("complete") ||
+        message.toLowerCase().includes("successful")
+      ) {
+        iconName = "check_circle";
       }
-      
+
       iconContainer.textContent = iconName;
     }
   }
 
   showProgress() {
-    const progressContainer = document.getElementById('progressContainer');
+    const progressContainer = document.getElementById("progressContainer");
     if (progressContainer) progressContainer.classList.remove("hidden");
   }
 
   hideProgress() {
-    const progressContainer = document.getElementById('progressContainer');
+    const progressContainer = document.getElementById("progressContainer");
     if (progressContainer) progressContainer.classList.add("hidden");
-    const progressFill = document.getElementById('progressFill');
-    if (progressFill) progressFill.style.width = '0%';
+    const progressFill = document.getElementById("progressFill");
+    if (progressFill) progressFill.style.width = "0%";
   }
 
   updateProgress(percentage, message) {
-    const progressFill = document.getElementById('progressFill');
-    const progressText = document.getElementById('progressText');
+    const progressFill = document.getElementById("progressFill");
+    const progressText = document.getElementById("progressText");
     if (progressFill) progressFill.style.width = `${percentage}%`;
     if (progressText) progressText.textContent = `${percentage}%`;
     if (message) {
@@ -2124,13 +2173,13 @@ class MedicalAudioRecorder {
   }
 
   showResult(content) {
-    if (typeof content === 'string' && (content.includes('<') || content.includes('>'))) {
-        // If it's HTML content from showResults, use DOMParser to avoid CSP issues 
-        // with inline strings that might be scrutinized, or just set it if safe.
-        // For now, let's keep showResult as a generic container setter but be careful.
-        this.elements.result.innerHTML = content;
+    if (
+      typeof content === "string" &&
+      (content.includes("<") || content.includes(">"))
+    ) {
+      this.elements.result.innerHTML = content;
     } else {
-        this.elements.result.textContent = content;
+      this.elements.result.textContent = content;
     }
     this.elements.result.classList.remove("hidden");
   }
@@ -2138,35 +2187,35 @@ class MedicalAudioRecorder {
   /**
    * Displays a temporary message to the user.
    * Shows success, error, or info messages with auto-removal.
-   * 
+   *
    * @param {string} message - The message text to display
    * @param {string} type - Message type ('success', 'error', 'info')
    * @private
    */
   showMessage(message, type) {
     const messageDiv = document.createElement("div");
-    messageDiv.className = type === "error" ? "md-message md-message--error" : "md-message md-message--success";
-    
+    messageDiv.className =
+      type === "error"
+        ? "md-message md-message--error"
+        : "md-message md-message--success";
+
     const iconEl = document.createElement("span");
     iconEl.className = "material-symbols-rounded";
     if (type === "error") {
-        iconEl.textContent = "error";
+      iconEl.textContent = "error";
     } else if (type === "info") {
-        iconEl.textContent = "info";
-        messageDiv.className = "md-message md-message--info";
+      iconEl.textContent = "info";
+      messageDiv.className = "md-message md-message--info";
     } else {
-        iconEl.textContent = "check_circle";
+      iconEl.textContent = "check_circle";
     }
-    
+
     messageDiv.appendChild(iconEl);
     const textSpan = document.createElement("span");
     textSpan.textContent = message;
     messageDiv.appendChild(textSpan);
 
-    // Remove existing messages
-    document
-      .querySelectorAll(".md-message")
-      .forEach((el) => el.remove());
+    document.querySelectorAll(".md-message").forEach((el) => el.remove());
 
     this.elements.result.appendChild(messageDiv);
     this.elements.result.classList.remove("hidden");
@@ -2224,7 +2273,7 @@ class MedicalAudioRecorder {
   /**
    * Inserts medical summary into the active webpage.
    * Communicates with content script to inject summary into healthcare forms.
-   * 
+   *
    * @async
    * @param {string} summary - The medical summary to insert
    * @returns {Promise<void>} Resolves when insertion is complete
@@ -2241,18 +2290,13 @@ class MedicalAudioRecorder {
 
         const tab = tabs[0];
 
-        // First, try to ping the content script to test connection
         chrome.tabs.sendMessage(tab.id, { action: "ping" }, (response) => {
           if (chrome.runtime.lastError) {
-            this.showMessage(
-              getMessage("content_script_unavailable"),
-              "error"
-            );
+            this.showMessage(getMessage("content_script_unavailable"), "error");
             resolve();
             return;
           }
 
-          // Now send the actual summary
           chrome.tabs.sendMessage(
             tab.id,
             {
@@ -2261,15 +2305,12 @@ class MedicalAudioRecorder {
             },
             (response) => {
               if (chrome.runtime.lastError) {
-                this.showMessage(
-                  getMessage("failed_insert"),
-                  "error"
-                );
+                this.showMessage(getMessage("failed_insert"), "error");
               } else {
                 this.showMessage(getMessage("summary_inserted"), "success");
               }
               resolve();
-            }
+            },
           );
         });
       });
@@ -2283,61 +2324,77 @@ class MedicalAudioRecorder {
   /**
    * Updates the UI based on whether realtime mode is enabled or disabled.
    * Shows/hides appropriate controls and steppers.
-   * 
+   *
    * @private
    */
   updateUIForRealtimeMode() {
     const isRealtimeMode = this.settings.enableRealtimeTranscription;
 
     if (isRealtimeMode) {
-      // Show realtime UI elements
-      if (this.elements.realtimeStepper) this.elements.realtimeStepper.classList.remove("hidden");
-      if (this.elements.realtimeInfoBanner) this.elements.realtimeInfoBanner.classList.remove("hidden");
-      if (this.elements.realtimeControls) this.elements.realtimeControls.classList.remove("hidden");
-      if (this.elements.liveTranscriptContainer) this.elements.liveTranscriptContainer.classList.remove("hidden");
+      if (this.elements.realtimeStepper)
+        this.elements.realtimeStepper.classList.remove("hidden");
+      if (this.elements.realtimeInfoBanner)
+        this.elements.realtimeInfoBanner.classList.remove("hidden");
+      if (this.elements.realtimeControls)
+        this.elements.realtimeControls.classList.remove("hidden");
+      if (this.elements.liveTranscriptContainer)
+        this.elements.liveTranscriptContainer.classList.remove("hidden");
 
-      // Hide normal UI elements
-      if (this.elements.normalStepper) this.elements.normalStepper.classList.add("hidden");
-      
-      // Hide normal controls (recording, play, transcribe buttons)
-      const normalControlsContainer = document.getElementById("startRecording")?.closest(".md-controls");
-      if (normalControlsContainer && normalControlsContainer.id !== "realtimeControls") {
+      if (this.elements.normalStepper)
+        this.elements.normalStepper.classList.add("hidden");
+
+      const normalControlsContainer = document
+        .getElementById("startRecording")
+        ?.closest(".md-controls");
+      if (
+        normalControlsContainer &&
+        normalControlsContainer.id !== "realtimeControls"
+      ) {
         normalControlsContainer.classList.add("hidden");
       }
-      
-      // Hide audio player and transcript editor in realtime mode
-      if (this.elements.audioControls) this.elements.audioControls.classList.add("hidden");
-      if (this.elements.transcriptEditor) this.elements.transcriptEditor.classList.add("hidden");
 
-      // Update status for realtime mode
+      if (this.elements.audioControls)
+        this.elements.audioControls.classList.add("hidden");
+      if (this.elements.transcriptEditor)
+        this.elements.transcriptEditor.classList.add("hidden");
+
       this.updateStatus(getMessage("realtime_ready"), "normal");
     } else {
-      // Show normal UI elements
-      if (this.elements.normalStepper) this.elements.normalStepper.classList.remove("hidden");
-      
-      const normalControlsContainer = document.getElementById("startRecording")?.closest(".md-controls");
-      if (normalControlsContainer && normalControlsContainer.id !== "realtimeControls") {
+      if (this.elements.normalStepper)
+        this.elements.normalStepper.classList.remove("hidden");
+
+      const normalControlsContainer = document
+        .getElementById("startRecording")
+        ?.closest(".md-controls");
+      if (
+        normalControlsContainer &&
+        normalControlsContainer.id !== "realtimeControls"
+      ) {
         normalControlsContainer.classList.remove("hidden");
       }
 
-      // Hide realtime UI elements
-      if (this.elements.realtimeStepper) this.elements.realtimeStepper.classList.add("hidden");
-      if (this.elements.realtimeInfoBanner) this.elements.realtimeInfoBanner.classList.add("hidden");
-      if (this.elements.realtimeControls) this.elements.realtimeControls.classList.add("hidden");
-      if (this.elements.liveTranscriptContainer) this.elements.liveTranscriptContainer.classList.add("hidden");
+      if (this.elements.realtimeStepper)
+        this.elements.realtimeStepper.classList.add("hidden");
+      if (this.elements.realtimeInfoBanner)
+        this.elements.realtimeInfoBanner.classList.add("hidden");
+      if (this.elements.realtimeControls)
+        this.elements.realtimeControls.classList.add("hidden");
+      if (this.elements.liveTranscriptContainer)
+        this.elements.liveTranscriptContainer.classList.add("hidden");
     }
   }
 
   /**
    * Starts the realtime transcription session.
    * Establishes WebSocket connection and begins audio capture.
-   * 
+   *
    * @async
    */
   async startRealtimeTranscription() {
     try {
-      const transcriptionProvider = this.settings.transcriptionProvider || "openai";
-      
+      const transcriptionProvider =
+        this.settings.transcriptionProvider || "openai";
+
       if (transcriptionProvider === "gemini") {
         await this.startGeminiRealtimeTranscription();
       } else {
@@ -2352,12 +2409,11 @@ class MedicalAudioRecorder {
   /**
    * Starts OpenAI real-time transcription session.
    * Initializes audio capture and WebSocket connection to OpenAI.
-   * 
+   *
    * @async
    * @private
    */
   async startOpenAIRealtimeTranscription() {
-    // Validate API key
     if (!this.settings.openaiApiKey) {
       this.showMessage(getMessage("openai_key_not_configured"), "error");
       return;
@@ -2367,35 +2423,30 @@ class MedicalAudioRecorder {
     this.updateRealtimeStepIndicator(1);
     this.realtimeProvider = "openai";
 
-    // Request microphone access
     this.realtimeMediaStream = await navigator.mediaDevices.getUserMedia({
       audio: {
         sampleRate: 24000,
         channelCount: 1,
         echoCancellation: true,
         noiseSuppression: true,
-      }
+      },
     });
 
-    // Initialize audio context with 24kHz sample rate
-    this.realtimeAudioContext = new (window.AudioContext || window.webkitAudioContext)({
-      sampleRate: 24000
+    this.realtimeAudioContext = new (
+      window.AudioContext || window.webkitAudioContext
+    )({
+      sampleRate: 24000,
     });
-
-    // Connect to OpenAI Realtime API
     await this.connectRealtimeWebSocket();
 
-    // Start audio processing
     await this.startRealtimeAudioProcessing();
 
-    // Update UI
     this.isRealtimeActive = true;
     this.realtimeSessionStartTime = Date.now();
     this.startRealtimeSessionTimer();
     this.updateRealtimeUIForRecording(true);
     this.updateStatus(getMessage("realtime_connected"), "realtime");
 
-    // Clear placeholder and show chat
     if (this.elements.liveTranscriptPlaceholder) {
       this.elements.liveTranscriptPlaceholder.classList.add("hidden");
     }
@@ -2404,12 +2455,11 @@ class MedicalAudioRecorder {
   /**
    * Starts Gemini real-time transcription session.
    * Initializes audio capture and WebSocket connection to Gemini Live API.
-   * 
+   *
    * @async
    * @private
    */
   async startGeminiRealtimeTranscription() {
-    // Validate API key
     if (!this.settings.geminiApiKey) {
       this.showMessage(getMessage("gemini_key_not_configured"), "error");
       return;
@@ -2419,35 +2469,30 @@ class MedicalAudioRecorder {
     this.updateRealtimeStepIndicator(1);
     this.realtimeProvider = "gemini";
 
-    // Request microphone access - Gemini uses 16kHz sample rate
     this.realtimeMediaStream = await navigator.mediaDevices.getUserMedia({
       audio: {
         sampleRate: 16000,
         channelCount: 1,
         echoCancellation: true,
         noiseSuppression: true,
-      }
+      },
     });
 
-    // Initialize audio context with 16kHz sample rate (Gemini's native rate)
-    this.realtimeAudioContext = new (window.AudioContext || window.webkitAudioContext)({
-      sampleRate: 16000
+    this.realtimeAudioContext = new (
+      window.AudioContext || window.webkitAudioContext
+    )({
+      sampleRate: 16000,
     });
-
-    // Connect to Gemini Live API
     await this.connectGeminiRealtimeWebSocket();
 
-    // Start audio processing for Gemini
     await this.startGeminiRealtimeAudioProcessing();
 
-    // Update UI
     this.isRealtimeActive = true;
     this.realtimeSessionStartTime = Date.now();
     this.startRealtimeSessionTimer();
     this.updateRealtimeUIForRecording(true);
     this.updateStatus(getMessage("realtime_connected"), "realtime");
 
-    // Clear placeholder and show chat
     if (this.elements.liveTranscriptPlaceholder) {
       this.elements.liveTranscriptPlaceholder.classList.add("hidden");
     }
@@ -2455,24 +2500,23 @@ class MedicalAudioRecorder {
 
   /**
    * Connects to the OpenAI Realtime WebSocket API.
-   * 
+   *
    * @async
    * @private
    */
   async connectRealtimeWebSocket() {
     return new Promise((resolve, reject) => {
       const wsUrl = "wss://api.openai.com/v1/realtime?intent=transcription";
-      
+
       this.realtimeWebSocket = new WebSocket(wsUrl, [
         "realtime",
         `openai-insecure-api-key.${this.settings.openaiApiKey}`,
-        "openai-beta.realtime-v1"
+        "openai-beta.realtime-v1",
       ]);
 
       this.realtimeWebSocket.onopen = () => {
         console.log("Realtime WebSocket connected");
-        
-        // Send session configuration
+
         this.sendRealtimeSessionConfig();
         resolve();
       };
@@ -2493,7 +2537,6 @@ class MedicalAudioRecorder {
         }
       };
 
-      // Timeout for connection
       setTimeout(() => {
         if (this.realtimeWebSocket.readyState !== WebSocket.OPEN) {
           reject(new Error(getMessage("realtime_error_connection")));
@@ -2504,7 +2547,7 @@ class MedicalAudioRecorder {
 
   /**
    * Sends session configuration to the OpenAI Realtime API.
-   * 
+   *
    * @private
    */
   sendRealtimeSessionConfig() {
@@ -2515,15 +2558,15 @@ class MedicalAudioRecorder {
         input_audio_transcription: {
           model: "gpt-4o-transcribe",
           language: this.settings.language === "id" ? "id" : "en",
-          prompt: "Medical consultation transcription"
+          prompt: "Medical consultation transcription",
         },
         turn_detection: {
           type: "server_vad",
           threshold: 0.5,
           prefix_padding_ms: 300,
-          silence_duration_ms: 500
-        }
-      }
+          silence_duration_ms: 500,
+        },
+      },
     };
 
     this.realtimeWebSocket.send(JSON.stringify(config));
@@ -2531,36 +2574,41 @@ class MedicalAudioRecorder {
 
   /**
    * Starts audio processing and sends audio data to WebSocket.
-   * 
+   *
    * @async
    * @private
    */
   async startRealtimeAudioProcessing() {
-    const source = this.realtimeAudioContext.createMediaStreamSource(this.realtimeMediaStream);
-    
-    // Create script processor for audio data extraction
-    // Using 4096 buffer size for good balance between latency and performance
-    this.realtimeProcessor = this.realtimeAudioContext.createScriptProcessor(4096, 1, 1);
-    
+    const source = this.realtimeAudioContext.createMediaStreamSource(
+      this.realtimeMediaStream,
+    );
+
+    this.realtimeProcessor = this.realtimeAudioContext.createScriptProcessor(
+      4096,
+      1,
+      1,
+    );
+
     this.realtimeProcessor.onaudioprocess = (event) => {
-      if (!this.isRealtimeActive || !this.realtimeWebSocket || this.realtimeWebSocket.readyState !== WebSocket.OPEN) {
+      if (
+        !this.isRealtimeActive ||
+        !this.realtimeWebSocket ||
+        this.realtimeWebSocket.readyState !== WebSocket.OPEN
+      ) {
         return;
       }
 
       const inputData = event.inputBuffer.getChannelData(0);
-      
-      // Convert Float32 to Int16 PCM
+
       const pcm16Data = this.float32ToPCM16(inputData);
-      
-      // Encode to base64
+
       const base64Audio = this.arrayBufferToBase64(pcm16Data.buffer);
-      
-      // Send audio data
+
       const audioMessage = {
         type: "input_audio_buffer.append",
-        audio: base64Audio
+        audio: base64Audio,
       };
-      
+
       this.realtimeWebSocket.send(JSON.stringify(audioMessage));
     };
 
@@ -2570,7 +2618,7 @@ class MedicalAudioRecorder {
 
   /**
    * Converts Float32 audio samples to Int16 PCM format.
-   * 
+   *
    * @private
    * @param {Float32Array} float32Array - The input audio samples
    * @returns {Int16Array} The converted PCM16 samples
@@ -2579,21 +2627,21 @@ class MedicalAudioRecorder {
     const int16Array = new Int16Array(float32Array.length);
     for (let i = 0; i < float32Array.length; i++) {
       const sample = Math.max(-1, Math.min(1, float32Array[i]));
-      int16Array[i] = sample < 0 ? sample * 0x8000 : sample * 0x7FFF;
+      int16Array[i] = sample < 0 ? sample * 0x8000 : sample * 0x7fff;
     }
     return int16Array;
   }
 
   /**
    * Converts ArrayBuffer to Base64 string.
-   * 
+   *
    * @private
    * @param {ArrayBuffer} buffer - The buffer to convert
    * @returns {string} Base64 encoded string
    */
   arrayBufferToBase64(buffer) {
     const bytes = new Uint8Array(buffer);
-    let binary = '';
+    let binary = "";
     for (let i = 0; i < bytes.byteLength; i++) {
       binary += String.fromCharCode(bytes[i]);
     }
@@ -2606,22 +2654,20 @@ class MedicalAudioRecorder {
 
   /**
    * Connects to the Gemini Live API WebSocket.
-   * 
+   *
    * @async
    * @private
    */
   async connectGeminiRealtimeWebSocket() {
     return new Promise((resolve, reject) => {
-      // Get the transcription model from settings or use default
       const modelName = this.settings.transcriptionModel || "gemini-2.0-flash";
       const wsUrl = `wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent?key=${this.settings.geminiApiKey}`;
-      
+
       this.realtimeWebSocket = new WebSocket(wsUrl);
 
       this.realtimeWebSocket.onopen = () => {
         console.log("Gemini Realtime WebSocket connected");
-        
-        // Send setup configuration
+
         this.sendGeminiSessionConfig(modelName);
         resolve();
       };
@@ -2642,7 +2688,6 @@ class MedicalAudioRecorder {
         }
       };
 
-      // Timeout for connection
       setTimeout(() => {
         if (this.realtimeWebSocket.readyState !== WebSocket.OPEN) {
           reject(new Error(getMessage("realtime_error_connection")));
@@ -2653,37 +2698,35 @@ class MedicalAudioRecorder {
 
   /**
    * Sends session configuration to the Gemini Live API.
-   * 
+   *
    * @private
    * @param {string} modelName - The Gemini model to use
    */
   sendGeminiSessionConfig(modelName) {
-    // Gemini Live API requires specific model names
-    // Use gemini-2.0-flash-exp for live audio (experimental feature)
     const liveModelName = "gemini-2.0-flash-exp";
-    
-    // Setup message for Gemini Live API
-    // Reference: https://ai.google.dev/api/multimodal-live
+
     const setupMessage = {
       setup: {
         model: `models/${liveModelName}`,
         generation_config: {
-          response_modalities: ["TEXT"]
+          response_modalities: ["TEXT"],
         },
         system_instruction: {
-          parts: [{
-            text: this.settings.language === "id" 
-              ? `Anda adalah asisten transkripsi. Tugas Anda adalah mentranskripsi audio dengan akurat ke dalam Bahasa Indonesia. 
+          parts: [
+            {
+              text:
+                this.settings.language === "id"
+                  ? `Anda adalah asisten transkripsi. Tugas Anda adalah mentranskripsi audio dengan akurat ke dalam Bahasa Indonesia. 
                  Transkripsikan persis seperti yang diucapkan tanpa meringkas atau menambahkan apapun.
                  Hanya berikan teks transkripsi, tanpa penjelasan atau komentar tambahan.`
-              : `You are a transcription assistant. Your task is to accurately transcribe audio.
+                  : `You are a transcription assistant. Your task is to accurately transcribe audio.
                  Transcribe exactly as spoken without summarizing or adding anything.
-                 Only provide the transcription text, no additional explanations or comments.`
-          }]
+                 Only provide the transcription text, no additional explanations or comments.`,
+            },
+          ],
         },
-        // Enable input audio transcription - this enables ASR on the input
-        input_audio_transcription: {}
-      }
+        input_audio_transcription: {},
+      },
     };
 
     console.log("Sending Gemini Live setup:", JSON.stringify(setupMessage));
@@ -2694,45 +2737,51 @@ class MedicalAudioRecorder {
   /**
    * Starts audio processing for Gemini Live API.
    * Uses ScriptProcessor to capture and send audio data.
-   * 
+   *
    * @async
    * @private
    */
   async startGeminiRealtimeAudioProcessing() {
-    const source = this.realtimeAudioContext.createMediaStreamSource(this.realtimeMediaStream);
-    
-    // Create script processor for audio data extraction
-    // Using 4096 buffer size for good balance between latency and performance
-    this.realtimeProcessor = this.realtimeAudioContext.createScriptProcessor(4096, 1, 1);
-    
+    const source = this.realtimeAudioContext.createMediaStreamSource(
+      this.realtimeMediaStream,
+    );
+
+    this.realtimeProcessor = this.realtimeAudioContext.createScriptProcessor(
+      4096,
+      1,
+      1,
+    );
+
     this.realtimeProcessor.onaudioprocess = (event) => {
-      if (!this.isRealtimeActive || !this.realtimeWebSocket || this.realtimeWebSocket.readyState !== WebSocket.OPEN) {
+      if (
+        !this.isRealtimeActive ||
+        !this.realtimeWebSocket ||
+        this.realtimeWebSocket.readyState !== WebSocket.OPEN
+      ) {
         return;
       }
 
-      // Don't send audio until setup is complete
       if (!this.geminiSetupComplete) {
         return;
       }
 
       const inputData = event.inputBuffer.getChannelData(0);
-      
-      // Convert Float32 to Int16 PCM
+
       const pcm16Data = this.float32ToPCM16(inputData);
-      
-      // Encode to base64
+
       const base64Audio = this.arrayBufferToBase64(pcm16Data.buffer);
-      
-      // Send audio data in Gemini format
+
       const audioMessage = {
         realtime_input: {
-          media_chunks: [{
-            mime_type: "audio/pcm;rate=16000",
-            data: base64Audio
-          }]
-        }
+          media_chunks: [
+            {
+              mime_type: "audio/pcm;rate=16000",
+              data: base64Audio,
+            },
+          ],
+        },
       };
-      
+
       this.realtimeWebSocket.send(JSON.stringify(audioMessage));
     };
 
@@ -2742,45 +2791,37 @@ class MedicalAudioRecorder {
 
   /**
    * Handles incoming WebSocket messages from the Gemini Live API.
-   * 
+   *
    * @private
    * @param {MessageEvent} event - The WebSocket message event
    */
   handleGeminiRealtimeMessage(event) {
     try {
       const message = JSON.parse(event.data);
-      
-      // Log all messages for debugging
+
       console.log("Gemini Live message received:", message);
-      
-      // Handle setup completion
+
       if (message.setupComplete) {
         console.log("Gemini Live session setup complete");
         this.geminiSetupComplete = true;
         return;
       }
 
-      // Handle server content (transcription results)
       if (message.serverContent) {
         const content = message.serverContent;
-        
-        // Handle input transcription (ASR result from user's speech)
-        // This is the primary way to get transcription in Gemini Live API
+
         if (content.inputTranscription) {
           const transcription = content.inputTranscription;
           console.log("Input transcription received:", transcription);
           if (transcription.text) {
-            // inputTranscription provides the transcribed text directly
             this.addFinalTranscript(transcription.text);
           }
         }
-        
-        // Check if this is a model turn with text (model's response to audio)
+
         if (content.modelTurn && content.modelTurn.parts) {
           for (const part of content.modelTurn.parts) {
             if (part.text) {
               console.log("Model turn text:", part.text);
-              // This is the model's interpretation/response
               if (content.turnComplete) {
                 this.addFinalTranscript(part.text);
               } else {
@@ -2790,33 +2831,33 @@ class MedicalAudioRecorder {
           }
         }
 
-        // Handle turn completion
         if (content.turnComplete) {
           console.log("Turn complete");
-          // Remove any partial message when turn is complete
-          const partialMessage = this.elements.liveTranscriptChat.querySelector(".md-live-transcript__message--partial");
+          const partialMessage = this.elements.liveTranscriptChat.querySelector(
+            ".md-live-transcript__message--partial",
+          );
           if (partialMessage) {
             partialMessage.remove();
           }
         }
 
-        // Handle output transcription (model's spoken response, if any)
         if (content.outputTranscription && content.outputTranscription.text) {
-          console.log("Gemini output transcription:", content.outputTranscription.text);
+          console.log(
+            "Gemini output transcription:",
+            content.outputTranscription.text,
+          );
         }
       }
 
-      // Handle tool calls (not used for transcription but good to log)
       if (message.toolCall) {
         console.log("Gemini tool call:", message.toolCall);
       }
-
-      // Handle errors
       if (message.error) {
         console.error("Gemini Live API error:", message.error);
-        this.handleRealtimeError(new Error(message.error.message || "Gemini API error"));
+        this.handleRealtimeError(
+          new Error(message.error.message || "Gemini API error"),
+        );
       }
-
     } catch (error) {
       console.error("Error parsing Gemini realtime message:", error);
     }
@@ -2824,14 +2865,14 @@ class MedicalAudioRecorder {
 
   /**
    * Handles incoming WebSocket messages from the Realtime API.
-   * 
+   *
    * @private
    * @param {MessageEvent} event - The WebSocket message event
    */
   handleRealtimeMessage(event) {
     try {
       const message = JSON.parse(event.data);
-      
+
       switch (message.type) {
         case "transcription_session.created":
           console.log("Realtime session created:", message.session?.id);
@@ -2842,12 +2883,10 @@ class MedicalAudioRecorder {
           break;
 
         case "conversation.item.input_audio_transcription.delta":
-          // Incremental transcription - update the current partial message
           this.updatePartialTranscript(message.delta);
           break;
 
         case "conversation.item.input_audio_transcription.completed":
-          // Final transcription for a segment
           this.addFinalTranscript(message.transcript);
           break;
 
@@ -2861,7 +2900,9 @@ class MedicalAudioRecorder {
 
         case "error":
           console.error("Realtime API error:", message.error);
-          this.handleRealtimeError(new Error(message.error?.message || "API error"));
+          this.handleRealtimeError(
+            new Error(message.error?.message || "API error"),
+          );
           break;
 
         default:
@@ -2874,7 +2915,7 @@ class MedicalAudioRecorder {
 
   /**
    * Updates the partial (in-progress) transcript in the chat.
-   * 
+   *
    * @private
    * @param {string} text - The text to display (delta for OpenAI, full text for Gemini)
    * @param {boolean} isFullText - If true, replace text instead of appending (for Gemini)
@@ -2882,54 +2923,55 @@ class MedicalAudioRecorder {
   updatePartialTranscript(text, isFullText = false) {
     if (!text) return;
 
-    // For Gemini, check if we're in Gemini mode
     const isGemini = this.realtimeProvider === "gemini";
 
-    let partialMessage = this.elements.liveTranscriptChat.querySelector(".md-live-transcript__message--partial");
-    
+    let partialMessage = this.elements.liveTranscriptChat.querySelector(
+      ".md-live-transcript__message--partial",
+    );
+
     if (!partialMessage) {
       partialMessage = document.createElement("div");
-      partialMessage.className = "md-live-transcript__message md-live-transcript__message--partial";
+      partialMessage.className =
+        "md-live-transcript__message md-live-transcript__message--partial";
       this.elements.liveTranscriptChat.appendChild(partialMessage);
     }
-    
-    // Gemini sends full text, OpenAI sends deltas
+
     if (isGemini || isFullText) {
       partialMessage.textContent = text;
     } else {
       partialMessage.textContent += text;
     }
-    
-    // Auto-scroll to bottom
-    this.elements.liveTranscriptChat.scrollTop = this.elements.liveTranscriptChat.scrollHeight;
+
+    this.elements.liveTranscriptChat.scrollTop =
+      this.elements.liveTranscriptChat.scrollHeight;
   }
 
   /**
    * Adds a final (completed) transcript to the chat.
-   * 
+   *
    * @private
    * @param {string} transcript - The complete transcript text
    */
   addFinalTranscript(transcript) {
     if (!transcript || !transcript.trim()) return;
 
-    // Remove partial message if exists
-    const partialMessage = this.elements.liveTranscriptChat.querySelector(".md-live-transcript__message--partial");
+    const partialMessage = this.elements.liveTranscriptChat.querySelector(
+      ".md-live-transcript__message--partial",
+    );
     if (partialMessage) {
       partialMessage.remove();
     }
-
-    // Add final message
     const finalMessage = document.createElement("div");
-    finalMessage.className = "md-live-transcript__message md-live-transcript__message--final";
+    finalMessage.className =
+      "md-live-transcript__message md-live-transcript__message--final";
     finalMessage.textContent = transcript.trim();
     this.elements.liveTranscriptChat.appendChild(finalMessage);
 
-    // Update the full transcript
-    this.realtimeTranscript += (this.realtimeTranscript ? " " : "") + transcript.trim();
+    this.realtimeTranscript +=
+      (this.realtimeTranscript ? " " : "") + transcript.trim();
 
-    // Auto-scroll to bottom
-    this.elements.liveTranscriptChat.scrollTop = this.elements.liveTranscriptChat.scrollHeight;
+    this.elements.liveTranscriptChat.scrollTop =
+      this.elements.liveTranscriptChat.scrollHeight;
   }
 
   /**
@@ -2952,14 +2994,17 @@ class MedicalAudioRecorder {
     }
 
     // Close audio context
-    if (this.realtimeAudioContext && this.realtimeAudioContext.state !== "closed") {
+    if (
+      this.realtimeAudioContext &&
+      this.realtimeAudioContext.state !== "closed"
+    ) {
       this.realtimeAudioContext.close();
       this.realtimeAudioContext = null;
     }
 
     // Stop media stream
     if (this.realtimeMediaStream) {
-      this.realtimeMediaStream.getTracks().forEach(track => track.stop());
+      this.realtimeMediaStream.getTracks().forEach((track) => track.stop());
       this.realtimeMediaStream = null;
     }
 
@@ -3004,12 +3049,12 @@ class MedicalAudioRecorder {
     if (resetData) {
       this.realtimeTranscript = "";
     }
-    
-    // Clear chat messages
-    const messages = this.elements.liveTranscriptChat.querySelectorAll(".md-live-transcript__message");
-    messages.forEach(msg => msg.remove());
-    
-    // Clear textarea
+
+    const messages = this.elements.liveTranscriptChat.querySelectorAll(
+      ".md-live-transcript__message",
+    );
+    messages.forEach((msg) => msg.remove());
+
     if (this.elements.realtimeTranscriptTextarea) {
       this.elements.realtimeTranscriptTextarea.value = "";
       if (resetData) {
@@ -3017,13 +3062,10 @@ class MedicalAudioRecorder {
         this.elements.liveTranscriptChat.classList.remove("hidden");
       }
     }
-    
-    // Show placeholder if we're doing a full reset
+
     if (resetData && this.elements.liveTranscriptPlaceholder) {
       this.elements.liveTranscriptPlaceholder.classList.remove("hidden");
     }
-    
-    // Hide actions if doing full reset
     if (resetData && this.elements.liveTranscriptActions) {
       this.elements.liveTranscriptActions.classList.add("hidden");
     }
@@ -3034,11 +3076,14 @@ class MedicalAudioRecorder {
    */
   copyRealtimeTranscript() {
     if (this.realtimeTranscript.trim()) {
-      navigator.clipboard.writeText(this.realtimeTranscript).then(() => {
-        this.showMessage(getMessage("transcript_copied"), "success");
-      }).catch(() => {
-        this.showMessage(getMessage("failed_copy"), "error");
-      });
+      navigator.clipboard
+        .writeText(this.realtimeTranscript)
+        .then(() => {
+          this.showMessage(getMessage("transcript_copied"), "success");
+        })
+        .catch(() => {
+          this.showMessage(getMessage("failed_copy"), "error");
+        });
     }
   }
 
@@ -3046,26 +3091,21 @@ class MedicalAudioRecorder {
    * Toggles between chat view and editable textarea for realtime transcript.
    */
   toggleRealtimeEditMode() {
-    const isEditing = !this.elements.realtimeTranscriptTextarea.classList.contains("hidden");
-    
+    const isEditing =
+      !this.elements.realtimeTranscriptTextarea.classList.contains("hidden");
+
     if (isEditing) {
-      // Switch back to chat view
       this.elements.realtimeTranscriptTextarea.classList.add("hidden");
       this.elements.liveTranscriptChat.classList.remove("hidden");
-      
-      // Update realtime transcript with edited text
-      const editedText = this.elements.realtimeTranscriptTextarea.value;
-      
-      // Re-render chat messages from edited text
-      this.clearRealtimeLiveTranscript(false); // Clear bubbles only
-      
-      // Reset transcript property because addFinalTranscript will append to it
-      this.realtimeTranscript = ""; 
-      
-      this.addFinalTranscript(editedText);
 
+      const editedText = this.elements.realtimeTranscriptTextarea.value;
+
+      this.clearRealtimeLiveTranscript(false);
+
+      this.realtimeTranscript = "";
+
+      this.addFinalTranscript(editedText);
     } else {
-      // Switch to edit mode
       this.elements.realtimeTranscriptTextarea.value = this.realtimeTranscript;
       this.elements.realtimeTranscriptTextarea.classList.remove("hidden");
       this.elements.liveTranscriptChat.classList.add("hidden");
@@ -3076,8 +3116,9 @@ class MedicalAudioRecorder {
    * Summarizes the realtime transcript using the existing summarization logic.
    */
   async summarizeRealtimeTranscript() {
-    // If we are in edit mode, update the transcript source
-    if (!this.elements.realtimeTranscriptTextarea.classList.contains("hidden")) {
+    if (
+      !this.elements.realtimeTranscriptTextarea.classList.contains("hidden")
+    ) {
       this.realtimeTranscript = this.elements.realtimeTranscriptTextarea.value;
     }
 
@@ -3086,7 +3127,6 @@ class MedicalAudioRecorder {
       return;
     }
 
-    // Use the existing summarization flow
     this.elements.transcriptTextarea.value = this.realtimeTranscript;
     this.updateRealtimeStepIndicator(3);
     await this.summarizeTranscript();
@@ -3094,7 +3134,7 @@ class MedicalAudioRecorder {
 
   /**
    * Shows the action buttons after transcription stops.
-   * 
+   *
    * @private
    */
   showRealtimeTranscriptActions() {
@@ -3105,39 +3145,35 @@ class MedicalAudioRecorder {
 
   /**
    * Updates UI elements based on recording state.
-   * 
+   *
    * @private
    * @param {boolean} isRecording - Whether recording is active
    */
   updateRealtimeUIForRecording(isRecording) {
     if (isRecording) {
-      // Recording started
       this.elements.startRealtime.classList.add("hidden");
       this.elements.stopRealtime.classList.remove("hidden");
       this.elements.stopRealtime.disabled = false;
       this.elements.clearRealtime.classList.add("hidden");
-      
-      // Add realtime class to status bar
+
       this.elements.statusBar.classList.add("md-status-card--realtime");
     } else {
-      // Recording stopped
       this.elements.startRealtime.classList.remove("hidden");
       this.elements.stopRealtime.classList.add("hidden");
       this.elements.stopRealtime.disabled = true;
-      
+
       if (this.realtimeTranscript.trim()) {
         this.elements.clearRealtime.classList.remove("hidden");
         this.elements.clearRealtime.disabled = false;
       }
-      
-      // Remove realtime class from status bar
+
       this.elements.statusBar.classList.remove("md-status-card--realtime");
     }
   }
 
   /**
    * Updates the realtime mode step indicator.
-   * 
+   *
    * @private
    * @param {number} step - The current step (1, 2, or 3)
    */
@@ -3145,14 +3181,14 @@ class MedicalAudioRecorder {
     const steps = [
       this.elements.realtimeStep1,
       this.elements.realtimeStep2,
-      this.elements.realtimeStep3
+      this.elements.realtimeStep3,
     ];
 
     steps.forEach((stepEl, index) => {
       if (!stepEl) return;
-      
+
       stepEl.className = "md-stepper__step";
-      
+
       if (index + 1 < step) {
         stepEl.classList.add("md-stepper__step--completed");
       } else if (index + 1 === step) {
@@ -3163,21 +3199,21 @@ class MedicalAudioRecorder {
 
   /**
    * Starts the session timer for realtime transcription.
-   * 
+   *
    * @private
    */
   startRealtimeSessionTimer() {
     this.elements.timer.classList.remove("hidden");
-    
+
     this.realtimeSessionTimer = setInterval(() => {
       if (!this.realtimeSessionStartTime) return;
-      
+
       const elapsed = Date.now() - this.realtimeSessionStartTime;
       const minutes = Math.floor(elapsed / 60000);
       const seconds = Math.floor((elapsed % 60000) / 1000);
-      
+
       this.elements.timer.textContent = `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-      
+
       // Check for 30-minute limit
       if (minutes >= 30) {
         this.showMessage(getMessage("realtime_session_limit"), "warning");
@@ -3188,19 +3224,22 @@ class MedicalAudioRecorder {
 
   /**
    * Handles errors during realtime transcription.
-   * 
+   *
    * @private
    * @param {Error} error - The error that occurred
    */
   handleRealtimeError(error) {
     console.error("Realtime error:", error);
-    
+
     // Clean up resources
     this.stopRealtimeTranscription();
-    
+
     // Show error message
     this.updateStatus(getMessage("realtime_error_connection"), "normal");
-    this.showMessage(error.message || getMessage("realtime_error_connection"), "error");
+    this.showMessage(
+      error.message || getMessage("realtime_error_connection"),
+      "error",
+    );
   }
 }
 

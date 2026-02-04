@@ -3,8 +3,8 @@
  * Extension-specific styles for popup interface
  */
 
-@import url('../styles/material-tokens.css');
-@import url('../styles/material-components.css');
+@import url("../styles/material-tokens.css");
+@import url("../styles/material-components.css");
 
 /* ========================================
  * POPUP BASE LAYOUT
@@ -77,7 +77,8 @@ body.popup-context {
 .md-popup-content {
   padding: 0 20px 20px;
   background: var(--md-sys-color-surface);
-  border-radius: var(--md-sys-shape-corner-extra-large) var(--md-sys-shape-corner-extra-large) 0 0;
+  border-radius: var(--md-sys-shape-corner-extra-large)
+    var(--md-sys-shape-corner-extra-large) 0 0;
   margin-top: -8px;
   box-shadow: var(--md-sys-elevation-level1);
 }
@@ -113,13 +114,15 @@ body.popup-context {
   background: var(--md-sys-color-surface-container-highest);
   border-radius: var(--md-sys-shape-corner-full);
   border: 2px solid var(--md-sys-color-outline-variant);
-  transition: all var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard);
+  transition: all var(--md-sys-motion-duration-medium1)
+    var(--md-sys-motion-easing-standard);
 }
 
 .md-stepper__indicator .material-symbols-rounded {
   font-size: 16px;
   color: var(--md-sys-color-on-surface-variant);
-  transition: color var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+  transition: color var(--md-sys-motion-duration-short4)
+    var(--md-sys-motion-easing-standard);
 }
 
 .md-stepper__label {
@@ -136,7 +139,8 @@ body.popup-context {
   background: var(--md-sys-color-outline-variant);
   margin: 0 -8px;
   margin-bottom: 22px;
-  transition: background-color var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard);
+  transition: background-color var(--md-sys-motion-duration-medium1)
+    var(--md-sys-motion-easing-standard);
 }
 
 /* Active Step */
@@ -182,7 +186,8 @@ body.popup-context {
   border-radius: var(--md-sys-shape-corner-medium);
   border: 1px solid var(--md-sys-color-outline-variant);
   margin-bottom: 16px;
-  transition: all var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+  transition: all var(--md-sys-motion-duration-short4)
+    var(--md-sys-motion-easing-standard);
 }
 
 .md-status-card__icon {
@@ -222,18 +227,27 @@ body.popup-context {
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Timer */
 .md-timer {
-  font-family: 'Roboto Mono', monospace;
+  font-family: "Roboto Mono", monospace;
   font-size: 28px;
   font-weight: 500;
   color: var(--md-sys-color-error);
@@ -305,7 +319,13 @@ body.popup-context {
   height: 4px;
   appearance: none;
   -webkit-appearance: none;
-  background: linear-gradient(to right, var(--md-sys-color-primary) 0%, var(--md-sys-color-primary) var(--value, 0%), var(--md-sys-color-surface-container-highest) var(--value, 0%), var(--md-sys-color-surface-container-highest) 100%);
+  background: linear-gradient(
+    to right,
+    var(--md-sys-color-primary) 0%,
+    var(--md-sys-color-primary) var(--value, 0%),
+    var(--md-sys-color-surface-container-highest) var(--value, 0%),
+    var(--md-sys-color-surface-container-highest) 100%
+  );
   border-radius: 2px;
   cursor: pointer;
 }
@@ -320,7 +340,8 @@ body.popup-context {
   border: 2px solid var(--md-sys-color-surface);
   box-shadow: var(--md-sys-elevation-level1);
   cursor: pointer;
-  transition: transform var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+  transition: transform var(--md-sys-motion-duration-short2)
+    var(--md-sys-motion-easing-standard);
 }
 
 .md-slider input[type="range"]::-webkit-slider-thumb:hover {
@@ -377,7 +398,8 @@ body.popup-context {
   line-height: 1.6;
   color: var(--md-sys-color-on-surface);
   resize: vertical;
-  transition: all var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+  transition: all var(--md-sys-motion-duration-short4)
+    var(--md-sys-motion-easing-standard);
   box-sizing: border-box;
 }
 
@@ -429,7 +451,7 @@ body.popup-context {
 }
 
 .md-timing-info__item .time-value {
-  font-family: 'Roboto Mono', monospace;
+  font-family: "Roboto Mono", monospace;
   font-weight: 500;
 }
 
@@ -549,7 +571,8 @@ body.popup-context {
   font-size: var(--md-sys-typescale-label-small-font-size);
   font-weight: 500;
   cursor: pointer;
-  transition: all var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+  transition: all var(--md-sys-motion-duration-short2)
+    var(--md-sys-motion-easing-standard);
 }
 
 .md-result-section__copy-btn:hover {
@@ -614,12 +637,14 @@ body.popup-context {
   text-decoration: none;
   font-size: var(--md-sys-typescale-label-large-font-size);
   font-weight: 500;
-  transition: all var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+  transition: all var(--md-sys-motion-duration-short2)
+    var(--md-sys-motion-easing-standard);
 }
 
 .md-settings-link span:not(.material-symbols-rounded) {
   text-decoration: underline;
-  transition: text-decoration var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+  transition: text-decoration var(--md-sys-motion-duration-short2)
+    var(--md-sys-motion-easing-standard);
 }
 
 .md-settings-link:hover {
@@ -693,7 +718,8 @@ body.popup-context {
   font-size: var(--md-sys-typescale-label-large-font-size);
   font-weight: 500;
   cursor: pointer;
-  transition: all var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+  transition: all var(--md-sys-motion-duration-short4)
+    var(--md-sys-motion-easing-standard);
 }
 
 .md-download-btn:hover {
@@ -740,20 +766,20 @@ body.popup-context {
 
 .material-symbols-rounded {
   font-variation-settings:
-    'FILL' 0,
-    'wght' 400,
-    'GRAD' 0,
-    'opsz' 24;
+    "FILL" 0,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
 }
 
 /* Filled icons for specific use cases */
 .md-icon--filled .material-symbols-rounded,
 .md-icon-button--filled .material-symbols-rounded {
   font-variation-settings:
-    'FILL' 1,
-    'wght' 400,
-    'GRAD' 0,
-    'opsz' 24;
+    "FILL" 1,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
 }
 
 /* ========================================
@@ -783,12 +809,12 @@ body.popup-context {
     font-size: 10px;
     max-width: 50px;
   }
-  
+
   .md-controls__row {
     flex-direction: column;
     gap: 8px;
   }
-  
+
   .md-timing-info {
     flex-direction: column;
     gap: 8px;
@@ -821,11 +847,19 @@ body.popup-context {
 
 /* Realtime Button Styling */
 .md-button--realtime {
-  background: linear-gradient(135deg, var(--md-sys-color-primary), var(--md-sys-color-tertiary));
+  background: linear-gradient(
+    135deg,
+    var(--md-sys-color-primary),
+    var(--md-sys-color-tertiary)
+  );
 }
 
 .md-button--realtime:hover {
-  background: linear-gradient(135deg, var(--md-sys-color-primary), var(--md-sys-color-secondary));
+  background: linear-gradient(
+    135deg,
+    var(--md-sys-color-primary),
+    var(--md-sys-color-secondary)
+  );
   box-shadow: var(--md-sys-elevation-level3);
 }
 
@@ -857,12 +891,13 @@ body.popup-context {
 }
 
 @keyframes live-pulse {
-  0%, 100% { 
-    opacity: 1; 
+  0%,
+  100% {
+    opacity: 1;
     transform: scale(1);
   }
-  50% { 
-    opacity: 0.6; 
+  50% {
+    opacity: 0.6;
     transform: scale(1.1);
   }
 }

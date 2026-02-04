@@ -1,142 +1,168 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>__MSG_welcome_title__</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/icon?family=Material+Symbols+Rounded"
+    />
+    <link rel="stylesheet" href="../styles/material-tokens.css" />
+    <link rel="stylesheet" href="../styles/material-components.css" />
+    <link rel="stylesheet" href="welcome.css" />
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>__MSG_welcome_title__</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Symbols+Rounded">
-  <link rel="stylesheet" href="../styles/material-tokens.css">
-  <link rel="stylesheet" href="../styles/material-components.css">
-  <link rel="stylesheet" href="welcome.css" />
-</head>
-
-<body>
-  <div class="md-welcome-container">
-    <div class="md-welcome-card">
-      <!-- Header Section -->
-      <header class="md-welcome-header">
-        <div class="md-welcome-header__icon">
-          <span class="material-symbols-rounded">local_hospital</span>
-        </div>
-        <h1 class="md-headline-large">__MSG_app_name__</h1>
-        <p class="md-body-large md-text-secondary">__MSG_welcome_subtitle__</p>
-      </header>
-
-      <!-- Features Section -->
-      <section class="md-features">
-        <div class="md-feature-card md-card md-card--filled">
-          <div class="md-feature-card__icon">
-            <span class="material-symbols-rounded">mic</span>
+  <body>
+    <div class="md-welcome-container">
+      <div class="md-welcome-card">
+        <!-- Header Section -->
+        <header class="md-welcome-header">
+          <div class="md-welcome-header__icon">
+            <span class="material-symbols-rounded">local_hospital</span>
           </div>
-          <div class="md-feature-card__content">
-            <h3 class="md-title-small">__MSG_feature_recording__</h3>
-            <p class="md-body-small md-text-secondary">__MSG_feature_recording_desc__</p>
-          </div>
-        </div>
+          <h1 class="md-headline-large">__MSG_app_name__</h1>
+          <p class="md-body-large md-text-secondary">
+            __MSG_welcome_subtitle__
+          </p>
+        </header>
 
-        <div class="md-feature-card md-card md-card--filled">
-          <div class="md-feature-card__icon">
-            <span class="material-symbols-rounded">psychology</span>
-          </div>
-          <div class="md-feature-card__content">
-            <h3 class="md-title-small">__MSG_feature_transcription__</h3>
-            <p class="md-body-small md-text-secondary">__MSG_feature_transcription_desc__</p>
-          </div>
-        </div>
-
-        <div class="md-feature-card md-card md-card--filled">
-          <div class="md-feature-card__icon">
-            <span class="material-symbols-rounded">summarize</span>
-          </div>
-          <div class="md-feature-card__content">
-            <h3 class="md-title-small">__MSG_feature_summarization__</h3>
-            <p class="md-body-small md-text-secondary">__MSG_feature_summarization_desc__</p>
-          </div>
-        </div>
-
-        <div class="md-feature-card md-card md-card--filled">
-          <div class="md-feature-card__icon">
-            <span class="material-symbols-rounded">integration_instructions</span>
-          </div>
-          <div class="md-feature-card__content">
-            <h3 class="md-title-small">__MSG_feature_integration__</h3>
-            <p class="md-body-small md-text-secondary">__MSG_feature_integration_desc__</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- Permission Section -->
-      <section class="md-permission-card">
-        <div class="md-permission-card__icon">
-          <span class="material-symbols-rounded">warning</span>
-        </div>
-        <div class="md-permission-card__content">
-          <h3 class="md-title-medium">__MSG_permission_required__</h3>
-          <p class="md-body-medium">__MSG_permission_description__</p>
-        </div>
-      </section>
-
-      <!-- Action Buttons -->
-      <div class="md-welcome-actions">
-        <button type="button" id="requestAccess" class="md-button md-button--filled">
-          <span class="material-symbols-rounded">mic</span>
-          __MSG_grant_access__
-        </button>
-        <button type="button" id="configureSettings" class="md-button md-button--outlined">
-          <span class="material-symbols-rounded">settings</span>
-          __MSG_configure_settings__
-        </button>
-      </div>
-
-      <!-- Status Message -->
-      <div id="status" class="md-status-message hidden"></div>
-
-      <!-- Next Steps Section -->
-      <section id="nextSteps" class="md-next-steps hidden">
-        <div class="md-next-steps__header">
-          <span class="material-symbols-rounded">check_circle</span>
-          <h3 class="md-title-medium">__MSG_setup_complete__</h3>
-        </div>
-        <p class="md-body-medium md-text-secondary">__MSG_setup_complete_desc__</p>
-        <ol class="md-next-steps__list">
-          <li>
-            <span class="md-next-steps__step-icon">
-              <span class="material-symbols-rounded">vpn_key</span>
-            </span>
-            <span>__MSG_step_configure_api__</span>
-          </li>
-          <li>
-            <span class="md-next-steps__step-icon">
-              <span class="material-symbols-rounded">translate</span>
-            </span>
-            <span>__MSG_step_choose_language__</span>
-          </li>
-          <li>
-            <span class="md-next-steps__step-icon">
+        <!-- Features Section -->
+        <section class="md-features">
+          <div class="md-feature-card md-card md-card--filled">
+            <div class="md-feature-card__icon">
               <span class="material-symbols-rounded">mic</span>
-            </span>
-            <span>__MSG_step_start_recording__</span>
-          </li>
-          <li>
-            <span class="md-next-steps__step-icon">
-              <span class="material-symbols-rounded">description</span>
-            </span>
-            <span>__MSG_step_review_summaries__</span>
-          </li>
-        </ol>
-      </section>
+            </div>
+            <div class="md-feature-card__content">
+              <h3 class="md-title-small">__MSG_feature_recording__</h3>
+              <p class="md-body-small md-text-secondary">
+                __MSG_feature_recording_desc__
+              </p>
+            </div>
+          </div>
 
-      <!-- Footer -->
-      <footer class="md-welcome-footer">
-        <span class="material-symbols-rounded">security</span>
-        <p class="md-body-small">__MSG_privacy_notice__</p>
-      </footer>
+          <div class="md-feature-card md-card md-card--filled">
+            <div class="md-feature-card__icon">
+              <span class="material-symbols-rounded">psychology</span>
+            </div>
+            <div class="md-feature-card__content">
+              <h3 class="md-title-small">__MSG_feature_transcription__</h3>
+              <p class="md-body-small md-text-secondary">
+                __MSG_feature_transcription_desc__
+              </p>
+            </div>
+          </div>
+
+          <div class="md-feature-card md-card md-card--filled">
+            <div class="md-feature-card__icon">
+              <span class="material-symbols-rounded">summarize</span>
+            </div>
+            <div class="md-feature-card__content">
+              <h3 class="md-title-small">__MSG_feature_summarization__</h3>
+              <p class="md-body-small md-text-secondary">
+                __MSG_feature_summarization_desc__
+              </p>
+            </div>
+          </div>
+
+          <div class="md-feature-card md-card md-card--filled">
+            <div class="md-feature-card__icon">
+              <span class="material-symbols-rounded"
+                >integration_instructions</span
+              >
+            </div>
+            <div class="md-feature-card__content">
+              <h3 class="md-title-small">__MSG_feature_integration__</h3>
+              <p class="md-body-small md-text-secondary">
+                __MSG_feature_integration_desc__
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Permission Section -->
+        <section class="md-permission-card">
+          <div class="md-permission-card__icon">
+            <span class="material-symbols-rounded">warning</span>
+          </div>
+          <div class="md-permission-card__content">
+            <h3 class="md-title-medium">__MSG_permission_required__</h3>
+            <p class="md-body-medium">__MSG_permission_description__</p>
+          </div>
+        </section>
+
+        <!-- Action Buttons -->
+        <div class="md-welcome-actions">
+          <button
+            type="button"
+            id="requestAccess"
+            class="md-button md-button--filled"
+          >
+            <span class="material-symbols-rounded">mic</span>
+            __MSG_grant_access__
+          </button>
+          <button
+            type="button"
+            id="configureSettings"
+            class="md-button md-button--outlined"
+          >
+            <span class="material-symbols-rounded">settings</span>
+            __MSG_configure_settings__
+          </button>
+        </div>
+
+        <!-- Status Message -->
+        <div id="status" class="md-status-message hidden"></div>
+
+        <!-- Next Steps Section -->
+        <section id="nextSteps" class="md-next-steps hidden">
+          <div class="md-next-steps__header">
+            <span class="material-symbols-rounded">check_circle</span>
+            <h3 class="md-title-medium">__MSG_setup_complete__</h3>
+          </div>
+          <p class="md-body-medium md-text-secondary">
+            __MSG_setup_complete_desc__
+          </p>
+          <ol class="md-next-steps__list">
+            <li>
+              <span class="md-next-steps__step-icon">
+                <span class="material-symbols-rounded">vpn_key</span>
+              </span>
+              <span>__MSG_step_configure_api__</span>
+            </li>
+            <li>
+              <span class="md-next-steps__step-icon">
+                <span class="material-symbols-rounded">translate</span>
+              </span>
+              <span>__MSG_step_choose_language__</span>
+            </li>
+            <li>
+              <span class="md-next-steps__step-icon">
+                <span class="material-symbols-rounded">mic</span>
+              </span>
+              <span>__MSG_step_start_recording__</span>
+            </li>
+            <li>
+              <span class="md-next-steps__step-icon">
+                <span class="material-symbols-rounded">description</span>
+              </span>
+              <span>__MSG_step_review_summaries__</span>
+            </li>
+          </ol>
+        </section>
+
+        <!-- Footer -->
+        <footer class="md-welcome-footer">
+          <span class="material-symbols-rounded">security</span>
+          <p class="md-body-small">__MSG_privacy_notice__</p>
+        </footer>
+      </div>
     </div>
-  </div>
 
-  <script src="welcome.js" type="module"></script>
-</body>
-
+    <script src="welcome.js" type="module"></script>
+  </body>
 </html>
