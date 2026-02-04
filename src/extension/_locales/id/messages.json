@@ -27,10 +27,13 @@
     "message": "Platform OpenAI"
   },
   "gemini_api_description": {
-    "message": "Diperlukan untuk transkripsi dan ringkasan Gemini. Dapatkan kunci Anda dari"
+    "message": "Diperlukan untuk transkripsi dan ringkasan Google Gemini. Dapatkan kunci Anda dari"
   },
   "gemini_studio_link": {
     "message": "Google AI Studio"
+  },
+  "realtime_openai_only_notice": {
+    "message": "Transkripsi realtime tersedia dengan penyedia OpenAI dan Google Gemini."
   },
   "transcription_settings": {
     "message": "Pengaturan Transkripsi"

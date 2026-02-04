@@ -276,7 +276,8 @@ class OptionsManager {
       });
     } else if (provider === "gemini") {
       const geminiModels = [
-        { value: "google-speech-id", label: getMessage("google_speech_id") }
+        { value: "gemini-2.0-flash", label: getMessage("gemini_2_0_flash") },
+        { value: "gemini-2.0-flash-lite", label: getMessage("gemini_2_0_flash_lite") }
       ];
 
       geminiModels.forEach(model => {
@@ -288,7 +289,7 @@ class OptionsManager {
     }
     
     // Set default value
-    modelSelect.value = provider === "openai" ? "whisper-1" : "google-speech-id";
+    modelSelect.value = provider === "openai" ? "whisper-1" : "gemini-2.0-flash";
   }
 
   /**
@@ -320,9 +321,9 @@ class OptionsManager {
       });
     } else if (provider === "gemini") {
       const geminiModels = [
-        { value: "2.5flash-lite", label: getMessage("gemini_2_5_flash_lite") },
-        { value: "2.0flash", label: getMessage("gemini_2_0_flash") },
-        { value: "2.0flash-lite", label: getMessage("gemini_2_0_flash_lite") }
+        { value: "gemini-2.5-flash-lite", label: getMessage("gemini_2_5_flash_lite") },
+        { value: "gemini-2.0-flash", label: getMessage("gemini_2_0_flash") },
+        { value: "gemini-2.0-flash-lite", label: getMessage("gemini_2_0_flash_lite") }
       ];
 
       geminiModels.forEach(model => {
@@ -334,13 +335,19 @@ class OptionsManager {
     }
     
     // Set default value
-    modelSelect.value = provider === "openai" ? "gpt-3.5-turbo" : "2.5flash-lite";
+    modelSelect.value = provider === "openai" ? "gpt-3.5-turbo" : "gemini-2.0-flash-lite";
   }
 
   // ============================================================================
   // API TESTING METHODS
   // ============================================================================
 
+  /**
+   * Tests API connections for configured providers.
+   * Validates API keys by making test requests to each configured service.
+   * 
+   * @async
+   */
   /**
    * Tests API connections for configured providers.
    * Validates API keys by making test requests to each configured service.
@@ -447,7 +454,7 @@ class OptionsManager {
    * @async
    * @private
    * @param {string} apiKey - OpenAI API key to test
-   * @returns {Promise<string>} Test result message
+   * @returns {Promise<Object>} Test result with success and message
    */
   async testOpenAIConnection(apiKey) {
     try {
@@ -467,21 +474,33 @@ class OptionsManager {
 
   /**
    * Tests Gemini API connection.
-   * Validates Gemini API key format (placeholder for full implementation).
+   * Makes a test request to Gemini's models endpoint to validate the API key.
    * 
    * @async
    * @private
    * @param {string} apiKey - Gemini API key to test
-   * @returns {Promise<string>} Test result message
+   * @returns {Promise<Object>} Test result with success and message
    */
   async testGeminiConnection(apiKey) {
     try {
-      // Test Gemini API connection - you'll implement the actual API call later
-      // For now, we'll just validate the API key format
-      if (apiKey.startsWith("AIza")) {
-        return { success: true, message: getMessage("gemini_key_valid_format") };
-      } else {
+      // Validate API key format first
+      if (!apiKey.startsWith("AIza")) {
         return { success: false, message: getMessage("invalid_gemini_key_format") };
+      }
+
+      // Test Gemini API connection by listing models
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`
+      );
+
+      if (response.ok) {
+        return { success: true, message: getMessage("connection_successful") };
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        return { 
+          success: false, 
+          message: errorData.error?.message || getMessage("connection_failed_check_key")
+        };
       }
     } catch (error) {
       return { success: false, message: getMessage("connection_failed") + ": " + error.message };

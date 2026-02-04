@@ -27,10 +27,13 @@
     "message": "OpenAI Platform"
   },
   "gemini_api_description": {
-    "message": "Required for Gemini transcription and summarization. Get your key from"
+    "message": "Required for Google Gemini transcription and summarization. Get your key from"
   },
   "gemini_studio_link": {
     "message": "Google AI Studio"
+  },
+  "realtime_openai_only_notice": {
+    "message": "Real-time transcription is available with both OpenAI and Google Gemini providers."
   },
   "transcription_settings": {
     "message": "Transcription Settings"

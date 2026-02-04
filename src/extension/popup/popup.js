@@ -112,6 +112,8 @@ class MedicalAudioRecorder {
     this.isRealtimeActive = false;
     this.realtimeSessionTimer = null;
     this.realtimeSessionStartTime = null;
+    this.realtimeProvider = null; // 'openai' or 'gemini'
+    this.geminiSetupComplete = false; // Tracks Gemini Live API setup state
   }
 
   /**
@@ -461,6 +463,7 @@ class MedicalAudioRecorder {
     if (transcriptionProvider === "openai" && !this.settings.openaiApiKey) {
       missingKeys.push("OpenAI API key (for transcription)");
     } else if (transcriptionProvider === "gemini" && !this.settings.geminiApiKey) {
+      // Gemini provider now uses Gemini API for transcription (multimodal)
       missingKeys.push("Gemini API key (for transcription)");
     }
 
@@ -506,15 +509,18 @@ class MedicalAudioRecorder {
     try {
       const result = await chrome.storage.local.get([
         "openaiApiKey", 
-        "geminiApiKey", 
+        "geminiApiKey",
         "transcriptionProvider",
         "summarizationProvider"
       ]);
 
+      // Check OpenAI key
       if ((result.transcriptionProvider === "openai" || result.summarizationProvider === "openai") && result.openaiApiKey === "") {
         this.showMessage(getMessage("api_key_missing"), "error");
-      } else if ((result.transcriptionProvider === "gemini" || result.summarizationProvider === "gemini") && result.geminiApiKey === "") {
-        this.showMessage(getMessage("api_key_missing"), "error");
+      }
+      // Check Gemini key for transcription or summarization
+      else if ((result.transcriptionProvider === "gemini" || result.summarizationProvider === "gemini") && !result.geminiApiKey) {
+        this.showMessage(getMessage("gemini_key_not_configured"), "error");
       }
       
       return result;
@@ -559,7 +565,7 @@ class MedicalAudioRecorder {
         resultsContainer.appendChild(openaiItem);
       }
 
-      // Test Gemini API key if needed
+      // Test Gemini API key for transcription or summarization
       if (transcriptionProvider === "gemini" || summarizationProvider === "gemini") {
         const geminiItem = document.createElement("div");
         const isConfigured = !!this.settings.geminiApiKey;
@@ -1362,17 +1368,114 @@ class MedicalAudioRecorder {
     return data.text;
   }
 
+  /**
+   * Transcribes audio using Google Gemini's multimodal API.
+   * Converts audio to base64 and sends to Gemini API for transcription.
+   * Supports audio files of any duration.
+   * 
+   * @async
+   * @private
+   * @returns {Promise<string>} Transcribed text from Gemini
+   * @throws {Error} When API key is missing or API call fails
+   */
   async transcribeWithGemini() {
-    // Check if API key is configured
+    // Check if Gemini API key is configured
     if (!this.settings.geminiApiKey) {
       throw new Error(
         getMessage("gemini_key_not_configured")
       );
     }
 
-    // Placeholder for Gemini transcription implementation
-    // You'll implement the actual Google Cloud Speech-to-Text API call here
-    throw new Error(getMessage("gemini_not_implemented"));
+    // Convert audio blob to base64
+    const audioBase64 = await this.audioToBase64(this.audioBlob);
+    
+    // Get the MIME type of the audio
+    const mimeType = this.audioBlob.type || "audio/webm";
+    
+    // Prepare the transcription prompt
+    const transcriptionPrompt = this.settings.language === "id" 
+      ? `Transkripsikan audio ini dengan akurat ke dalam Bahasa Indonesia. 
+         Berikan transkripsi kata per kata yang tepat dari percakapan dalam audio.
+         Jangan meringkas atau mengubah apa pun - transkripsikan persis seperti yang diucapkan.
+         Jika ada beberapa pembicara, tunjukkan perubahan pembicara dengan baris baru.
+         Hanya berikan teks transkripsi, tanpa komentar atau penjelasan tambahan.`
+      : `Transcribe this audio accurately. 
+         Provide an exact word-for-word transcription of the conversation in the audio.
+         Do not summarize or change anything - transcribe exactly as spoken.
+         If there are multiple speakers, indicate speaker changes with new lines.
+         Only provide the transcription text, no additional comments or explanations.`;
+
+    // Use the selected Gemini model for audio transcription (supports audio input)
+    const modelName = this.settings.transcriptionModel || "gemini-2.0-flash";
+
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${this.settings.geminiApiKey}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                {
+                  inline_data: {
+                    mime_type: mimeType,
+                    data: audioBase64
+                  }
+                },
+                {
+                  text: transcriptionPrompt
+                }
+              ]
+            }
+          ],
+          generationConfig: {
+            temperature: 0.1,
+            maxOutputTokens: 8192
+          }
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(
+        `Gemini API: ${errorData.error?.message || "HTTP " + response.status}`
+      );
+    }
+
+    const data = await response.json();
+    
+    // Extract the transcription from Gemini response
+    const transcription = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    
+    if (!transcription) {
+      return getMessage("realtime_transcription_empty");
+    }
+
+    return transcription.trim();
+  }
+
+  /**
+   * Converts audio blob to base64 string.
+   * 
+   * @private
+   * @param {Blob} audioBlob - The audio blob to convert
+   * @returns {Promise<string>} Base64 encoded audio data
+   */
+  async audioToBase64(audioBlob) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        // Remove the data URL prefix (e.g., "data:audio/webm;base64,")
+        const base64String = reader.result.split(',')[1];
+        resolve(base64String);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(audioBlob);
+    });
   }
 
   createTranscriptionFormData() {
@@ -1523,6 +1626,16 @@ class MedicalAudioRecorder {
     return data.choices[0].message.content.trim();
   }
 
+  /**
+   * Generates medical summary using Google Gemini API.
+   * Processes transcription through medical summary prompt.
+   * 
+   * @async
+   * @private
+   * @param {string} transcription - The transcribed text to process
+   * @returns {Promise<string>} Medical summary in structured JSON format
+   * @throws {Error} When API key is missing or API call fails
+   */
   async generateSummaryWithGemini(transcription) {
     // Check if API key is configured
     if (!this.settings.geminiApiKey) {
@@ -1531,9 +1644,110 @@ class MedicalAudioRecorder {
       );
     }
 
-    // Placeholder for Gemini summarization implementation
-    // You'll implement the actual Gemini API call here
-    throw new Error(getMessage("gemini_summarization_not_implemented"));
+    // System prompt - same as OpenAI for consistency
+    const systemPrompt = `
+    You are a highly skilled medical transcriber and summarizer. Your task is to accurately and concisely summarize a doctor-patient conversation transcript provided in Bahasa Indonesia. Focus on extracting key medical information relevant to the patient's visit, including:
+
+    1.  Chief Complaint (CC): The primary reason for the visit in the patient's own words, and how long it has been present.
+    2.  Additional Complaint: Any secondary or additional complaints mentioned by the patient, including those that occurred simultaneously or prior to the main chief complaint. Avoid repeating the chief complaint in this section.
+    3.  History of Present Illness (HPI): Detailed description of the chief complaint, including onset, duration, character, location, radiation, aggravating/alleviating factors, and associated symptoms.
+    4.  Past Medical History (PMH): Relevant pre-existing conditions, significant illnesses, surgeries, or hospitalizations.
+    5.  Family History (FH): Significant medical conditions in immediate family members.
+    6.  Recommended Medication Therapy: Specific medication treatments advised by the doctor. For each medication, include the drug name, dosage, frequency, route of administration, and duration of use. Mention the indication if relevant. Identify and convert any layman's terms or general descriptions of medications (e.g., "obat demam", "obat pereda nyeri", "obat sakit perut") into their correct pharmacological drug classes or specific drug names.
+    7.  Recommended Non-Medication Therapy: Non-pharmacological treatments or lifestyle changes advised (e.g., diet, exercise, physiotherapy).
+    8.  Education: Key information or advice given to the patient for understanding their condition or managing their health.
+
+    Instructions for Summarization:
+
+    * Language Input: The input transcript will be in Bahasa Indonesia. Summarize the content from this language.
+    * Conciseness: Be as brief as possible while retaining all critical medical information.
+    * Accuracy: Ensure all summarized information is directly supported by the transcript.
+    * Objectivity: Present facts without interpretation or inference.
+    * Completeness: Include all the specified categories if present in the transcript. If a category is not present in the transcript, its value should be set to "Informasi tidak tersedia".
+    * Language Output: The summarized values in the JSON should be derived from the Indonesian transcript.
+
+    Output Format:
+
+    Provide the summary as a JSON object with the following structure. The keys should be as listed below, and values should be strings summarizing the respective categories. If a category has no information in the transcript, its value will be "Informasi tidak tersedia".
+
+    {
+      "chief_complaint": "Summary of the chief complaint.",
+      "additional_complaint": "Summary of additional complaints.",
+      "history_of_present_illness": "Summary of HPI.",
+      "past_medical_history": "Summary of PMH.",
+      "family_history": "Summary of family history.",
+      "recommended_medication_therapy": "Summary of recommended medication therapy.",
+      "recommended_non_medication_therapy": "Summary of recommended non-medication therapy.",
+      "education": "Summary of education provided."
+    }
+    `;
+
+    const userPrompt = `
+    Transcript to summarize:
+    ${transcription}
+    `;
+
+    // Get the model name from settings (e.g., "gemini-2.0-flash-lite", "gemini-2.0-flash")
+    const modelName = this.getGeminiModelName(this.settings.summarizationModel);
+
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${this.settings.geminiApiKey}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                { text: systemPrompt + "\n\n" + userPrompt }
+              ]
+            }
+          ],
+          generationConfig: {
+            temperature: 0.2,
+            maxOutputTokens: 1024,
+            responseMimeType: "application/json"
+          }
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(
+        `Gemini API: ${errorData.error?.message || "HTTP " + response.status}`
+      );
+    }
+
+    const data = await response.json();
+    
+    // Extract the generated text from Gemini response
+    const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    
+    if (!generatedText) {
+      throw new Error(getMessage("gemini_summarization_not_implemented"));
+    }
+
+    return generatedText.trim();
+  }
+
+  /**
+   * Maps the summarization model setting to Gemini API model name.
+   * 
+   * @private
+   * @param {string} modelSetting - The model setting value from options
+   * @returns {string} Gemini API model name
+   */
+  getGeminiModelName(modelSetting) {
+    const modelMap = {
+      "gemini-2.5-flash-lite": "gemini-2.0-flash-lite",
+      "gemini-2.0-flash": "gemini-2.0-flash",
+      "gemini-2.0-flash-lite": "gemini-2.0-flash-lite",
+    };
+    
+    return modelMap[modelSetting] || "gemini-2.0-flash-lite";
   }
 
   showResults(originalTranscription, summary) {
@@ -2122,51 +2336,120 @@ class MedicalAudioRecorder {
    */
   async startRealtimeTranscription() {
     try {
-      // Validate API key
-      if (!this.settings.openaiApiKey) {
-        this.showMessage(getMessage("openai_key_not_configured"), "error");
-        return;
+      const transcriptionProvider = this.settings.transcriptionProvider || "openai";
+      
+      if (transcriptionProvider === "gemini") {
+        await this.startGeminiRealtimeTranscription();
+      } else {
+        await this.startOpenAIRealtimeTranscription();
       }
-
-      this.updateStatus(getMessage("realtime_connecting"), "processing");
-      this.updateRealtimeStepIndicator(1);
-
-      // Request microphone access
-      this.realtimeMediaStream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          sampleRate: 24000,
-          channelCount: 1,
-          echoCancellation: true,
-          noiseSuppression: true,
-        }
-      });
-
-      // Initialize audio context with 24kHz sample rate
-      this.realtimeAudioContext = new (window.AudioContext || window.webkitAudioContext)({
-        sampleRate: 24000
-      });
-
-      // Connect to OpenAI Realtime API
-      await this.connectRealtimeWebSocket();
-
-      // Start audio processing
-      await this.startRealtimeAudioProcessing();
-
-      // Update UI
-      this.isRealtimeActive = true;
-      this.realtimeSessionStartTime = Date.now();
-      this.startRealtimeSessionTimer();
-      this.updateRealtimeUIForRecording(true);
-      this.updateStatus(getMessage("realtime_connected"), "realtime");
-
-      // Clear placeholder and show chat
-      if (this.elements.liveTranscriptPlaceholder) {
-        this.elements.liveTranscriptPlaceholder.classList.add("hidden");
-      }
-
     } catch (error) {
       console.error("Realtime transcription error:", error);
       this.handleRealtimeError(error);
+    }
+  }
+
+  /**
+   * Starts OpenAI real-time transcription session.
+   * Initializes audio capture and WebSocket connection to OpenAI.
+   * 
+   * @async
+   * @private
+   */
+  async startOpenAIRealtimeTranscription() {
+    // Validate API key
+    if (!this.settings.openaiApiKey) {
+      this.showMessage(getMessage("openai_key_not_configured"), "error");
+      return;
+    }
+
+    this.updateStatus(getMessage("realtime_connecting"), "processing");
+    this.updateRealtimeStepIndicator(1);
+    this.realtimeProvider = "openai";
+
+    // Request microphone access
+    this.realtimeMediaStream = await navigator.mediaDevices.getUserMedia({
+      audio: {
+        sampleRate: 24000,
+        channelCount: 1,
+        echoCancellation: true,
+        noiseSuppression: true,
+      }
+    });
+
+    // Initialize audio context with 24kHz sample rate
+    this.realtimeAudioContext = new (window.AudioContext || window.webkitAudioContext)({
+      sampleRate: 24000
+    });
+
+    // Connect to OpenAI Realtime API
+    await this.connectRealtimeWebSocket();
+
+    // Start audio processing
+    await this.startRealtimeAudioProcessing();
+
+    // Update UI
+    this.isRealtimeActive = true;
+    this.realtimeSessionStartTime = Date.now();
+    this.startRealtimeSessionTimer();
+    this.updateRealtimeUIForRecording(true);
+    this.updateStatus(getMessage("realtime_connected"), "realtime");
+
+    // Clear placeholder and show chat
+    if (this.elements.liveTranscriptPlaceholder) {
+      this.elements.liveTranscriptPlaceholder.classList.add("hidden");
+    }
+  }
+
+  /**
+   * Starts Gemini real-time transcription session.
+   * Initializes audio capture and WebSocket connection to Gemini Live API.
+   * 
+   * @async
+   * @private
+   */
+  async startGeminiRealtimeTranscription() {
+    // Validate API key
+    if (!this.settings.geminiApiKey) {
+      this.showMessage(getMessage("gemini_key_not_configured"), "error");
+      return;
+    }
+
+    this.updateStatus(getMessage("realtime_connecting"), "processing");
+    this.updateRealtimeStepIndicator(1);
+    this.realtimeProvider = "gemini";
+
+    // Request microphone access - Gemini uses 16kHz sample rate
+    this.realtimeMediaStream = await navigator.mediaDevices.getUserMedia({
+      audio: {
+        sampleRate: 16000,
+        channelCount: 1,
+        echoCancellation: true,
+        noiseSuppression: true,
+      }
+    });
+
+    // Initialize audio context with 16kHz sample rate (Gemini's native rate)
+    this.realtimeAudioContext = new (window.AudioContext || window.webkitAudioContext)({
+      sampleRate: 16000
+    });
+
+    // Connect to Gemini Live API
+    await this.connectGeminiRealtimeWebSocket();
+
+    // Start audio processing for Gemini
+    await this.startGeminiRealtimeAudioProcessing();
+
+    // Update UI
+    this.isRealtimeActive = true;
+    this.realtimeSessionStartTime = Date.now();
+    this.startRealtimeSessionTimer();
+    this.updateRealtimeUIForRecording(true);
+    this.updateStatus(getMessage("realtime_connected"), "realtime");
+
+    // Clear placeholder and show chat
+    if (this.elements.liveTranscriptPlaceholder) {
+      this.elements.liveTranscriptPlaceholder.classList.add("hidden");
     }
   }
 
@@ -2317,6 +2600,228 @@ class MedicalAudioRecorder {
     return btoa(binary);
   }
 
+  // ============================================================================
+  // GEMINI REALTIME TRANSCRIPTION METHODS
+  // ============================================================================
+
+  /**
+   * Connects to the Gemini Live API WebSocket.
+   * 
+   * @async
+   * @private
+   */
+  async connectGeminiRealtimeWebSocket() {
+    return new Promise((resolve, reject) => {
+      // Get the transcription model from settings or use default
+      const modelName = this.settings.transcriptionModel || "gemini-2.0-flash";
+      const wsUrl = `wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent?key=${this.settings.geminiApiKey}`;
+      
+      this.realtimeWebSocket = new WebSocket(wsUrl);
+
+      this.realtimeWebSocket.onopen = () => {
+        console.log("Gemini Realtime WebSocket connected");
+        
+        // Send setup configuration
+        this.sendGeminiSessionConfig(modelName);
+        resolve();
+      };
+
+      this.realtimeWebSocket.onmessage = (event) => {
+        this.handleGeminiRealtimeMessage(event);
+      };
+
+      this.realtimeWebSocket.onerror = (error) => {
+        console.error("Gemini WebSocket error:", error);
+        reject(new Error(getMessage("realtime_error_websocket")));
+      };
+
+      this.realtimeWebSocket.onclose = (event) => {
+        console.log("Gemini WebSocket closed:", event.code, event.reason);
+        if (this.isRealtimeActive) {
+          this.stopRealtimeTranscription();
+        }
+      };
+
+      // Timeout for connection
+      setTimeout(() => {
+        if (this.realtimeWebSocket.readyState !== WebSocket.OPEN) {
+          reject(new Error(getMessage("realtime_error_connection")));
+        }
+      }, 10000);
+    });
+  }
+
+  /**
+   * Sends session configuration to the Gemini Live API.
+   * 
+   * @private
+   * @param {string} modelName - The Gemini model to use
+   */
+  sendGeminiSessionConfig(modelName) {
+    // Gemini Live API requires specific model names
+    // Use gemini-2.0-flash-exp for live audio (experimental feature)
+    const liveModelName = "gemini-2.0-flash-exp";
+    
+    // Setup message for Gemini Live API
+    // Reference: https://ai.google.dev/api/multimodal-live
+    const setupMessage = {
+      setup: {
+        model: `models/${liveModelName}`,
+        generation_config: {
+          response_modalities: ["TEXT"]
+        },
+        system_instruction: {
+          parts: [{
+            text: this.settings.language === "id" 
+              ? `Anda adalah asisten transkripsi. Tugas Anda adalah mentranskripsi audio dengan akurat ke dalam Bahasa Indonesia. 
+                 Transkripsikan persis seperti yang diucapkan tanpa meringkas atau menambahkan apapun.
+                 Hanya berikan teks transkripsi, tanpa penjelasan atau komentar tambahan.`
+              : `You are a transcription assistant. Your task is to accurately transcribe audio.
+                 Transcribe exactly as spoken without summarizing or adding anything.
+                 Only provide the transcription text, no additional explanations or comments.`
+          }]
+        },
+        // Enable input audio transcription - this enables ASR on the input
+        input_audio_transcription: {}
+      }
+    };
+
+    console.log("Sending Gemini Live setup:", JSON.stringify(setupMessage));
+    this.realtimeWebSocket.send(JSON.stringify(setupMessage));
+    this.geminiSetupComplete = false;
+  }
+
+  /**
+   * Starts audio processing for Gemini Live API.
+   * Uses ScriptProcessor to capture and send audio data.
+   * 
+   * @async
+   * @private
+   */
+  async startGeminiRealtimeAudioProcessing() {
+    const source = this.realtimeAudioContext.createMediaStreamSource(this.realtimeMediaStream);
+    
+    // Create script processor for audio data extraction
+    // Using 4096 buffer size for good balance between latency and performance
+    this.realtimeProcessor = this.realtimeAudioContext.createScriptProcessor(4096, 1, 1);
+    
+    this.realtimeProcessor.onaudioprocess = (event) => {
+      if (!this.isRealtimeActive || !this.realtimeWebSocket || this.realtimeWebSocket.readyState !== WebSocket.OPEN) {
+        return;
+      }
+
+      // Don't send audio until setup is complete
+      if (!this.geminiSetupComplete) {
+        return;
+      }
+
+      const inputData = event.inputBuffer.getChannelData(0);
+      
+      // Convert Float32 to Int16 PCM
+      const pcm16Data = this.float32ToPCM16(inputData);
+      
+      // Encode to base64
+      const base64Audio = this.arrayBufferToBase64(pcm16Data.buffer);
+      
+      // Send audio data in Gemini format
+      const audioMessage = {
+        realtime_input: {
+          media_chunks: [{
+            mime_type: "audio/pcm;rate=16000",
+            data: base64Audio
+          }]
+        }
+      };
+      
+      this.realtimeWebSocket.send(JSON.stringify(audioMessage));
+    };
+
+    source.connect(this.realtimeProcessor);
+    this.realtimeProcessor.connect(this.realtimeAudioContext.destination);
+  }
+
+  /**
+   * Handles incoming WebSocket messages from the Gemini Live API.
+   * 
+   * @private
+   * @param {MessageEvent} event - The WebSocket message event
+   */
+  handleGeminiRealtimeMessage(event) {
+    try {
+      const message = JSON.parse(event.data);
+      
+      // Log all messages for debugging
+      console.log("Gemini Live message received:", message);
+      
+      // Handle setup completion
+      if (message.setupComplete) {
+        console.log("Gemini Live session setup complete");
+        this.geminiSetupComplete = true;
+        return;
+      }
+
+      // Handle server content (transcription results)
+      if (message.serverContent) {
+        const content = message.serverContent;
+        
+        // Handle input transcription (ASR result from user's speech)
+        // This is the primary way to get transcription in Gemini Live API
+        if (content.inputTranscription) {
+          const transcription = content.inputTranscription;
+          console.log("Input transcription received:", transcription);
+          if (transcription.text) {
+            // inputTranscription provides the transcribed text directly
+            this.addFinalTranscript(transcription.text);
+          }
+        }
+        
+        // Check if this is a model turn with text (model's response to audio)
+        if (content.modelTurn && content.modelTurn.parts) {
+          for (const part of content.modelTurn.parts) {
+            if (part.text) {
+              console.log("Model turn text:", part.text);
+              // This is the model's interpretation/response
+              if (content.turnComplete) {
+                this.addFinalTranscript(part.text);
+              } else {
+                this.updatePartialTranscript(part.text);
+              }
+            }
+          }
+        }
+
+        // Handle turn completion
+        if (content.turnComplete) {
+          console.log("Turn complete");
+          // Remove any partial message when turn is complete
+          const partialMessage = this.elements.liveTranscriptChat.querySelector(".md-live-transcript__message--partial");
+          if (partialMessage) {
+            partialMessage.remove();
+          }
+        }
+
+        // Handle output transcription (model's spoken response, if any)
+        if (content.outputTranscription && content.outputTranscription.text) {
+          console.log("Gemini output transcription:", content.outputTranscription.text);
+        }
+      }
+
+      // Handle tool calls (not used for transcription but good to log)
+      if (message.toolCall) {
+        console.log("Gemini tool call:", message.toolCall);
+      }
+
+      // Handle errors
+      if (message.error) {
+        console.error("Gemini Live API error:", message.error);
+        this.handleRealtimeError(new Error(message.error.message || "Gemini API error"));
+      }
+
+    } catch (error) {
+      console.error("Error parsing Gemini realtime message:", error);
+    }
+  }
+
   /**
    * Handles incoming WebSocket messages from the Realtime API.
    * 
@@ -2371,10 +2876,14 @@ class MedicalAudioRecorder {
    * Updates the partial (in-progress) transcript in the chat.
    * 
    * @private
-   * @param {string} delta - The incremental text to append
+   * @param {string} text - The text to display (delta for OpenAI, full text for Gemini)
+   * @param {boolean} isFullText - If true, replace text instead of appending (for Gemini)
    */
-  updatePartialTranscript(delta) {
-    if (!delta) return;
+  updatePartialTranscript(text, isFullText = false) {
+    if (!text) return;
+
+    // For Gemini, check if we're in Gemini mode
+    const isGemini = this.realtimeProvider === "gemini";
 
     let partialMessage = this.elements.liveTranscriptChat.querySelector(".md-live-transcript__message--partial");
     
@@ -2384,7 +2893,12 @@ class MedicalAudioRecorder {
       this.elements.liveTranscriptChat.appendChild(partialMessage);
     }
     
-    partialMessage.textContent += delta;
+    // Gemini sends full text, OpenAI sends deltas
+    if (isGemini || isFullText) {
+      partialMessage.textContent = text;
+    } else {
+      partialMessage.textContent += text;
+    }
     
     // Auto-scroll to bottom
     this.elements.liveTranscriptChat.scrollTop = this.elements.liveTranscriptChat.scrollHeight;
@@ -2456,6 +2970,10 @@ class MedicalAudioRecorder {
       }
       this.realtimeWebSocket = null;
     }
+
+    // Reset provider state
+    this.realtimeProvider = null;
+    this.geminiSetupComplete = false;
 
     // Update UI
     this.updateRealtimeUIForRecording(false);
