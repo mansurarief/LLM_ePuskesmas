@@ -1,19 +1,18 @@
 {
   "app_name": {
-    "message": "Perekam Audio Medis"
+    "message": "Pencatatan Medis untuk ePuskesmas"
   },
   "app_description": {
-    "message": "Transkripsi dan ringkasan bertenaga AI untuk profesional kesehatan"
+    "message": "Perekaman audio medis tingkat lanjut, transkripsi, dan ringkasan bertenaga AI untuk profesional kesehatan"
   },
   "epuskesmas_integration": {
     "message": "Integrasi ePuskesmas"
   },
-
   "options_title": {
     "message": "Pengaturan Catatan Medis"
   },
   "api_configuration": {
-    "message": "🔑 Konfigurasi API"
+    "message": "Konfigurasi API"
   },
   "openai_api_key": {
     "message": "Kunci API OpenAI:"
@@ -28,13 +27,16 @@
     "message": "Platform OpenAI"
   },
   "gemini_api_description": {
-    "message": "Diperlukan untuk transkripsi dan ringkasan Gemini. Dapatkan kunci Anda dari"
+    "message": "Diperlukan untuk transkripsi dan ringkasan Google Gemini. Dapatkan kunci Anda dari"
   },
   "gemini_studio_link": {
     "message": "Google AI Studio"
   },
+  "realtime_openai_only_notice": {
+    "message": "Transkripsi realtime tersedia dengan penyedia OpenAI dan Google Gemini."
+  },
   "transcription_settings": {
-    "message": "🎯 Pengaturan Transkripsi"
+    "message": "Pengaturan Transkripsi"
   },
   "transcription_provider": {
     "message": "Penyedia Transkripsi:"
@@ -55,7 +57,7 @@
     "message": "Google Speech-to-Text (Bahasa Indonesia)"
   },
   "summarization_settings": {
-    "message": "🤖 Pengaturan Ringkasan"
+    "message": "Pengaturan Ringkasan"
   },
   "summarization_provider": {
     "message": "Penyedia Ringkasan:"
@@ -85,7 +87,7 @@
     "message": "Gemini 2.0 Flash Lite"
   },
   "language_settings": {
-    "message": "🌐 Pengaturan Bahasa"
+    "message": "Pengaturan Bahasa"
   },
   "primary_language": {
     "message": "Bahasa Utama:"
@@ -94,7 +96,7 @@
     "message": "Bahasa Indonesia"
   },
   "advanced_settings": {
-    "message": "🔧 Pengaturan Lanjutan"
+    "message": "Pengaturan Lanjutan"
   },
   "enable_retry": {
     "message": "Aktifkan percobaan ulang otomatis saat kegagalan API"
@@ -108,7 +110,6 @@
   "test_connection": {
     "message": "Uji Koneksi API"
   },
-
   "ready_to_record": {
     "message": "Siap untuk mulai merekam"
   },
@@ -142,7 +143,81 @@
   "error_summarization": {
     "message": "Ringkasan gagal"
   },
-
+  "inserting_summary": {
+    "message": "Memasukkan ringkasan..."
+  },
+  "complete": {
+    "message": "Selesai!"
+  },
+  "retrying_transcription": {
+    "message": "Mencoba ulang transkripsi..."
+  },
+  "error_loading": {
+    "message": "Gagal memuat pengaturan"
+  },
+  "error_saving": {
+    "message": "Gagal menyimpan pengaturan"
+  },
+  "error_connection": {
+    "message": "Uji koneksi gagal"
+  },
+  "error_no_tab": {
+    "message": "Tidak ada tab aktif ditemukan"
+  },
+  "error_permissions": {
+    "message": "Gagal memeriksa izin"
+  },
+  "error_failed_insert": {
+    "message": "Gagal memasukkan ringkasan"
+  },
+  "api_key_not_provided": {
+    "message": "Kunci API tidak disediakan"
+  },
+  "connection_successful": {
+    "message": "Koneksi berhasil!"
+  },
+  "connection_failed": {
+    "message": "Koneksi gagal"
+  },
+  "connection_failed_check_key": {
+    "message": "Koneksi gagal. Silakan periksa kunci API Anda."
+  },
+  "invalid_gemini_key_format": {
+    "message": "Format kunci API tidak valid. Kunci API Gemini harus dimulai dengan 'AIza'"
+  },
+  "gemini_key_valid_format": {
+    "message": "Format kunci API valid (uji koneksi menunggu implementasi)"
+  },
+  "openai_key_configured": {
+    "message": "Kunci API OpenAI terkonfigurasi"
+  },
+  "openai_key_missing": {
+    "message": "Kunci API OpenAI hilang"
+  },
+  "gemini_key_configured": {
+    "message": "Kunci API Gemini terkonfigurasi"
+  },
+  "gemini_key_missing": {
+    "message": "Kunci API Gemini hilang"
+  },
+  "error_testing_api_key": {
+    "message": "Error saat menguji kunci API"
+  },
+  "openai_key_not_configured": {
+    "message": "Kunci API OpenAI tidak terkonfigurasi. Silakan buka Pengaturan dan tambahkan kunci API Anda."
+  },
+  "gemini_key_not_configured": {
+    "message": "Kunci API Gemini tidak terkonfigurasi. Silakan buka Pengaturan dan tambahkan kunci API Anda."
+  },
+  "gemini_not_implemented": {
+    "message": "Transkripsi Gemini belum diimplementasikan. Silakan gunakan OpenAI untuk saat ini."
+  },
+  "openai_api_error": {
+    "message": "Error API OpenAI"
+  },
+  "gemini_summarization_not_implemented": {
+    "message": "Ringkasan Gemini belum diimplementasikan. Silakan gunakan OpenAI untuk saat ini."
+  },
   "step_record": {
     "message": "1. Rekam"
   },
@@ -155,77 +230,72 @@
   "step_summarize": {
     "message": "4. Ringkas"
   },
-
   "start_recording": {
-    "message": "🎙️ Mulai Merekam"
+    "message": "Mulai Merekam"
   },
   "stop_recording": {
-    "message": "⏹️ Berhenti"
+    "message": "Berhenti"
   },
   "play_recording": {
-    "message": "▶️ Putar"
+    "message": "Putar"
+  },
+  "pause_recording": {
+    "message": "Jeda"
   },
   "transcribe_audio": {
-    "message": "🎯 Transkripsi"
+    "message": "Transkripsi"
   },
   "clear_recording": {
-    "message": "🗑️ Hapus"
+    "message": "Hapus"
   },
   "upload_audio": {
-    "message": "📁 Unggah Audio"
+    "message": "Unggah Audio"
   },
   "grant_mic_access": {
-    "message": "🎤 Berikan Akses Mikrofon"
+    "message": "Berikan Akses Mikrofon"
   },
-
   "volume_label": {
     "message": "Volume:"
   },
-
   "edit_transcript": {
-    "message": "📝 Edit Transkrip"
+    "message": "Edit Transkrip"
   },
   "edit_transcript_desc": {
     "message": "Edit transkrip sebelum merangkum"
   },
   "copy_transcript": {
-    "message": "📋 Salin"
+    "message": "Salin"
   },
   "clear_transcript": {
-    "message": "🗑️ Hapus"
+    "message": "Hapus"
   },
   "summarize_transcript": {
-    "message": "🤖 Ringkas"
+    "message": "Ringkas"
   },
-
   "transcription_time": {
-    "message": "⏱️ Transkripsi:"
+    "message": "Transkripsi:"
   },
   "summarization_time": {
-    "message": "⏱️ Ringkasan:"
+    "message": "Ringkasan:"
   },
-
   "settings_config": {
-    "message": "⚙️ Pengaturan & Konfigurasi API"
+    "message": "Pengaturan & Konfigurasi API"
   },
   "refresh_settings": {
-    "message": "🔄 Segarkan Pengaturan"
+    "message": "Segarkan Pengaturan"
   },
   "test_api_key": {
-    "message": "🔍 Uji Kunci API"
+    "message": "Uji Kunci API"
   },
-
   "transcript_placeholder": {
     "message": "Transkrip akan muncul di sini setelah transkripsi..."
   },
-
   "welcome_title": {
-    "message": "Selamat Datang di Perekam Audio Medis"
+    "message": "Selamat Datang di Pencatatan Medis"
   },
   "welcome_subtitle": {
     "message": "Transkripsi dan ringkasan bertenaga AI untuk profesional kesehatan"
   },
-
   "feature_recording": {
     "message": "Perekaman Berkualitas Tinggi"
   },
@@ -250,9 +320,8 @@
   "feature_integration_desc": {
     "message": "Integrasi mulus dengan sistem manajemen kesehatan"
   },
-
   "permission_required": {
-    "message": "🔒 Izin Mikrofon Diperlukan"
+    "message": "Izin Mikrofon Diperlukan"
   },
   "permission_description": {
     "message": "Untuk merekam konsultasi audio, kami memerlukan akses ke mikrofon Anda. Audio Anda diproses dengan aman dan tidak pernah disimpan secara permanen tanpa persetujuan Anda."
@@ -267,29 +336,28 @@
     "message": "Meminta Akses..."
   },
   "access_granted": {
-    "message": "✓ Akses Diberikan"
+    "message": "Akses Diberikan"
   },
   "testing_microphone": {
     "message": "Menguji mikrofon..."
   },
   "microphone_access_granted": {
-    "message": "✅ Akses mikrofon berhasil diberikan!"
+    "message": "Akses mikrofon berhasil diberikan!"
   },
   "microphone_already_granted": {
     "message": "Akses mikrofon sudah diberikan!"
   },
-
   "setup_complete": {
-    "message": "🎉 Setup Selesai!"
+    "message": "Setup Selesai!"
   },
   "setup_complete_desc": {
-    "message": "Perekam Audio Medis Anda siap digunakan. Berikut yang harus dilakukan selanjutnya:"
+    "message": "Alat Pencatatan Medis Anda siap digunakan. Berikut yang harus dilakukan selanjutnya:"
   },
   "step_configure_api": {
     "message": "Konfigurasi kunci API OpenAI Anda di halaman pengaturan"
   },
   "step_choose_language": {
-    "message": "Pilih bahasa dan template medis yang Anda inginkan"
+    "message": "Pilih bahasa yang Anda inginkan"
   },
   "step_start_recording": {
     "message": "Mulai merekam konsultasi medis dari halaman ePuskesmas mana pun"
@@ -298,13 +366,11 @@
     "message": "Tinjau dan edit ringkasan yang dihasilkan AI sebelum menyimpan"
   },
   "step_api_configured": {
-    "message": "✓ Kunci API OpenAI dikonfigurasi"
+    "message": "Kunci API OpenAI dikonfigurasi"
   },
-
   "privacy_notice": {
     "message": "Privasi: Semua rekaman diproses dengan aman. Konfigurasikan retensi data di pengaturan."
   },
-
   "success_message": {
     "message": "Berhasil!"
   },
@@ -314,7 +380,6 @@
   "info_message": {
     "message": "Info"
   },
-
   "settings_saved": {
     "message": "Pengaturan berhasil disimpan!"
   },
@@ -339,7 +404,6 @@
   "content_script_unavailable": {
     "message": "Content script tidak tersedia. Silakan segarkan halaman dan coba lagi."
   },
-
   "permission_denied": {
     "message": "Izin ditolak. Silakan izinkan akses mikrofon di pengaturan browser Anda."
   },
@@ -349,7 +413,6 @@
   "microphone_in_use": {
     "message": "Mikrofon sedang digunakan oleh aplikasi lain."
   },
-
   "api_key_missing": {
     "message": "Kunci API tidak dikonfigurasi. Silakan buka Pengaturan dan tambahkan kunci API Anda."
   },
@@ -368,11 +431,82 @@
   "file_too_large": {
     "message": "Ukuran file terlalu besar. Silakan pilih file yang lebih kecil dari 25MB"
   },
-
   "download_mp3": {
     "message": "Unduh MP3"
   },
   "no_audio_download": {
     "message": "Tidak ada audio yang tersedia untuk diunduh"
+  },
+  "copy": {
+    "message": "Salin"
+  },
+  "transcription_label": {
+    "message": "Transkripsi"
+  },
+  "summary_label": {
+    "message": "Ringkasan"
+  },
+  "enable_realtime_transcription": {
+    "message": "Aktifkan Mode Transkripsi Realtime"
+  },
+  "realtime_transcription_desc": {
+    "message": "Gunakan API Realtime OpenAI untuk transkripsi bicara-ke-teks secara langsung"
+  },
+  "enable_vad": {
+    "message": "Aktifkan Deteksi Aktivitas Suara (VAD)"
+  },
+  "vad_desc": {
+    "message": "Secara otomatis mendeteksi saat Anda berhenti berbicara untuk menyegmentasi transkripsi"
+  },
+  "start_realtime": {
+    "message": "Mulai Transkripsi Realtime"
+  },
+  "stop_realtime": {
+    "message": "Hentikan Transkripsi"
+  },
+  "realtime_step_transcribe": {
+    "message": "1. Transkripsi Langsung"
+  },
+  "realtime_step_edit": {
+    "message": "2. Edit"
+  },
+  "realtime_step_summarize": {
+    "message": "3. Ringkas"
+  },
+  "realtime_connecting": {
+    "message": "Menghubungkan ke layanan realtime..."
+  },
+  "realtime_connected": {
+    "message": "Terhubung - Mendengarkan..."
+  },
+  "realtime_disconnected": {
+    "message": "Terputus dari layanan realtime"
+  },
+  "realtime_session_limit": {
+    "message": "Batas sesi: maksimum 30 menit"
+  },
+  "realtime_error_connection": {
+    "message": "Gagal terhubung ke layanan transkripsi realtime"
+  },
+  "realtime_error_websocket": {
+    "message": "Kesalahan koneksi WebSocket"
+  },
+  "realtime_session_ended": {
+    "message": "Sesi realtime berakhir"
+  },
+  "realtime_transcription_empty": {
+    "message": "Tidak ada transkripsi yang ditangkap. Silakan coba berbicara lagi."
+  },
+  "realtime_mode_active": {
+    "message": "Mode Realtime Aktif"
+  },
+  "realtime_ready": {
+    "message": "Siap untuk transkripsi realtime"
+  },
+  "edit_realtime_transcript": {
+    "message": "Edit Transkrip Langsung"
+  },
+  "edit_realtime_transcript_desc": {
+    "message": "Tinjau dan edit transkripsi langsung sebelum merangkum"
   }
 }

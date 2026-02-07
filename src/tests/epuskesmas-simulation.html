@@ -1,332 +1,250 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex, follow">
     <title>e-Puskesmas - Anamnesa - Buat Baru (Simulation)</title>
-    
+
     <!-- Bootstrap core CSS -->
     <link href="https://bangkabarat.epuskesmas.id/lib/bootstrap/css/bootstrap.min.css" type="text/css" rel="stylesheet">
     <!-- Font Awesome -->
     <link href="https://bangkabarat.epuskesmas.id/lib/font-awesome/css/font-awesome.min.css" type="text/css" rel="stylesheet">
-    <!-- Custom CSS -->
+    <!-- Custom CSS (Original) -->
     <link href="https://bangkabarat.epuskesmas.id/css/custom.min.css?v=1" type="text/css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="https://bangkabarat.epuskesmas.id/css/epusv3-style.css?v=3.6">
-    
+
+    <!-- Material Design -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Symbols+Rounded">
+    <link rel="stylesheet" href="../extension/styles/material-tokens.css">
+    <link rel="stylesheet" href="../extension/styles/material-components.css">
+
     <style type="text/css">
+        /* Keep original helper classes */
         .hidden {
             display: none !important;
         }
-        
-        .form-horizontal .control-label {
-            padding-top: 7px;
-            margin-bottom: 0;
-            text-align: left;
+
+        /* Material Layout Overrides */
+        body {
+            background-color: var(--md-sys-color-background, #f5f5f5);
+            font-family: 'Roboto', sans-serif; /* Prefer Roboto for the main page */
         }
         
-        .form-control.input-sm {
-            height: 80px !important;
-            padding: 10px;
-            font-size: 12px;
-            line-height: 1.5;
-            border-radius: 3px;
-            width: 100%;
-            box-sizing: border-box;
+        .md-options-layout {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 24px;
         }
-        
-        textarea.form-control.input-sm {
-            height: 80px !important;
-            min-height: 80px !important;
-            max-height: 80px !important;
-            resize: none;
+
+        .md-card {
+            background-color: var(--md-sys-color-surface, #ffffff);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+            margin-bottom: 24px;
         }
-        
-        /* Override any Bootstrap or other CSS that might affect height */
-        .form-group textarea.form-control.input-sm {
-            height: 80px !important;
-            min-height: 80px !important;
-            max-height: 80px !important;
+
+        .md-headline-medium {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--md-sys-color-primary);
+            margin-top: 0;
+            margin-bottom: 8px;
         }
-        
-        .has-success .form-control {
-            border-color: #3c763d;
-            -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
-            box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+
+        .info-box {
+            background-color: var(--md-sys-color-surface-variant, #e1e1e1);
+            color: var(--md-sys-color-on-surface-variant, #444);
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            border-left: 4px solid var(--md-sys-color-primary, #6200ee);
         }
-        
-        .has-error .form-control {
-            border-color: #a94442;
-            -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
-            box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
-        }
-        
+
+        /* Adjust Bootstrap Panel to fit nicely */
         .panel {
-            margin-bottom: 20px;
-            background-color: #fff;
+            box-shadow: none; /* Let Material card handle shadow or keep flat */
             border: 1px solid #ddd;
-            border-radius: 4px;
-            -webkit-box-shadow: 0 1px 1px rgba(0,0,0,.05);
-            box-shadow: 0 1px 1px rgba(0,0,0,.05);
         }
         
-        .panel-heading {
-            padding: 10px 15px;
-            border-bottom: 1px solid #ddd;
-            border-top-left-radius: 3px;
-            border-top-right-radius: 3px;
-            background-color: #f5f5f5;
-        }
-        
-        .panel-body {
-            padding: 15px;
-        }
-        
-        .btn {
-            display: inline-block;
-            padding: 6px 12px;
-            margin-bottom: 0;
-            font-size: 14px;
-            font-weight: 400;
-            line-height: 1.42857143;
-            text-align: center;
-            white-space: nowrap;
-            vertical-align: middle;
-            -ms-touch-action: manipulation;
-            touch-action: manipulation;
-            cursor: pointer;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-            background-image: none;
-            border: 1px solid transparent;
-            border-radius: 4px;
-        }
-        
-        .btn-primary {
-            color: #fff;
-            background-color: #337ab7;
-            border-color: #2e6da4;
-        }
-        
-        .btn-success {
-            color: #fff;
-            background-color: #5cb85c;
-            border-color: #4cae4c;
-        }
-        
-        .btn-warning {
-            color: #fff;
-            background-color: #f0ad4e;
-            border-color: #eea236;
-        }
-        
-        .btn-danger {
-            color: #fff;
-            background-color: #d9534f;
-            border-color: #d43f3a;
-        }
-        
-        .btn-sm {
-            padding: 5px 10px;
-            font-size: 12px;
-            line-height: 1.5;
-            border-radius: 3px;
-        }
-        
-        .container-fluid {
-            padding-right: 15px;
-            padding-left: 15px;
-            margin-right: auto;
-            margin-left: auto;
-        }
-        
-        .row {
-            margin-right: -15px;
-            margin-left: -15px;
-        }
-        
-        .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-9 {
-            position: relative;
-            min-height: 1px;
-            padding-right: 15px;
-            padding-left: 15px;
-        }
-        
-        .col-sm-2 {
-            width: 16.66666667%;
-        }
-        
-        .col-sm-3 {
-            width: 25%;
-        }
-        
-        .col-sm-4 {
-            width: 33.33333333%;
-        }
-        
-        .col-sm-9 {
-            width: 75%;
-        }
-        
-        .form-group {
-            margin-bottom: 15px;
-        }
-        
-        .control-label {
-            font-weight: bold;
-        }
-        
-        /* Simulation specific styles */
-        .simulation-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        
-        .simulation-info {
-            background: #e3f2fd;
-            border: 1px solid #2196f3;
-            border-radius: 5px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-        
+        /* Ensure inputs inside panel allow Bootstrap styles but maybe minimal tweaks if needed?
+           We leave them strictly alone as requested for the clone look. 
+        */
+
+        /* Test Buttons Section */
         .test-buttons {
-            margin-top: 20px;
-            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: flex-start;
         }
         
-        .test-buttons .btn {
-            margin: 5px;
+        .md-button {
+            /* Fix alignment with material symbols */
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
     </style>
 </head>
 
 <body>
-    <div class="simulation-header">
-        <h1>🏥 e-Puskesmas Form Simulation</h1>
-        <p>Testing JSON parsing for Medical Audio Recorder Extension</p>
+    <div class="md-options-layout">
+        <header class="md-options-header">
+            <h1 class="md-headline-medium">
+                <span class="material-symbols-rounded">medical_services</span>
+                e-Puskesmas Form Simulation
+            </h1>
+            <p style="color: var(--md-sys-color-on-surface-variant);">Testing JSON parsing for Medical Audio Recorder Extension</p>
+        </header>
+
+        <section class="md-card">
+            <div class="info-box">
+                <strong>Testing Instructions:</strong><br>
+                1. Open the Medical Audio Recorder extension<br>
+                2. Record or upload audio<br>
+                3. Transcribe and summarize<br>
+                4. The AI summary should automatically populate the fields below<br>
+                5. Use the test buttons to simulate different scenarios
+            </div>
+
+            <!-- The cloned form starts here -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <span class="panel-title">Buat Baru Anamnesa</span>
+                </div>
+                <div class="panel-body">
+                    <form form-ajax id="form_create" method="POST" action="#" class="form-horizontal">
+                        <div class="form-group">
+                            <label style="padding-left: 15px;"><b>Anamnesa</b></label>
+                        </div>
+
+                        <!-- Hidden fields to match real form structure -->
+                        <input type="text" class="hidden form-control input-sm" readonly name="Anamnesa[pelayanan_id]"
+                            value="35489">
+                        <input type="text" class="hidden form-control input-sm" readonly name="Anamnesa[dokter_id]" value=""
+                            required>
+                        <input type="text" class="hidden form-control input-sm" readonly name="Anamnesa[perawat_id]"
+                            value="">
+
+                        <!-- Keluhan Utama -->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Keluhan Utama <span style="color:red;">*</span></label>
+                            <div class="col-sm-10">
+                                <textarea class="form-control input-sm" id="keluhan" name="Anamnesa[keluhan_utama]"
+                                    placeholder="🔍 Keluhan Utama *pisahkan dengan tanda koma ','" required></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Keluhan Tambahan / Anamnesa -->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Keluhan Tambahan / Anamnesa <span
+                                    style="color:red;"></span></label>
+                            <div class="col-sm-10">
+                                <textarea class="form-control input-sm" id="keluhan-tambahan"
+                                    name="Anamnesa[keluhan_tambahan]"
+                                    placeholder="🔍 Keluhan Tambahan *pisahkan dengan tanda koma ','"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- RPS -->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">RPS <span style="color:red;"></span></label>
+                            <div class="col-sm-10">
+                                <input id="id_rps" class="hidden" name="MRiwayatPasien[Riwayat Penyakit Sekarang][id]"
+                                    value="">
+                                <textarea id="text_rps" class="form-control input-sm"
+                                    name="MRiwayatPasien[Riwayat Penyakit Sekarang][value]" maxlength="256"
+                                    placeholder="Riwayat Penyakit Sekarang"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- RPD -->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">RPD <span style="color:red;"></span></label>
+                            <div class="col-sm-10">
+                                <input id="id_rpd" class="hidden" name="MRiwayatPasien[Riwayat Penyakit Dulu][id]" value="">
+                                <textarea id="text_rpd" class="form-control input-sm"
+                                    name="MRiwayatPasien[Riwayat Penyakit Dulu][value]" maxlength="256"
+                                    placeholder="Riwayat Penyakit Dulu"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- RPK -->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">RPK <span style="color:red;"></span></label>
+                            <div class="col-sm-10">
+                                <input id="id_rpk" class="hidden" name="MRiwayatPasien[Riwayat Penyakit Keluarga][id]"
+                                    value="">
+                                <textarea id="text_rpk" class="form-control input-sm"
+                                    name="MRiwayatPasien[Riwayat Penyakit Keluarga][value]" maxlength="256"
+                                    placeholder="Riwayat Penyakit Keluarga"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Terapi Obat yang dianjurkan -->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Terapi Obat yang dianjurkan<span
+                                    style="color:red;"></span></label>
+                            <div class="col-sm-10">
+                                <textarea id="text_terapi" class="form-control input-sm" name="Anamnesa[terapi]"
+                                    maxlength="256" placeholder="Terapi Obat"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Terapi Non Obat yang dianjurkan -->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Terapi Non Obat yang dianjurkan<span
+                                    style="color:red;"></span></label>
+                            <div class="col-sm-10">
+                                <textarea id="text_terapi_non_obat" class="form-control input-sm"
+                                    name="Anamnesa[terapi_non_obat]" maxlength="256"
+                                    placeholder="Terapi Non Obat"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Edukasi -->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Edukasi <span style="color:red;">*</span></label>
+                            <div class="col-sm-10">
+                                <textarea id="text_edukasi" class="form-control input-sm" name="Anamnesa[edukasi]"
+                                    placeholder="Edukasi" required></textarea>
+                            </div>
+                        </div>
+
+                        <div class="test-buttons">
+                            <button type="button" class="md-button md-button--filled" onclick="testPopulateWithSampleData()">
+                                <span class="material-symbols-rounded">science</span> Test with Sample Data
+                            </button>
+                            <button type="button" class="md-button md-button--outlined" onclick="clearAllFields()">
+                                <span class="material-symbols-rounded">delete</span> Clear All Fields
+                            </button>
+                            <button type="button" class="md-button md-button--text" onclick="showFieldMapping()">
+                                <span class="material-symbols-rounded">list</span> Show Field Mapping
+                            </button>
+                            <button type="button" class="md-button md-button--filled" onclick="testJSONParsing()">
+                                <span class="material-symbols-rounded">data_check</span> Test JSON Parsing
+                            </button>
+                            <button type="button" class="md-button md-button--filled" onclick="testContentScriptParsing()">
+                                <span class="material-symbols-rounded">javascript</span> Test Content Script Parsing
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <!-- End cloned form -->
+        </section>
     </div>
 
-    <div class="container-fluid">
-        <div class="simulation-info">
-            <strong>Testing Instructions:</strong><br>
-            1. Open the Medical Audio Recorder extension<br>
-            2. Record or upload audio<br>
-            3. Transcribe and summarize<br>
-            4. The AI summary should automatically populate the fields below<br>
-            5. Use the test buttons to simulate different scenarios
-        </div>
-
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <span class="panel-title">Buat Baru Anamnesa</span>
-            </div>
-            <div class="panel-body">
-                <form form-ajax id="form_create" method="POST" action="#" class="form-horizontal">
-                    <div class="form-group">
-                        <label style="padding-left: 15px;"><b>Anamnesa</b></label>
-                    </div>
-
-                    <!-- Hidden fields to match real form structure -->
-                    <input type="text" class="hidden form-control input-sm" readonly name="Anamnesa[pelayanan_id]" value="35489">
-                    <input type="text" class="hidden form-control input-sm" readonly name="Anamnesa[dokter_id]" value="" required>
-                    <input type="text" class="hidden form-control input-sm" readonly name="Anamnesa[perawat_id]" value="">
-
-                    <!-- Keluhan Utama -->
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">Keluhan Utama <span style="color:red;">*</span></label>
-                        <div class="col-sm-10">
-                            <textarea class="form-control input-sm" id="keluhan" name="Anamnesa[keluhan_utama]" placeholder="🔍 Keluhan Utama *pisahkan dengan tanda koma ','" required></textarea>
-                        </div>
-                    </div>
-
-                    <!-- Keluhan Tambahan / Anamnesa -->
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">Keluhan Tambahan / Anamnesa <span style="color:red;"></span></label>
-                        <div class="col-sm-10">
-                            <textarea class="form-control input-sm" id="keluhan-tambahan" name="Anamnesa[keluhan_tambahan]" placeholder="🔍 Keluhan Tambahan *pisahkan dengan tanda koma ','"></textarea>
-                        </div>
-                    </div>
-
-                    <!-- RPS -->
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">RPS <span style="color:red;"></span></label>
-                        <div class="col-sm-10">
-                            <input id="id_rps" class="hidden" name="MRiwayatPasien[Riwayat Penyakit Sekarang][id]" value="">
-                            <textarea id="text_rps" class="form-control input-sm" name="MRiwayatPasien[Riwayat Penyakit Sekarang][value]" maxlength="256" placeholder="Riwayat Penyakit Sekarang"></textarea>
-                        </div>
-                    </div>
-
-                    <!-- RPD -->
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">RPD <span style="color:red;"></span></label>
-                        <div class="col-sm-10">
-                            <input id="id_rpd" class="hidden" name="MRiwayatPasien[Riwayat Penyakit Dulu][id]" value="">
-                            <textarea id="text_rpd" class="form-control input-sm" name="MRiwayatPasien[Riwayat Penyakit Dulu][value]" maxlength="256" placeholder="Riwayat Penyakit Dulu"></textarea>
-                        </div>
-                    </div>
-
-                    <!-- RPK -->
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">RPK <span style="color:red;"></span></label>
-                        <div class="col-sm-10">
-                            <input id="id_rpk" class="hidden" name="MRiwayatPasien[Riwayat Penyakit Keluarga][id]" value="">
-                            <textarea id="text_rpk" class="form-control input-sm" name="MRiwayatPasien[Riwayat Penyakit Keluarga][value]" maxlength="256" placeholder="Riwayat Penyakit Keluarga"></textarea>
-                        </div>
-                    </div>
-
-                    <!-- Terapi Obat yang dianjurkan -->
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">Terapi Obat yang dianjurkan<span style="color:red;"></span></label>
-                        <div class="col-sm-10">
-                            <textarea id="text_terapi" class="form-control input-sm" name="Anamnesa[terapi]" maxlength="256" placeholder="Terapi Obat"></textarea>
-                        </div>
-                    </div>
-
-                    <!-- Terapi Non Obat yang dianjurkan -->
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">Terapi Non Obat yang dianjurkan<span style="color:red;"></span></label>
-                        <div class="col-sm-10">
-                            <textarea id="text_terapi_non_obat" class="form-control input-sm" name="Anamnesa[terapi_non_obat]" maxlength="256" placeholder="Terapi Non Obat"></textarea>
-                        </div>
-                    </div>
-
-                    <!-- Edukasi -->
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">Edukasi <span style="color:red;">*</span></label>
-                        <div class="col-sm-10">
-                            <textarea id="text_edukasi" class="form-control input-sm" name="Anamnesa[edukasi]" placeholder="Edukasi" required></textarea>
-                        </div>
-                    </div>
-
-                    <div class="test-buttons">
-                        <button type="button" class="btn btn-success btn-sm" onclick="testPopulateWithSampleData()">
-                            🧪 Test with Sample Data
-                        </button>
-                        <button type="button" class="btn btn-warning btn-sm" onclick="clearAllFields()">
-                            🗑️ Clear All Fields
-                        </button>
-                        <button type="button" class="btn btn-info btn-sm" onclick="showFieldMapping()">
-                            📋 Show Field Mapping
-                        </button>
-                        <button type="button" class="btn btn-primary btn-sm" onclick="testJSONParsing()">
-                            🔍 Test JSON Parsing
-                        </button>
-                        <button type="button" class="btn btn-info btn-sm" onclick="testContentScriptParsing()">
-                            🔍 Test Content Script Parsing
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
+    <!-- Script remains unchanged -->
     <script>
         // Sample data that matches your JSON structure
         const sampleData = {
@@ -354,12 +272,12 @@
 
         function testPopulateWithSampleData() {
             console.log("Testing with sample data:", sampleData);
-            
+
             // Populate each field
             Object.keys(fieldMapping).forEach(jsonKey => {
                 const formFieldName = fieldMapping[jsonKey];
                 const value = sampleData[jsonKey];
-                
+
                 const element = document.querySelector(`[name="${formFieldName}"]`);
                 if (element) {
                     element.value = value;
@@ -370,7 +288,7 @@
                     console.log(`❌ Field not found: ${formFieldName}`);
                 }
             });
-            
+
             showMessage("Sample data populated successfully!", "success");
         }
 
@@ -382,7 +300,7 @@
                     element.parentElement.classList.remove('has-success', 'has-error');
                 }
             });
-            
+
             showMessage("All fields cleared!", "info");
         }
 
@@ -390,7 +308,7 @@
             const mappingText = Object.entries(fieldMapping)
                 .map(([jsonKey, formField]) => `${jsonKey} → ${formField}`)
                 .join('\n');
-            
+
             alert("Field Mapping:\n\n" + mappingText);
         }
 
@@ -398,16 +316,16 @@
             // Simulate the JSON parsing that your extension would do
             const testJSON = JSON.stringify(sampleData);
             console.log("Testing JSON parsing with:", testJSON);
-            
+
             try {
                 const parsedData = JSON.parse(testJSON);
                 console.log("✅ JSON parsed successfully:", parsedData);
-                
+
                 // Simulate the field population logic
                 Object.keys(fieldMapping).forEach(jsonKey => {
                     const formFieldName = fieldMapping[jsonKey];
                     const value = parsedData[jsonKey];
-                    
+
                     if (value) {
                         const element = document.querySelector(`[name="${formFieldName}"]`);
                         if (element) {
@@ -419,7 +337,7 @@
                         }
                     }
                 });
-                
+
                 showMessage("JSON parsing test completed successfully!", "success");
             } catch (error) {
                 console.error("❌ JSON parsing failed:", error);
@@ -431,13 +349,13 @@
         function testContentScriptParsing() {
             const testSummary = JSON.stringify(sampleData);
             console.log("Testing content script parsing with:", testSummary);
-            
+
             // Simulate what the content script would receive
             const mockSummary = `--- AI Medical Summary ---\n${testSummary}\n--- End Summary ---`;
-            
+
             // Try to parse it like the content script does
             let jsonString = mockSummary.trim();
-            
+
             if (mockSummary.includes('--- AI Medical Summary')) {
                 const startIndex = mockSummary.indexOf('{');
                 const endIndex = mockSummary.lastIndexOf('}');
@@ -446,7 +364,7 @@
                     console.log("Extracted JSON from wrapper:", jsonString);
                 }
             }
-            
+
             try {
                 const parsed = JSON.parse(jsonString);
                 console.log("✅ Content script parsing successful:", parsed);
@@ -471,8 +389,8 @@
                 z-index: 10000;
                 max-width: 300px;
             `;
-            
-            switch(type) {
+
+            switch (type) {
                 case 'success':
                     messageDiv.style.backgroundColor = '#28a745';
                     break;
@@ -485,10 +403,10 @@
                 default:
                     messageDiv.style.backgroundColor = '#6c757d';
             }
-            
+
             messageDiv.textContent = message;
             document.body.appendChild(messageDiv);
-            
+
             setTimeout(() => {
                 if (messageDiv.parentNode) {
                     messageDiv.parentNode.removeChild(messageDiv);
@@ -497,14 +415,14 @@
         }
 
         // Initialize the form
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             console.log("🏥 ePuskesmas Form Simulation Loaded");
             console.log("Field mapping:", fieldMapping);
             console.log("Sample data:", sampleData);
-            
+
             // Add some visual feedback for form interactions
             document.querySelectorAll('textarea, input').forEach(element => {
-                element.addEventListener('input', function() {
+                element.addEventListener('input', function () {
                     this.parentElement.classList.remove('has-error', 'has-success');
                     if (this.value.trim()) {
                         this.parentElement.classList.add('has-success');
@@ -514,4 +432,5 @@
         });
     </script>
 </body>
+
 </html>

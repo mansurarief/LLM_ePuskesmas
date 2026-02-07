@@ -1,95 +1,328 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>__MSG_options_title__</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/icon?family=Material+Symbols+Rounded"
+    />
+    <link rel="stylesheet" href="../styles/material-tokens.css" />
+    <link rel="stylesheet" href="../styles/material-components.css" />
+    <link rel="stylesheet" href="options.css" />
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>__MSG_options_title__</title>
-  <link rel="stylesheet" href="options.css" />
-</head>
+  <body>
+    <div class="md-options-layout">
+      <header class="md-options-header">
+        <div class="md-options-header__icon">
+          <span class="material-symbols-rounded">settings</span>
+        </div>
+        <div class="md-options-header__text">
+          <h1 class="md-headline-medium">__MSG_options_title__</h1>
+        </div>
+      </header>
 
-<body>
-  <div class="container">
-    <h1>__MSG_options_title__</h1>
+      <main class="md-options-content">
+        <!-- API Configuration Section -->
+        <section class="md-section md-card md-card--outlined">
+          <div class="md-section__header">
+            <div class="md-section__icon">
+              <span class="material-symbols-rounded">key</span>
+            </div>
+            <h2 class="md-title-large">__MSG_api_configuration__</h2>
+          </div>
 
-    <div class="section">
-      <h2>__MSG_api_configuration__</h2>
+          <div class="md-section__content">
+            <div class="md-text-field">
+              <label for="openaiApiKey" class="md-label-medium"
+                >__MSG_openai_api_key__</label
+              >
+              <div class="md-text-field__container">
+                <span
+                  class="material-symbols-rounded md-text-field__leading-icon"
+                  >vpn_key</span
+                >
+                <input
+                  type="password"
+                  id="openaiApiKey"
+                  class="md-text-field__input"
+                  placeholder="sk-..."
+                />
+                <button
+                  type="button"
+                  class="md-icon-button md-toggle-visibility"
+                  data-target="openaiApiKey"
+                >
+                  <span class="material-symbols-rounded">visibility</span>
+                </button>
+              </div>
+              <p class="md-text-field__supporting-text">
+                __MSG_openai_api_description__
+                <a
+                  href="https://platform.openai.com/api-keys"
+                  target="_blank"
+                  class="md-link"
+                  >__MSG_openai_platform_link__</a
+                >
+              </p>
+            </div>
 
-      <label for="openaiApiKey">__MSG_openai_api_key__</label>
-      <input type="password" id="openaiApiKey" placeholder="sk-..." />
-      <small>__MSG_openai_api_description__ <a href="https://platform.openai.com/api-keys" target="_blank">__MSG_openai_platform_link__</a>.</small>
+            <div class="md-text-field md-mt-4">
+              <label for="geminiApiKey" class="md-label-medium"
+                >__MSG_gemini_api_key__</label
+              >
+              <div class="md-text-field__container">
+                <span
+                  class="material-symbols-rounded md-text-field__leading-icon"
+                  >vpn_key</span
+                >
+                <input
+                  type="password"
+                  id="geminiApiKey"
+                  class="md-text-field__input"
+                  placeholder="AIza..."
+                />
+                <button
+                  type="button"
+                  class="md-icon-button md-toggle-visibility"
+                  data-target="geminiApiKey"
+                >
+                  <span class="material-symbols-rounded">visibility</span>
+                </button>
+              </div>
+              <p class="md-text-field__supporting-text">
+                __MSG_gemini_api_description__
+                <a
+                  href="https://aistudio.google.com/app/apikey"
+                  target="_blank"
+                  class="md-link"
+                  >__MSG_gemini_studio_link__</a
+                >
+              </p>
+            </div>
+          </div>
+        </section>
 
-      <label for="geminiApiKey" style="margin-top: 15px;">__MSG_gemini_api_key__</label>
-      <input type="password" id="geminiApiKey" placeholder="AIza..." />
-      <small>__MSG_gemini_api_description__ <a href="https://makersuite.google.com/app/apikey" target="_blank">__MSG_gemini_studio_link__</a>.</small>
+        <!-- Transcription Settings Section -->
+        <section class="md-section md-card md-card--outlined">
+          <div class="md-section__header">
+            <div class="md-section__icon">
+              <span class="material-symbols-rounded">transcribe</span>
+            </div>
+            <h2 class="md-title-large">__MSG_transcription_settings__</h2>
+          </div>
+
+          <div class="md-section__content">
+            <div class="md-select">
+              <label for="transcriptionProvider" class="md-label-medium"
+                >__MSG_transcription_provider__</label
+              >
+              <div class="md-select__container">
+                <select id="transcriptionProvider" class="md-select__input">
+                  <option value="openai" selected>OpenAI</option>
+                  <option value="gemini">Google</option>
+                </select>
+                <span class="material-symbols-rounded md-select__icon"
+                  >expand_more</span
+                >
+              </div>
+            </div>
+
+            <div class="md-select md-mt-4">
+              <label for="transcriptionModel" class="md-label-medium"
+                >__MSG_transcription_model__</label
+              >
+              <div class="md-select__container">
+                <select id="transcriptionModel" class="md-select__input">
+                  <option value="whisper-1" selected>__MSG_whisper_1__</option>
+                  <option value="gpt-4o-transcribe">
+                    __MSG_gpt4o_transcribe__
+                  </option>
+                  <option value="gpt-4o-mini-transcribe">
+                    __MSG_gpt4o_mini_transcribe__
+                  </option>
+                  <option value="google-speech-id">
+                    __MSG_google_speech_id__
+                  </option>
+                </select>
+                <span class="material-symbols-rounded md-select__icon"
+                  >expand_more</span
+                >
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Summarization Settings Section -->
+        <section class="md-section md-card md-card--outlined">
+          <div class="md-section__header">
+            <div class="md-section__icon">
+              <span class="material-symbols-rounded">auto_awesome</span>
+            </div>
+            <h2 class="md-title-large">__MSG_summarization_settings__</h2>
+          </div>
+
+          <div class="md-section__content">
+            <div class="md-select">
+              <label for="summarizationProvider" class="md-label-medium"
+                >__MSG_summarization_provider__</label
+              >
+              <div class="md-select__container">
+                <select id="summarizationProvider" class="md-select__input">
+                  <option value="openai" selected>OpenAI GPT</option>
+                  <option value="gemini">Google Gemini</option>
+                </select>
+                <span class="material-symbols-rounded md-select__icon"
+                  >expand_more</span
+                >
+              </div>
+            </div>
+
+            <div class="md-select md-mt-4">
+              <label for="summarizationModel" class="md-label-medium"
+                >__MSG_summarization_model__</label
+              >
+              <div class="md-select__container">
+                <select id="summarizationModel" class="md-select__input">
+                  <option value="gpt-3.5-turbo" selected>
+                    __MSG_gpt35_turbo__
+                  </option>
+                  <option value="gpt-5-nano">__MSG_gpt5_nano__</option>
+                  <option value="gpt-5-mini">__MSG_gpt5_mini__</option>
+                  <option value="gpt-4o-mini">__MSG_gpt4o_mini__</option>
+                  <option value="2.5flash-lite">
+                    __MSG_gemini_2_5_flash_lite__
+                  </option>
+                  <option value="2.0flash">__MSG_gemini_2_0_flash__</option>
+                  <option value="2.0flash-lite">
+                    __MSG_gemini_2_0_flash_lite__
+                  </option>
+                </select>
+                <span class="material-symbols-rounded md-select__icon"
+                  >expand_more</span
+                >
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Language Settings Section -->
+        <section class="md-section md-card md-card--outlined">
+          <div class="md-section__header">
+            <div class="md-section__icon">
+              <span class="material-symbols-rounded">translate</span>
+            </div>
+            <h2 class="md-title-large">__MSG_language_settings__</h2>
+          </div>
+
+          <div class="md-section__content">
+            <div class="md-select">
+              <label for="language" class="md-label-medium"
+                >__MSG_primary_language__</label
+              >
+              <div class="md-select__container">
+                <select id="language" class="md-select__input">
+                  <option value="id" selected>__MSG_bahasa_indonesia__</option>
+                  <option value="en">English</option>
+                </select>
+                <span class="material-symbols-rounded md-select__icon"
+                  >expand_more</span
+                >
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Advanced Settings Section -->
+        <section class="md-section md-card md-card--outlined">
+          <div class="md-section__header">
+            <div class="md-section__icon">
+              <span class="material-symbols-rounded">tune</span>
+            </div>
+            <h2 class="md-title-large">__MSG_advanced_settings__</h2>
+          </div>
+
+          <div class="md-section__content">
+            <div class="md-switch-group">
+              <label class="md-switch">
+                <input
+                  type="checkbox"
+                  id="enableRetry"
+                  class="md-switch__input"
+                />
+                <span class="md-switch__track">
+                  <span class="md-switch__thumb"></span>
+                </span>
+                <span class="md-switch__label">__MSG_enable_retry__</span>
+              </label>
+            </div>
+
+            <div class="md-divider md-mt-4 md-mb-4"></div>
+
+            <!-- Realtime Transcription Settings -->
+            <div class="md-switch-group">
+              <label class="md-switch">
+                <input
+                  type="checkbox"
+                  id="enableRealtimeTranscription"
+                  class="md-switch__input"
+                />
+                <span class="md-switch__track">
+                  <span class="md-switch__thumb"></span>
+                </span>
+                <span class="md-switch__label"
+                  >__MSG_enable_realtime_transcription__</span
+                >
+              </label>
+              <p class="md-text-field__supporting-text md-mt-1">
+                __MSG_realtime_transcription_desc__
+              </p>
+              <div class="md-info-banner md-mt-2">
+                <span class="material-symbols-rounded">info</span>
+                <span>__MSG_realtime_openai_only_notice__</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Action Buttons -->
+        <div class="md-options-actions">
+          <button
+            type="button"
+            id="saveSettings"
+            class="md-button md-button--filled"
+          >
+            <span class="material-symbols-rounded">save</span>
+            __MSG_save_settings__
+          </button>
+          <button
+            type="button"
+            id="testConnection"
+            class="md-button md-button--outlined"
+          >
+            <span class="material-symbols-rounded">cable</span>
+            __MSG_test_connection__
+          </button>
+        </div>
+
+        <!-- Message containers -->
+        <div id="successMessage" class="md-message md-message--success hidden">
+          <span class="material-symbols-rounded">check_circle</span>
+          <span class="md-message__text"></span>
+        </div>
+        <div id="errorMessage" class="md-message md-message--error hidden">
+          <span class="material-symbols-rounded">error</span>
+          <span class="md-message__text"></span>
+        </div>
+      </main>
     </div>
 
-    <div class="section">
-      <h2>__MSG_transcription_settings__</h2>
-      <label for="transcriptionProvider">__MSG_transcription_provider__</label>
-      <select id="transcriptionProvider">
-        <option value="openai" selected>OpenAI</option>
-        <option value="gemini">Google</option>
-      </select>
-
-      <label for="transcriptionModel" style="display: block; margin-top: 10px">__MSG_transcription_model__</label>
-      <select id="transcriptionModel">
-        <option value="whisper-1" selected>__MSG_whisper_1__</option>
-        <option value="gpt-4o-transcribe">__MSG_gpt4o_transcribe__</option>
-        <option value="gpt-4o-mini-transcribe">__MSG_gpt4o_mini_transcribe__</option>
-        <option value="google-speech-id">__MSG_google_speech_id__</option>
-      </select>
-    </div>
-
-    <div class="section">
-      <h2>__MSG_summarization_settings__</h2>
-      <label for="summarizationProvider">__MSG_summarization_provider__</label>
-      <select id="summarizationProvider">
-        <option value="openai" selected>OpenAI GPT</option>
-        <option value="gemini">Google Gemini</option>
-      </select>
-
-      <label for="summarizationModel" style="display: block; margin-top: 10px">__MSG_summarization_model__</label>
-      <select id="summarizationModel">
-        <option value="gpt-3.5-turbo" selected>__MSG_gpt35_turbo__</option>
-        <option value="gpt-5-nano">__MSG_gpt5_nano__</option>
-        <option value="gpt-5-mini">__MSG_gpt5_mini__</option>
-        <option value="gpt-4o-mini">__MSG_gpt4o_mini__</option>
-        <option value="2.5flash-lite">__MSG_gemini_2_5_flash_lite__</option>
-        <option value="2.0flash">__MSG_gemini_2_0_flash__</option>
-        <option value="2.0flash-lite">__MSG_gemini_2_0_flash_lite__</option>
-      </select>
-    </div>
-
-    <div class="section">
-      <h2>__MSG_language_settings__</h2>
-      <label for="language">__MSG_primary_language__</label>
-      <select id="language">
-        <option value="id" selected>__MSG_bahasa_indonesia__</option>
-      </select>
-    </div>
-
-    <div class="section">
-      <h2>__MSG_advanced_settings__</h2>
-      <label class="checkbox-label">
-        <input type="checkbox" id="enableRetry" />
-        <span>__MSG_enable_retry__</span>
-      </label>
-      <br /><br />
-      <label class="checkbox-label">
-        <input type="checkbox" id="saveRecordings" />
-        <span>__MSG_save_recordings__</span>
-      </label>
-    </div>
-
-    <button type="button" id="saveSettings">__MSG_save_settings__</button>
-    <button type="button" id="testConnection">__MSG_test_connection__</button>
-
-    <div id="successMessage" class="success"></div>
-    <div id="errorMessage" class="error"></div>
-  </div>
-
-  <script src="options.js" type="module"></script>
-</body>
-
+    <script src="options.js" type="module"></script>
+  </body>
 </html>

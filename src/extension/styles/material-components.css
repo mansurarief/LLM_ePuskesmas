@@ -1,0 +1,1225 @@
+/**
+ * Material Design 3 Component Styles
+ * Implements Material You design language for Chrome Extension
+ */
+
+/* ========================================
+ * BASE STYLES
+ * ======================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: var(--md-sys-typescale-font-family);
+  font-size: var(--md-sys-typescale-body-medium-font-size);
+  line-height: var(--md-sys-typescale-body-medium-line-height);
+  letter-spacing: var(--md-sys-typescale-body-medium-letter-spacing);
+  color: var(--md-sys-color-on-surface);
+  background-color: var(--md-sys-color-surface);
+}
+
+/* ========================================
+ * TYPOGRAPHY CLASSES
+ * ======================================== */
+
+.md-display-large {
+  font-size: var(--md-sys-typescale-display-large-font-size);
+  line-height: var(--md-sys-typescale-display-large-line-height);
+  font-weight: var(--md-sys-typescale-display-large-font-weight);
+  letter-spacing: var(--md-sys-typescale-display-large-letter-spacing);
+}
+
+.md-headline-large {
+  font-size: var(--md-sys-typescale-headline-large-font-size);
+  line-height: var(--md-sys-typescale-headline-large-line-height);
+  font-weight: var(--md-sys-typescale-headline-large-font-weight);
+  letter-spacing: var(--md-sys-typescale-headline-large-letter-spacing);
+}
+
+.md-headline-medium {
+  font-size: var(--md-sys-typescale-headline-medium-font-size);
+  line-height: var(--md-sys-typescale-headline-medium-line-height);
+  font-weight: var(--md-sys-typescale-headline-medium-font-weight);
+  letter-spacing: var(--md-sys-typescale-headline-medium-letter-spacing);
+}
+
+.md-headline-small {
+  font-size: var(--md-sys-typescale-headline-small-font-size);
+  line-height: var(--md-sys-typescale-headline-small-line-height);
+  font-weight: var(--md-sys-typescale-headline-small-font-weight);
+  letter-spacing: var(--md-sys-typescale-headline-small-letter-spacing);
+}
+
+.md-title-large {
+  font-size: var(--md-sys-typescale-title-large-font-size);
+  line-height: var(--md-sys-typescale-title-large-line-height);
+  font-weight: var(--md-sys-typescale-title-large-font-weight);
+  letter-spacing: var(--md-sys-typescale-title-large-letter-spacing);
+}
+
+.md-title-medium {
+  font-size: var(--md-sys-typescale-title-medium-font-size);
+  line-height: var(--md-sys-typescale-title-medium-line-height);
+  font-weight: var(--md-sys-typescale-title-medium-font-weight);
+  letter-spacing: var(--md-sys-typescale-title-medium-letter-spacing);
+}
+
+.md-title-small {
+  font-size: var(--md-sys-typescale-title-small-font-size);
+  line-height: var(--md-sys-typescale-title-small-line-height);
+  font-weight: var(--md-sys-typescale-title-small-font-weight);
+  letter-spacing: var(--md-sys-typescale-title-small-letter-spacing);
+}
+
+.md-label-large {
+  font-size: var(--md-sys-typescale-label-large-font-size);
+  line-height: var(--md-sys-typescale-label-large-line-height);
+  font-weight: var(--md-sys-typescale-label-large-font-weight);
+  letter-spacing: var(--md-sys-typescale-label-large-letter-spacing);
+}
+
+.md-label-medium {
+  font-size: var(--md-sys-typescale-label-medium-font-size);
+  line-height: var(--md-sys-typescale-label-medium-line-height);
+  font-weight: var(--md-sys-typescale-label-medium-font-weight);
+  letter-spacing: var(--md-sys-typescale-label-medium-letter-spacing);
+}
+
+.md-label-small {
+  font-size: var(--md-sys-typescale-label-small-font-size);
+  line-height: var(--md-sys-typescale-label-small-line-height);
+  font-weight: var(--md-sys-typescale-label-small-font-weight);
+  letter-spacing: var(--md-sys-typescale-label-small-letter-spacing);
+}
+
+.md-body-large {
+  font-size: var(--md-sys-typescale-body-large-font-size);
+  line-height: var(--md-sys-typescale-body-large-line-height);
+  font-weight: var(--md-sys-typescale-body-large-font-weight);
+  letter-spacing: var(--md-sys-typescale-body-large-letter-spacing);
+}
+
+.md-body-medium {
+  font-size: var(--md-sys-typescale-body-medium-font-size);
+  line-height: var(--md-sys-typescale-body-medium-line-height);
+  font-weight: var(--md-sys-typescale-body-medium-font-weight);
+  letter-spacing: var(--md-sys-typescale-body-medium-letter-spacing);
+}
+
+.md-body-small {
+  font-size: var(--md-sys-typescale-body-small-font-size);
+  line-height: var(--md-sys-typescale-body-small-line-height);
+  font-weight: var(--md-sys-typescale-body-small-font-weight);
+  letter-spacing: var(--md-sys-typescale-body-small-letter-spacing);
+}
+
+/* ========================================
+ * BUTTONS - Material Design 3
+ * ======================================== */
+
+.md-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 24px;
+  border: none;
+  border-radius: var(--md-sys-shape-corner-full);
+  cursor: pointer;
+  font-family: var(--md-sys-typescale-font-family);
+  font-size: var(--md-sys-typescale-label-large-font-size);
+  font-weight: var(--md-sys-typescale-label-large-font-weight);
+  letter-spacing: var(--md-sys-typescale-label-large-letter-spacing);
+  line-height: var(--md-sys-typescale-label-large-line-height);
+  text-decoration: none;
+  overflow: hidden;
+  transition: box-shadow var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard),
+              background-color var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+}
+
+.md-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+  pointer-events: none;
+}
+
+.md-button:hover::before {
+  opacity: var(--md-sys-state-hover-state-layer-opacity);
+}
+
+.md-button:focus-visible::before {
+  opacity: var(--md-sys-state-focus-state-layer-opacity);
+}
+
+.md-button:active::before {
+  opacity: var(--md-sys-state-pressed-state-layer-opacity);
+}
+
+.md-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.38;
+}
+
+.md-button:disabled::before {
+  opacity: 0;
+}
+
+/* Filled Button */
+.md-button--filled {
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  box-shadow: var(--md-sys-elevation-level0);
+}
+
+.md-button--filled::before {
+  background-color: var(--md-sys-color-on-primary);
+}
+
+.md-button--filled:hover {
+  box-shadow: var(--md-sys-elevation-level1);
+}
+
+.md-button--filled:disabled {
+  background-color: rgba(var(--md-sys-color-on-surface-rgb, 0, 0, 0), 0.12);
+  color: rgba(var(--md-sys-color-on-surface-rgb, 0, 0, 0), 0.38);
+  box-shadow: var(--md-sys-elevation-level0);
+}
+
+/* Filled Tonal Button */
+.md-button--filled-tonal {
+  background-color: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+  box-shadow: var(--md-sys-elevation-level0);
+}
+
+.md-button--filled-tonal::before {
+  background-color: var(--md-sys-color-on-secondary-container);
+}
+
+.md-button--filled-tonal:hover {
+  box-shadow: var(--md-sys-elevation-level1);
+}
+
+/* Outlined Button */
+.md-button--outlined {
+  background-color: transparent;
+  color: var(--md-sys-color-primary);
+  border: 1px solid var(--md-sys-color-outline);
+}
+
+.md-button--outlined::before {
+  background-color: var(--md-sys-color-primary);
+}
+
+.md-button--outlined:hover {
+  background-color: rgba(0, 106, 96, 0.08);
+}
+
+.md-button--outlined:focus-visible {
+  border-color: var(--md-sys-color-primary);
+}
+
+/* Text Button */
+.md-button--text {
+  background-color: transparent;
+  color: var(--md-sys-color-primary);
+  padding: 0 16px;
+}
+
+.md-button--text::before {
+  background-color: var(--md-sys-color-primary);
+}
+
+/* Elevated Button */
+.md-button--elevated {
+  background-color: var(--md-sys-color-surface-container-low);
+  color: var(--md-sys-color-primary);
+  box-shadow: var(--md-sys-elevation-level1);
+}
+
+.md-button--elevated::before {
+  background-color: var(--md-sys-color-primary);
+}
+
+.md-button--elevated:hover {
+  box-shadow: var(--md-sys-elevation-level2);
+}
+
+/* Button Color Variants */
+.md-button--error {
+  background-color: var(--md-sys-color-error);
+  color: var(--md-sys-color-on-error);
+}
+
+.md-button--error::before {
+  background-color: var(--md-sys-color-on-error);
+}
+
+.md-button--success {
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+}
+
+.md-button--success::before {
+  background-color: var(--md-sys-color-on-primary);
+}
+
+.md-button--warning {
+  background-color: var(--md-sys-color-warning);
+  color: var(--md-sys-color-on-warning);
+}
+
+.md-button--warning::before {
+  background-color: var(--md-sys-color-on-warning);
+}
+
+/* Outlined Button Color Variants */
+.md-button--success-outline {
+  background-color: transparent;
+  color: var(--md-sys-color-primary);
+  border: 1px solid var(--md-sys-color-primary);
+}
+
+.md-button--success-outline::before {
+  background-color: var(--md-sys-color-primary);
+}
+
+.md-button--success-outline:hover {
+  background-color: rgba(0, 106, 96, 0.08);
+}
+
+.md-button--error-outline {
+  background-color: transparent;
+  color: var(--md-sys-color-error);
+  border: 1px solid var(--md-sys-color-error);
+}
+
+.md-button--error-outline::before {
+  background-color: var(--md-sys-color-error);
+}
+
+.md-button--error-outline:hover {
+  background-color: rgba(186, 26, 26, 0.08);
+}
+
+.md-button--warning-outline {
+  background-color: transparent;
+  color: var(--md-sys-color-tertiary);
+  border: 1px solid var(--md-sys-color-tertiary);
+}
+
+.md-button--warning-outline::before {
+  background-color: var(--md-sys-color-tertiary);
+}
+
+.md-button--warning-outline:hover {
+  background-color: rgba(125, 82, 96, 0.08);
+}
+
+/* ========================================
+ * ICON BUTTONS - Material Design 3
+ * ======================================== */
+
+.md-icon-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  border-radius: var(--md-sys-shape-corner-full);
+  background-color: transparent;
+  color: var(--md-sys-color-on-surface-variant);
+  cursor: pointer;
+  overflow: hidden;
+  transition: background-color var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+}
+
+.md-icon-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  background-color: var(--md-sys-color-on-surface-variant);
+  transition: opacity var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+}
+
+.md-icon-button:hover::before {
+  opacity: var(--md-sys-state-hover-state-layer-opacity);
+}
+
+.md-icon-button:focus-visible::before {
+  opacity: var(--md-sys-state-focus-state-layer-opacity);
+}
+
+.md-icon-button:active::before {
+  opacity: var(--md-sys-state-pressed-state-layer-opacity);
+}
+
+.md-icon-button:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+.md-icon-button--filled {
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+}
+
+.md-icon-button--filled::before {
+  background-color: var(--md-sys-color-on-primary);
+}
+
+.md-icon-button--filled-tonal {
+  background-color: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+}
+
+.md-icon-button--outlined {
+  border: 1px solid var(--md-sys-color-outline);
+}
+
+/* ========================================
+ * FAB - Floating Action Button
+ * ======================================== */
+
+.md-fab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 56px;
+  height: 56px;
+  padding: 16px;
+  border: none;
+  border-radius: var(--md-sys-shape-corner-large);
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  cursor: pointer;
+  box-shadow: var(--md-sys-elevation-level3);
+  overflow: hidden;
+  transition: box-shadow var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+}
+
+.md-fab::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background-color: var(--md-sys-color-on-primary-container);
+  transition: opacity var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+}
+
+.md-fab:hover {
+  box-shadow: var(--md-sys-elevation-level4);
+}
+
+.md-fab:hover::before {
+  opacity: var(--md-sys-state-hover-state-layer-opacity);
+}
+
+.md-fab--small {
+  min-width: 40px;
+  height: 40px;
+  padding: 8px;
+  border-radius: var(--md-sys-shape-corner-medium);
+}
+
+.md-fab--large {
+  min-width: 96px;
+  height: 96px;
+  padding: 30px;
+  border-radius: var(--md-sys-shape-corner-extra-large);
+}
+
+.md-fab--extended {
+  padding: 16px 20px;
+  gap: 12px;
+}
+
+/* ========================================
+ * CARDS - Material Design 3
+ * ======================================== */
+
+.md-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--md-sys-color-surface-container-lowest);
+  border-radius: var(--md-sys-shape-corner-medium);
+  overflow: hidden;
+}
+
+.md-card--elevated {
+  background-color: var(--md-sys-color-surface-container-low);
+  box-shadow: var(--md-sys-elevation-level1);
+}
+
+.md-card--filled {
+  background-color: var(--md-sys-color-surface-container-highest);
+}
+
+.md-card--outlined {
+  border: 1px solid var(--md-sys-color-outline-variant);
+}
+
+.md-card__content {
+  padding: 16px;
+}
+
+.md-card__header {
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.md-card__actions {
+  padding: 16px;
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+/* ========================================
+ * TEXT FIELDS - Material Design 3
+ * ======================================== */
+
+.md-text-field {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.md-text-field__container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 56px;
+  padding: 8px 16px;
+  background-color: var(--md-sys-color-surface-container-highest);
+  border-radius: var(--md-sys-shape-corner-extra-small) var(--md-sys-shape-corner-extra-small) 0 0;
+  border-bottom: 1px solid var(--md-sys-color-on-surface-variant);
+  transition: border-color var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard),
+              background-color var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+}
+
+.md-text-field__container:hover {
+  background-color: var(--md-sys-color-surface-container-high);
+}
+
+.md-text-field__container:focus-within {
+  border-bottom-width: 2px;
+  border-bottom-color: var(--md-sys-color-primary);
+}
+
+.md-text-field__input {
+  flex: 1;
+  width: 100%;
+  padding: 8px 0;
+  border: none;
+  background: transparent;
+  font-family: var(--md-sys-typescale-font-family);
+  font-size: var(--md-sys-typescale-body-large-font-size);
+  line-height: var(--md-sys-typescale-body-large-line-height);
+  color: var(--md-sys-color-on-surface);
+  caret-color: var(--md-sys-color-primary);
+}
+
+.md-text-field__input:focus {
+  outline: none;
+}
+
+.md-text-field__input::placeholder {
+  color: var(--md-sys-color-on-surface-variant);
+  opacity: 1;
+}
+
+.md-text-field__label {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: var(--md-sys-typescale-body-large-font-size);
+  color: var(--md-sys-color-on-surface-variant);
+  pointer-events: none;
+  transition: all var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+}
+
+.md-text-field__input:focus + .md-text-field__label,
+.md-text-field__input:not(:placeholder-shown) + .md-text-field__label {
+  top: 12px;
+  transform: translateY(0);
+  font-size: var(--md-sys-typescale-body-small-font-size);
+  color: var(--md-sys-color-primary);
+}
+
+.md-text-field__supporting-text {
+  padding: 4px 16px 0;
+  font-size: var(--md-sys-typescale-body-small-font-size);
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+/* Outlined variant */
+.md-text-field--outlined .md-text-field__container {
+  background-color: transparent;
+  border: 1px solid var(--md-sys-color-outline);
+  border-radius: var(--md-sys-shape-corner-extra-small);
+}
+
+.md-text-field--outlined .md-text-field__container:focus-within {
+  border: 2px solid var(--md-sys-color-primary);
+}
+
+/* Error state */
+.md-text-field--error .md-text-field__container {
+  border-color: var(--md-sys-color-error);
+}
+
+.md-text-field--error .md-text-field__label,
+.md-text-field--error .md-text-field__supporting-text {
+  color: var(--md-sys-color-error);
+}
+
+/* ========================================
+ * SELECT / DROPDOWN - Material Design 3
+ * ======================================== */
+
+.md-select {
+  position: relative;
+  width: 100%;
+}
+
+.md-select__container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 56px;
+  padding: 8px 16px;
+  padding-right: 48px;
+  background-color: var(--md-sys-color-surface-container-highest);
+  border-radius: var(--md-sys-shape-corner-extra-small) var(--md-sys-shape-corner-extra-small) 0 0;
+  border-bottom: 1px solid var(--md-sys-color-on-surface-variant);
+  cursor: pointer;
+  transition: all var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+}
+
+.md-select__container:hover {
+  background-color: var(--md-sys-color-surface-container-high);
+}
+
+.md-select__input {
+  width: 100%;
+  padding: 8px 0;
+  border: none;
+  background: transparent;
+  font-family: var(--md-sys-typescale-font-family);
+  font-size: var(--md-sys-typescale-body-large-font-size);
+  color: var(--md-sys-color-on-surface);
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.md-select__input:focus {
+  outline: none;
+}
+
+.md-select__icon {
+  position: absolute;
+  right: 12px;
+  color: var(--md-sys-color-on-surface-variant);
+  pointer-events: none;
+}
+
+/* ========================================
+ * CHECKBOX - Material Design 3
+ * ======================================== */
+
+.md-checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.md-checkbox__input {
+  position: relative;
+  width: 18px;
+  height: 18px;
+  appearance: none;
+  -webkit-appearance: none;
+  border: 2px solid var(--md-sys-color-on-surface-variant);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+}
+
+.md-checkbox__input:checked {
+  background-color: var(--md-sys-color-primary);
+  border-color: var(--md-sys-color-primary);
+}
+
+.md-checkbox__input:checked::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 1px;
+  width: 4px;
+  height: 9px;
+  border: solid var(--md-sys-color-on-primary);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.md-checkbox__input:hover {
+  border-color: var(--md-sys-color-on-surface);
+}
+
+.md-checkbox__input:focus-visible {
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: 2px;
+}
+
+.md-checkbox__label {
+  font-size: var(--md-sys-typescale-body-medium-font-size);
+  color: var(--md-sys-color-on-surface);
+}
+
+/* ========================================
+ * SWITCH - Material Design 3
+ * ======================================== */
+
+.md-switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.md-switch__track {
+  position: relative;
+  width: 52px;
+  height: 32px;
+  background-color: var(--md-sys-color-surface-container-highest);
+  border: 2px solid var(--md-sys-color-outline);
+  border-radius: var(--md-sys-shape-corner-full);
+  transition: all var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+}
+
+.md-switch__thumb {
+  position: absolute;
+  left: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  background-color: var(--md-sys-color-outline);
+  border-radius: var(--md-sys-shape-corner-full);
+  transition: all var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+}
+
+.md-switch__input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.md-switch__input:checked + .md-switch__track {
+  background-color: var(--md-sys-color-primary);
+  border-color: var(--md-sys-color-primary);
+}
+
+.md-switch__input:checked + .md-switch__track .md-switch__thumb {
+  left: calc(100% - 4px);
+  transform: translate(-100%, -50%);
+  width: 24px;
+  height: 24px;
+  background-color: var(--md-sys-color-on-primary);
+}
+
+/* ========================================
+ * CHIPS - Material Design 3
+ * ======================================== */
+
+.md-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 16px;
+  border: 1px solid var(--md-sys-color-outline);
+  border-radius: var(--md-sys-shape-corner-small);
+  background-color: transparent;
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: var(--md-sys-typescale-label-large-font-size);
+  font-weight: var(--md-sys-typescale-label-large-font-weight);
+  cursor: pointer;
+  transition: all var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+}
+
+.md-chip:hover {
+  background-color: rgba(0, 106, 96, 0.08);
+}
+
+.md-chip--filled {
+  background-color: var(--md-sys-color-secondary-container);
+  border: none;
+  color: var(--md-sys-color-on-secondary-container);
+}
+
+.md-chip--selected {
+  background-color: var(--md-sys-color-secondary-container);
+  border-color: transparent;
+  color: var(--md-sys-color-on-secondary-container);
+}
+
+/* ========================================
+ * PROGRESS INDICATORS
+ * ======================================== */
+
+/* Linear Progress */
+.md-progress-linear {
+  position: relative;
+  width: 100%;
+  height: 4px;
+  background-color: var(--md-sys-color-surface-container-highest);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.md-progress-linear__track {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background-color: var(--md-sys-color-primary);
+  border-radius: 2px;
+  transition: width var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard);
+}
+
+.md-progress-linear--indeterminate .md-progress-linear__track {
+  width: 50%;
+  animation: md-progress-linear-indeterminate 2s infinite var(--md-sys-motion-easing-linear);
+}
+
+@keyframes md-progress-linear-indeterminate {
+  0% {
+    left: -50%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* Circular Progress */
+.md-progress-circular {
+  width: 48px;
+  height: 48px;
+  animation: md-progress-circular-rotate 2s linear infinite;
+}
+
+.md-progress-circular__circle {
+  fill: none;
+  stroke: var(--md-sys-color-primary);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-dasharray: 80, 200;
+  stroke-dashoffset: 0;
+  animation: md-progress-circular-dash 1.5s var(--md-sys-motion-easing-emphasized) infinite;
+}
+
+@keyframes md-progress-circular-rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes md-progress-circular-dash {
+  0% {
+    stroke-dasharray: 1, 200;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 89, 200;
+    stroke-dashoffset: -35;
+  }
+  100% {
+    stroke-dasharray: 89, 200;
+    stroke-dashoffset: -124;
+  }
+}
+
+/* ========================================
+ * DIVIDERS
+ * ======================================== */
+
+.md-divider {
+  height: 1px;
+  background-color: var(--md-sys-color-outline-variant);
+  border: none;
+  margin: 8px 0;
+}
+
+.md-divider--inset {
+  margin-left: 16px;
+  margin-right: 16px;
+}
+
+/* ========================================
+ * LISTS - Material Design 3
+ * ======================================== */
+
+.md-list {
+  padding: 8px 0;
+  list-style: none;
+}
+
+.md-list-item {
+  display: flex;
+  align-items: center;
+  min-height: 56px;
+  padding: 8px 16px;
+  gap: 16px;
+  cursor: pointer;
+  transition: background-color var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+}
+
+.md-list-item:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.md-list-item__leading {
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.md-list-item__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.md-list-item__headline {
+  font-size: var(--md-sys-typescale-body-large-font-size);
+  color: var(--md-sys-color-on-surface);
+}
+
+.md-list-item__supporting {
+  font-size: var(--md-sys-typescale-body-medium-font-size);
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.md-list-item__trailing {
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+/* ========================================
+ * SNACKBAR / TOAST
+ * ======================================== */
+
+.md-snackbar {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 288px;
+  max-width: 568px;
+  padding: 14px 16px;
+  background-color: var(--md-sys-color-inverse-surface);
+  color: var(--md-sys-color-inverse-on-surface);
+  border-radius: var(--md-sys-shape-corner-extra-small);
+  box-shadow: var(--md-sys-elevation-level3);
+  z-index: 1000;
+  animation: md-snackbar-enter var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-emphasized-decelerate);
+}
+
+@keyframes md-snackbar-enter {
+  from {
+    transform: translateX(-50%) translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+}
+
+.md-snackbar__text {
+  flex: 1;
+  font-size: var(--md-sys-typescale-body-medium-font-size);
+}
+
+.md-snackbar__action {
+  color: var(--md-sys-color-inverse-primary);
+  background: transparent;
+  border: none;
+  padding: 0 8px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+/* ========================================
+ * DIALOG - Material Design 3
+ * ======================================== */
+
+.md-dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.32);
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: md-dialog-overlay-enter var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard);
+}
+
+@keyframes md-dialog-overlay-enter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.md-dialog {
+  background-color: var(--md-sys-color-surface-container-high);
+  border-radius: var(--md-sys-shape-corner-extra-large);
+  min-width: 280px;
+  max-width: 560px;
+  box-shadow: var(--md-sys-elevation-level5);
+  animation: md-dialog-enter var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-emphasized-decelerate);
+}
+
+@keyframes md-dialog-enter {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.md-dialog__header {
+  padding: 24px 24px 16px;
+}
+
+.md-dialog__title {
+  font-size: var(--md-sys-typescale-headline-small-font-size);
+  font-weight: 400;
+  color: var(--md-sys-color-on-surface);
+}
+
+.md-dialog__content {
+  padding: 0 24px;
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: var(--md-sys-typescale-body-medium-font-size);
+}
+
+.md-dialog__actions {
+  padding: 24px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* ========================================
+ * UTILITY CLASSES
+ * ======================================== */
+
+.hidden {
+  display: none !important;
+}
+
+.md-surface {
+  background-color: var(--md-sys-color-surface);
+}
+
+.md-surface-container {
+  background-color: var(--md-sys-color-surface-container);
+}
+
+.md-surface-container-low {
+  background-color: var(--md-sys-color-surface-container-low);
+}
+
+.md-surface-container-high {
+  background-color: var(--md-sys-color-surface-container-high);
+}
+
+.md-elevation-1 {
+  box-shadow: var(--md-sys-elevation-level1);
+}
+
+.md-elevation-2 {
+  box-shadow: var(--md-sys-elevation-level2);
+}
+
+.md-elevation-3 {
+  box-shadow: var(--md-sys-elevation-level3);
+}
+
+.md-ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Spacing utilities */
+.md-mt-1 { margin-top: 4px; }
+.md-mt-2 { margin-top: 8px; }
+.md-mt-3 { margin-top: 12px; }
+.md-mt-4 { margin-top: 16px; }
+.md-mt-5 { margin-top: 20px; }
+.md-mt-6 { margin-top: 24px; }
+
+.md-mb-1 { margin-bottom: 4px; }
+.md-mb-2 { margin-bottom: 8px; }
+.md-mb-3 { margin-bottom: 12px; }
+.md-mb-4 { margin-bottom: 16px; }
+.md-mb-5 { margin-bottom: 20px; }
+.md-mb-6 { margin-bottom: 24px; }
+
+.md-gap-1 { gap: 4px; }
+.md-gap-2 { gap: 8px; }
+.md-gap-3 { gap: 12px; }
+.md-gap-4 { gap: 16px; }
+
+.full-width {
+  width: 100% !important;
+}
+
+/* Flex utilities */
+.md-flex {
+  display: flex;
+}
+
+.md-flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.md-flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.md-flex-col {
+  flex-direction: column;
+}
+
+.md-items-center {
+  align-items: center;
+}
+
+.md-justify-center {
+  justify-content: center;
+}
+
+.md-justify-between {
+  justify-content: space-between;
+}
+
+/* Text utilities */
+.md-text-center {
+  text-align: center;
+}
+
+.md-text-primary {
+  color: var(--md-sys-color-primary);
+}
+
+.md-text-secondary {
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.md-text-error {
+  color: var(--md-sys-color-error);
+}
+
+.md-text-success {
+  color: var(--md-sys-color-success);
+}
+
+/* ========================================
+ * ANIMATIONS
+ * ======================================== */
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ========================================
+ * MESSAGE STYLES
+ * ======================================== */
+
+.md-message {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border-radius: var(--md-sys-shape-corner-medium);
+  animation: slideIn var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-emphasized-decelerate);
+}
+
+.md-message--success {
+  background: var(--md-sys-color-success-container);
+  color: var(--md-sys-color-on-success-container);
+}
+
+.md-message--error {
+  background: var(--md-sys-color-error-container);
+  color: var(--md-sys-color-on-error-container);
+}
+
+.md-message--info {
+  background: var(--md-sys-color-tertiary-container);
+  color: var(--md-sys-color-on-tertiary-container);
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+

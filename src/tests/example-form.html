@@ -1,149 +1,166 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Medical Consultation Form - Example</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Symbols+Rounded">
+    <link rel="stylesheet" href="../extension/styles/material-tokens.css">
+    <link rel="stylesheet" href="../extension/styles/material-components.css">
     <style>
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--md-sys-color-background, #f5f5f5);
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+        }
+        
+        .md-options-layout {
             max-width: 800px;
             margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f5f5;
+            padding: 24px;
         }
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+
+        .md-card {
+            background-color: var(--md-sys-color-surface, #ffffff);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+            margin-bottom: 24px;
         }
-        h1 {
-            color: #2c3e50;
-            text-align: center;
-            margin-bottom: 30px;
+
+        .md-headline-medium {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+            color: var(--md-sys-color-primary);
         }
-        .form-group {
-            margin-bottom: 20px;
+
+        .info-box {
+            background-color: var(--md-sys-color-surface-variant, #e1e1e1);
+            color: var(--md-sys-color-on-surface-variant, #444);
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            border-left: 4px solid var(--md-sys-color-primary, #6200ee);
         }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
-            color: #333;
-        }
-        input, textarea, select {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 5px;
-            font-size: 14px;
-            box-sizing: border-box;
-        }
-        textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
+
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            gap: 16px;
         }
-        .btn {
-            background: #007bff;
-            color: white;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-right: 10px;
-        }
-        .btn:hover {
-            background: #0056b3;
-        }
-        .btn-secondary {
-            background: #6c757d;
-        }
-        .btn-secondary:hover {
-            background: #545b62;
-        }
-        .info-box {
-            background: #e3f2fd;
-            border: 1px solid #2196f3;
-            border-radius: 5px;
-            padding: 15px;
-            margin-bottom: 20px;
+
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
+
 <body>
-    <div class="container">
-        <h1>🏥 Medical Consultation Form</h1>
-        
-        <div class="info-box">
-            <strong>Testing Instructions:</strong><br>
-            1. Open the Medical Audio Recorder extension<br>
-            2. Record or upload audio<br>
-            3. Transcribe and summarize<br>
-            4. The AI summary should automatically populate the fields below
-        </div>
+    <div class="md-options-layout">
+        <header class="md-options-header">
+            <h1 class="md-headline-medium">
+                <span class="material-symbols-rounded">local_hospital</span>
+                Medical Consultation Form
+            </h1>
+        </header>
 
-        <form>
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="keluhanUtama">Keluhan Utama:</label>
-                    <textarea id="keluhanUtama" name="keluhanUtama" placeholder="Masukkan keluhan utama pasien..."></textarea>
+        <section class="md-card">
+            <div class="info-box">
+                <p><strong>Testing Instructions:</strong></p>
+                <ol style="margin: 8px 0 0 20px; padding: 0;">
+                    <li>Open the Medical Audio Recorder extension</li>
+                    <li>Record or upload audio</li>
+                    <li>Transcribe and summarize</li>
+                    <li>The AI summary should automatically populate the fields below</li>
+                </ol>
+            </div>
+
+            <form>
+                <div class="form-row">
+                    <div class="md-text-field">
+                        <label for="keluhanUtama" class="md-label-medium">Keluhan Utama</label>
+                        <div class="md-text-field__container">
+                            <textarea id="keluhanUtama" name="keluhanUtama" class="md-text-field__input" rows="3" placeholder="Masukkan keluhan utama pasien..."></textarea>
+                        </div>
+                    </div>
+                    <div class="md-text-field">
+                        <label for="keluhanTambahan" class="md-label-medium">Keluhan Tambahan</label>
+                        <div class="md-text-field__container">
+                            <textarea id="keluhanTambahan" name="keluhanTambahan" class="md-text-field__input" rows="3" placeholder="Masukkan keluhan tambahan..."></textarea>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="keluhanTambahan">Keluhan Tambahan:</label>
-                    <textarea id="keluhanTambahan" name="keluhanTambahan" placeholder="Masukkan keluhan tambahan..."></textarea>
+
+                <div class="md-text-field md-mt-4">
+                    <label for="rps" class="md-label-medium">RPS (Riwayat Penyakit Sekarang)</label>
+                    <div class="md-text-field__container">
+                        <textarea id="rps" name="rps" class="md-text-field__input" rows="2" placeholder="Riwayat penyakit saat ini..."></textarea>
+                    </div>
                 </div>
-            </div>
 
-            <div class="form-group">
-                <label for="rps">RPS (Riwayat Penyakit Sekarang):</label>
-                <textarea id="rps" name="rps" placeholder="Riwayat penyakit saat ini..."></textarea>
-            </div>
-
-            <div class="form-group">
-                <label for="rpd">RPD (Riwayat Penyakit Dahulu):</label>
-                <textarea id="rpd" name="rpd" placeholder="Riwayat penyakit sebelumnya..."></textarea>
-            </div>
-
-            <div class="form-group">
-                <label for="rpk">RPK (Riwayat Penyakit Keluarga):</label>
-                <textarea id="rpk" name="rpk" placeholder="Riwayat penyakit keluarga..."></textarea>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="terapiObat">Terapi Obat:</label>
-                    <textarea id="terapiObat" name="terapiObat" placeholder="Obat yang diresepkan..."></textarea>
+                <div class="md-text-field md-mt-4">
+                    <label for="rpd" class="md-label-medium">RPD (Riwayat Penyakit Dahulu)</label>
+                    <div class="md-text-field__container">
+                        <textarea id="rpd" name="rpd" class="md-text-field__input" rows="2" placeholder="Riwayat penyakit sebelumnya..."></textarea>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="terapiNonObat">Terapi Non Obat:</label>
-                    <textarea id="terapiNonObat" name="terapiNonObat" placeholder="Terapi non-farmakologis..."></textarea>
+
+                <div class="md-text-field md-mt-4">
+                    <label for="rpk" class="md-label-medium">RPK (Riwayat Penyakit Keluarga)</label>
+                    <div class="md-text-field__container">
+                        <textarea id="rpk" name="rpk" class="md-text-field__input" rows="2" placeholder="Riwayat penyakit keluarga..."></textarea>
+                    </div>
                 </div>
-            </div>
 
-            <div class="form-group">
-                <label for="edukasi">Edukasi:</label>
-                <textarea id="edukasi" name="edukasi" placeholder="Edukasi yang diberikan kepada pasien..."></textarea>
-            </div>
+                <div class="form-row md-mt-4">
+                    <div class="md-text-field">
+                        <label for="terapiObat" class="md-label-medium">Terapi Obat</label>
+                        <div class="md-text-field__container">
+                            <textarea id="terapiObat" name="terapiObat" class="md-text-field__input" rows="3" placeholder="Obat yang diresepkan..."></textarea>
+                        </div>
+                    </div>
+                    <div class="md-text-field">
+                        <label for="terapiNonObat" class="md-label-medium">Terapi Non Obat</label>
+                        <div class="md-text-field__container">
+                            <textarea id="terapiNonObat" name="terapiNonObat" class="md-text-field__input" rows="3" placeholder="Terapi non-farmakologis..."></textarea>
+                        </div>
+                    </div>
+                </div>
 
-            <div class="form-group">
-                <button type="button" class="btn" onclick="clearForm()">Clear Form</button>
-                <button type="button" class="btn btn-secondary" onclick="testPopulate()">Test Populate</button>
-            </div>
-        </form>
+                <div class="md-text-field md-mt-4">
+                    <label for="edukasi" class="md-label-medium">Edukasi</label>
+                    <div class="md-text-field__container">
+                        <textarea id="edukasi" name="edukasi" class="md-text-field__input" rows="3" placeholder="Edukasi yang diberikan kepada pasien..."></textarea>
+                    </div>
+                </div>
+
+                <div class="md-options-actions md-mt-4" style="display: flex; gap: 8px; justify-content: flex-end;">
+                    <button type="button" class="md-button md-button--outlined" onclick="clearForm()">
+                        <span class="material-symbols-rounded">delete</span>
+                        Clear Form
+                    </button>
+                    <button type="button" class="md-button md-button--filled" onclick="testPopulate()">
+                        <span class="material-symbols-rounded">science</span>
+                        Test Populate
+                    </button>
+                </div>
+            </form>
+        </section>
     </div>
 
     <script>
         function clearForm() {
             const fields = ['keluhanUtama', 'keluhanTambahan', 'rps', 'rpd', 'rpk', 'terapiObat', 'terapiNonObat', 'edukasi'];
             fields.forEach(fieldId => {
-                document.getElementById(fieldId).value = '';
+                const el = document.getElementById(fieldId);
+                if(el) el.value = '';
             });
         }
 
@@ -170,4 +187,5 @@
         }
     </script>
 </body>
-</html> 
+
+</html>
